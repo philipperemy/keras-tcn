@@ -22,7 +22,7 @@ def run_task():
 
     model, param_str = tcn.dilated_tcn(num_feat=1,
                                        num_classes=10,
-                                       nb_filters=20,
+                                       nb_filters=10,
                                        kernel_size=8,
                                        dilatations=[1, 2, 4, 8],
                                        nb_stacks=8,
