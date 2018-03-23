@@ -14,10 +14,10 @@ def data_generator(t, mem_length, b_size):
     marker = 9 * np.ones((b_size, mem_length + 1))
     placeholders = np.zeros((b_size, mem_length))
 
-    x = np.concatenate((seq, zeros[:, :-1], marker), 1)
+    x = np.array(np.concatenate((seq, zeros[:, :-1], marker), 1), dtype=int)
     y = np.array(np.concatenate((placeholders, zeros, seq), 1), dtype=int)
-    return x, y
+    return np.expand_dims(x, axis=2), np.expand_dims(y, axis=2)
 
 
 if __name__ == '__main__':
-    print(data_generator(2, 3, 1))
+    print(data_generator(t=601, mem_length=10, b_size=1)[0].flatten())
