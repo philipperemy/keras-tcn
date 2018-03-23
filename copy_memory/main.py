@@ -27,7 +27,7 @@ def run_task():
     model, param_str = tcn.dilated_tcn(num_feat=1,
                                        num_classes=10,
                                        nb_filters=128,
-                                       dilation_depth=1,
+                                       dilatations=1,
                                        nb_stacks=2,
                                        max_len=8,
                                        activation='wavenet',
