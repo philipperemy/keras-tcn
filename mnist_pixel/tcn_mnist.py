@@ -1,6 +1,6 @@
 import keras.backend as K
 from keras import optimizers
-from keras.layers import ZeroPadding1D, AtrousConvolution1D, Cropping1D, SpatialDropout1D, Activation, Lambda, \
+from keras.layers import AtrousConvolution1D, SpatialDropout1D, Activation, Lambda, \
     Convolution1D, Merge, Dense
 from keras.models import Input, Model
 
@@ -22,14 +22,14 @@ def residual_block(x, s, i, activation, causal, nb_filters, kernel_size):
     original_x = x
 
     if causal:
-        x = ZeroPadding1D(((2 ** i) // 2, 0))(x)
+        # x = ZeroPadding1D(((2 ** i) // 2, 0))(x)
         conv = AtrousConvolution1D(filters=nb_filters, kernel_size=kernel_size,
-                                   atrous_rate=2 ** i, padding='same',
+                                   atrous_rate=2 ** i, padding='causal',
                                    name='dilated_conv_%d_tanh_s%d' % (2 ** i, s))(x)
-        conv = Cropping1D((0, (2 ** i) // 2))(conv)
+        # conv = Cropping1D((0, (2 ** i) // 2))(conv)
     else:
         conv = AtrousConvolution1D(filters=nb_filters, kernel_size=kernel_size,
-                                   atrous_rate=2 ** i, padding='same',
+                                   atrous_rate=2 ** i, padding='causal',
                                    name='dilated_conv_%d_tanh_s%d' % (2 ** i, s))(x)
 
     if activation == 'norm_relu':
@@ -60,12 +60,20 @@ def dilated_tcn(num_feat, num_classes, nb_filters,
     input_layer = Input(name='input_layer', shape=(max_len, num_feat))
     x = input_layer
 
+    # DEBUG ON
+    # import numpy as np
+    # from mnist_pixel.utils import data_generator
+    # (x_train, y_train), (x_test, y_test) = data_generator()
+    # K.get_session().run(x, feed_dict={input_layer: x_train[0:1]})
+    # np.array(K.get_session().run(x, feed_dict={input_layer: x_train[0:1] + 1}))
+    # DEBUG OFF
+
     if causal:
-        x = ZeroPadding1D((kernel_size - 1, 0))(x)
-        x = Convolution1D(nb_filters, kernel_size, padding='same', name='initial_conv')(x)
-        x = Cropping1D((0, kernel_size - 1))(x)
+        # x = ZeroPadding1D((kernel_size - 1, 0))(x)
+        x = Convolution1D(nb_filters, kernel_size, padding='causal', name='initial_conv')(x)
+        # x = Cropping1D((kernel_size - 1, 0))(x)
     else:
-        x = Convolution1D(nb_filters, kernel_size, padding='same', name='initial_conv')(x)
+        x = Convolution1D(nb_filters, kernel_size, padding='causal', name='initial_conv')(x)
     print('Kernel size back')
 
     skip_connections = []
@@ -81,7 +89,8 @@ def dilated_tcn(num_feat, num_classes, nb_filters,
     # x = Convolution1D(nb_filters, tail_conv, padding='same')(x)
     # x = Activation('relu')(x)
 
-    x = Lambda(lambda tt: tt[:, -1, :])(x)
+    x = Lambda(lambda tt: tt[:, -1, :])(x)  # TODO: remove this zero. just for testing.
+    print('x.shape=', x.shape)
     x = Dense(num_classes)(x)
     # x = Convolution1D(num_classes, tail_conv, padding='same')(x)
 
@@ -104,3 +113,12 @@ def dilated_tcn(num_feat, num_classes, nb_filters,
         return model, param_str
     else:
         return model
+
+
+if __name__ == '__main__':
+    pass
+    # import numpy as np
+    # from mnist_pixel.utils import data_generator
+    # (x_train, y_train), (x_test, y_test) = data_generator()
+    # K.get_session().run(x, feed_dict={input_layer :x_train[0:1]})
+    # np.array(K.get_session().run(x, feed_dict={input_layer: x_train[0:1]}))

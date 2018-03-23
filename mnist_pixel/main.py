@@ -1,5 +1,44 @@
+import keras.backend as K
+import numpy as np
+
 from mnist_pixel import tcn_mnist
 from mnist_pixel.utils import data_generator
+
+
+def get_activations(model, model_inputs, print_shape_only=False, layer_name=None):
+    print('----- activations -----')
+    activations = []
+    inp = model.input
+
+    model_multi_inputs_cond = True
+    if not isinstance(inp, list):
+        # only one input! let's wrap it in a list.
+        inp = [inp]
+        model_multi_inputs_cond = False
+
+    outputs = [layer.output for layer in model.layers if
+               layer.name == layer_name or layer_name is None]  # all layer outputs
+
+    funcs = [K.function(inp + [K.learning_phase()], [out]) for out in outputs]  # evaluation functions
+
+    if model_multi_inputs_cond:
+        list_inputs = []
+        list_inputs.extend(model_inputs)
+        list_inputs.append(0.)
+    else:
+        list_inputs = [model_inputs, 0.]
+
+    # Learning phase. 0 = Test mode (no dropout or batch normalization)
+    # layer_outputs = [func([model_inputs, 0.])[0] for func in funcs]
+    layer_outputs = [func(list_inputs)[0] for func in funcs]
+    for layer_activations in layer_outputs:
+        activations.append(layer_activations)
+        if print_shape_only:
+            print(layer_activations.shape)
+        else:
+            print(layer_activations)
+    return activations
+    # np.sum(activations[15].squeeze(), axis=1)
 
 
 def run_task():
@@ -23,6 +62,10 @@ def run_task():
     print(f'y_test.shape = {y_test.shape}')
 
     model.summary()
+
+    # a = np.zeros_like(x_train[0:1])
+    # a[:, 0, :] = 1.0
+    # print(get_activations(model, a))
 
     model.fit(x_train, y_train.squeeze().argmax(axis=1), epochs=100,
               validation_data=(x_test, y_test.squeeze().argmax(axis=1)))

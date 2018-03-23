@@ -17,6 +17,11 @@ def data_generator():
     y_train = np.expand_dims(y_train, axis=2)
     y_test = np.expand_dims(y_test, axis=2)
 
+    x_train = x_train.astype('float32')
+    x_test = x_test.astype('float32')
+    x_train /= 255
+    x_test /= 255
+
     return (x_train, y_train), (x_test, y_test)
 
 
