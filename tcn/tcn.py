@@ -62,10 +62,11 @@ def dilated_tcn(num_feat, num_classes, nb_filters,
 
     if causal:
         x = ZeroPadding1D((kernel_size - 1, 0))(x)
-        x = Convolution1D(nb_filters, 1, padding='same', name='initial_conv')(x)
+        x = Convolution1D(nb_filters, kernel_size, padding='same', name='initial_conv')(x)
         x = Cropping1D((0, kernel_size - 1))(x)
     else:
-        x = Convolution1D(nb_filters, 1, padding='same', name='initial_conv')(x)
+        x = Convolution1D(nb_filters, kernel_size, padding='same', name='initial_conv')(x)
+    print('Kernel size back')
 
     skip_connections = []
     for s in range(nb_stacks):
