@@ -1,6 +1,6 @@
 import keras.backend as K
 from keras import optimizers
-from keras.layers import ZeroPadding1D, AtrousConvolution1D, Cropping1D, SpatialDropout1D, Activation, Lambda, \
+from keras.layers import AtrousConvolution1D, SpatialDropout1D, Activation, Lambda, \
     Convolution1D, Merge, Dense
 from keras.models import Input, Model
 
@@ -22,14 +22,14 @@ def residual_block(x, s, i, activation, causal, nb_filters, kernel_size):
     original_x = x
 
     if causal:
-        x = ZeroPadding1D(((2 ** i) // 2, 0))(x)
+        # x = ZeroPadding1D(((2 ** i) // 2, 0))(x)
         conv = AtrousConvolution1D(filters=nb_filters, kernel_size=kernel_size,
-                                   atrous_rate=2 ** i, padding='same',
+                                   atrous_rate=2 ** i, padding='causal',
                                    name='dilated_conv_%d_tanh_s%d' % (2 ** i, s))(x)
-        conv = Cropping1D((0, (2 ** i) // 2))(conv)
+        # conv = Cropping1D((0, (2 ** i) // 2))(conv)
     else:
         conv = AtrousConvolution1D(filters=nb_filters, kernel_size=kernel_size,
-                                   atrous_rate=2 ** i, padding='same',
+                                   atrous_rate=2 ** i, padding='causal',
                                    name='dilated_conv_%d_tanh_s%d' % (2 ** i, s))(x)
 
     if activation == 'norm_relu':
@@ -56,16 +56,17 @@ def dilated_tcn(num_feat, num_classes, nb_filters,
     dilation_depth : number of layers per stack
     nb_stacks : number of stacks.
     """
+    print('OK LALA')
 
     input_layer = Input(name='input_layer', shape=(max_len, num_feat))
     x = input_layer
 
     if causal:
-        x = ZeroPadding1D((kernel_size - 1, 0))(x)
-        x = Convolution1D(nb_filters, kernel_size, padding='same', name='initial_conv')(x)
-        x = Cropping1D((0, kernel_size - 1))(x)
+        # x = ZeroPadding1D((kernel_size - 1, 0))(x)
+        x = Convolution1D(nb_filters, kernel_size, padding='causal', name='initial_conv')(x)
+        # x = Cropping1D((0, kernel_size - 1))(x)
     else:
-        x = Convolution1D(nb_filters, kernel_size, padding='same', name='initial_conv')(x)
+        x = Convolution1D(nb_filters, kernel_size, padding='causal', name='initial_conv')(x)
     print('Kernel size back')
 
     skip_connections = []
