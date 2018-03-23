@@ -51,7 +51,7 @@ def residual_block(x, s, i, activation, causal, nb_filters, kernel_size):
 def dilated_tcn(num_feat, num_classes, nb_filters,
                 kernel_size, dilatations, nb_stacks, max_len,
                 activation='wavenet', use_skip_connections=True,
-                causal=False, optimizer='adam', return_param_str=False):
+                causal=False, return_param_str=False):
     """
     dilation_depth : number of layers per stack
     nb_stacks : number of stacks.
@@ -62,10 +62,10 @@ def dilated_tcn(num_feat, num_classes, nb_filters,
 
     if causal:
         x = ZeroPadding1D((kernel_size - 1, 0))(x)
-        x = Convolution1D(nb_filters, kernel_size, padding='same', name='initial_conv')(x)
+        x = Convolution1D(nb_filters, 1, padding='same', name='initial_conv')(x)
         x = Cropping1D((0, kernel_size - 1))(x)
     else:
-        x = Convolution1D(nb_filters, kernel_size, padding='same', name='initial_conv')(x)
+        x = Convolution1D(nb_filters, 1, padding='same', name='initial_conv')(x)
 
     skip_connections = []
     for s in range(nb_stacks):
