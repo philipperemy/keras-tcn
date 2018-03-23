@@ -1,28 +1,31 @@
-import numpy as np
-
-import tcn
+from mnist_pixel import tcn_mnist
 from mnist_pixel.utils import data_generator
 
 
 def run_task():
-    model, param_str = tcn.dilated_tcn(num_feat=1,
-                                       num_classes=10,
-                                       nb_filters=64,
-                                       dilation_depth=1,
-                                       nb_stacks=1,
-                                       max_len=784,
-                                       activation='wavenet',
-                                       causal=True,
-                                       return_param_str=True)
-
     (x_train, y_train), (x_test, y_test) = data_generator()
+
+    model, param_str = tcn_mnist.dilated_tcn(num_feat=1,
+                                             num_classes=10,
+                                             nb_filters=64,
+                                             kernel_size=8,
+                                             dilatations=[1, 2, 4, 8],
+                                             nb_stacks=8,
+                                             max_len=x_train[0:1].shape[1],
+                                             activation='norm_relu',
+                                             use_skip_connections=False,
+                                             causal=True,
+                                             return_param_str=True)
 
     print(f'x_train.shape = {x_train.shape}')
     print(f'y_train.shape = {y_train.shape}')
     print(f'x_test.shape = {x_test.shape}')
     print(f'y_test.shape = {y_test.shape}')
 
-    model.fit(x_train, y_train, epochs=10)
+    model.summary()
+
+    model.fit(x_train, y_train.squeeze().argmax(axis=1), epochs=100,
+              validation_data=(x_test, y_test.squeeze().argmax(axis=1)))
 
 
 if __name__ == '__main__':
