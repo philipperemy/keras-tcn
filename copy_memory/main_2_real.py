@@ -3,8 +3,8 @@ import keras
 from copy_memory.utils import data_generator
 from tcn import tcn
 
-x_train, y_train = data_generator(101, 10, 10000)
-x_test, y_test = data_generator(101, 10, 2000)
+x_train, y_train = data_generator(301, 10, 10000)
+x_test, y_test = data_generator(301, 10, 2000)
 
 
 class PrintSomeValues(keras.callbacks.Callback):
