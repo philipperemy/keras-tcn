@@ -3,8 +3,8 @@ import keras
 from copy_memory.utils import data_generator
 from tcn import tcn
 
-x_train, y_train = data_generator(301, 10, 10000)
-x_test, y_test = data_generator(301, 10, 2000)
+x_train, y_train = data_generator(601, 10, 10000)
+x_test, y_test = data_generator(601, 10, 2000)
 
 
 class PrintSomeValues(keras.callbacks.Callback):
@@ -22,10 +22,10 @@ def run_task():
 
     model, param_str = tcn.dilated_tcn(num_feat=1,
                                        num_classes=10,
-                                       nb_filters=10,
+                                       nb_filters=20,
                                        kernel_size=8,
                                        dilatations=[1, 2, 4, 8],
-                                       nb_stacks=6,
+                                       nb_stacks=8,
                                        max_len=x_train[0:1].shape[1],
                                        activation='norm_relu',
                                        use_skip_connections=False,
@@ -42,7 +42,7 @@ def run_task():
     model.summary()
 
     model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=100,
-              callbacks=[psv], batch_size=1024)
+              callbacks=[psv], batch_size=128)
 
 
 if __name__ == '__main__':
