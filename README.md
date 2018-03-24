@@ -92,6 +92,9 @@ pip install . # install keras-tcn
 ## Run
 
 ```
+cd adding_problem/
+python main.py # run adding problem task
+
 cd copy_memory/
 python main.py # run copy memory task
 
