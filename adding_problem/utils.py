@@ -15,9 +15,10 @@ def data_generator(n, seq_length):
         x_mask[i, 0, positions[0]] = 1
         x_mask[i, 0, positions[1]] = 1
         y[i, 0] = x_num[i, 0, positions[0]] + x_num[i, 0, positions[1]]
-    x = np.concatenate((x_num, x_mask))
+    x = np.concatenate((x_num, x_mask), axis=1)
+    x = np.transpose(x, (0, 2, 1))
     return x, y
 
 
 if __name__ == '__main__':
-    print(data_generator(n=1, seq_length=10))
+    print(data_generator(n=20, seq_length=10))

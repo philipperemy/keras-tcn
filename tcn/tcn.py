@@ -42,7 +42,8 @@ def residual_block(x, s, i, activation, nb_filters, kernel_size):
 def dilated_tcn(num_feat, num_classes, nb_filters,
                 kernel_size, dilatations, nb_stacks, max_len,
                 activation='wavenet', use_skip_connections=True,
-                return_param_str=False, output_slice_index=None):
+                return_param_str=False, output_slice_index=None,
+                regression=False):
     """
     dilation_depth : number of layers per stack
     nb_stacks : number of stacks.
@@ -69,18 +70,29 @@ def dilated_tcn(num_feat, num_classes, nb_filters,
         x = Lambda(lambda tt: tt[:, output_slice_index, :])(x)
 
     print('x.shape=', x.shape)
-    x = Dense(num_classes)(x)
 
-    x = Activation('softmax', name='output_softmax')(x)
-    output_layer = x
+    if regression is None:
+        # classification
+        x = Dense(num_classes)(x)
+        x = Activation('softmax', name='output_softmax')(x)
+        output_layer = x
+        print(f'model.x = {input_layer.shape}')
+        print(f'model.y = {output_layer.shape}')
+        model = Model(input_layer, output_layer)
 
-    print(f'model.x = {input_layer.shape}')
-    print(f'model.y = {output_layer.shape}')
-    model = Model(input_layer, output_layer)
-
-    adam = optimizers.Adam(lr=0.002, clipnorm=1.)
-    model.compile(adam, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-    print('Adam with norm clipping.')
+        adam = optimizers.Adam(lr=0.002, clipnorm=1.)
+        model.compile(adam, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+        print('Adam with norm clipping.')
+    else:
+        # regression
+        x = Dense(1)(x)
+        x = Activation('linear', name='output_dense')(x)
+        output_layer = x
+        print(f'model.x = {input_layer.shape}')
+        print(f'model.y = {output_layer.shape}')
+        model = Model(input_layer, output_layer)
+        adam = optimizers.Adam(lr=0.002, clipnorm=1.)
+        model.compile(adam, loss='mean_squared_error')
 
     if return_param_str:
         param_str = 'D-TCN_C{}_B{}_L{}'.format(2, nb_stacks, dilatations)
