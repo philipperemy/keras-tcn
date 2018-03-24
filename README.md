@@ -23,7 +23,7 @@
 
 
 <p align="center">
-  <img src="misc/Sequential_MNIST_Task.png" width="400">
+  <img src="misc/Sequential_MNIST_Task.png">
   <b>Sequential MNIST</b><br><br>
 </p>
 
