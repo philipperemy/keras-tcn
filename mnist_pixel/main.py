@@ -1,8 +1,7 @@
 import keras.backend as K
-import numpy as np
 
-from mnist_pixel import tcn_mnist
-from mnist_pixel.utils import data_generator
+from utils import data_generator
+from tcn import tcn
 
 
 def get_activations(model, model_inputs, print_shape_only=False, layer_name=None):
@@ -44,17 +43,17 @@ def get_activations(model, model_inputs, print_shape_only=False, layer_name=None
 def run_task():
     (x_train, y_train), (x_test, y_test) = data_generator()
 
-    model, param_str = tcn_mnist.dilated_tcn(num_feat=1,
-                                             num_classes=10,
-                                             nb_filters=64,
-                                             kernel_size=8,
-                                             dilatations=[1, 2, 4, 8],
-                                             nb_stacks=8,
-                                             max_len=x_train[0:1].shape[1],
-                                             activation='norm_relu',
-                                             use_skip_connections=False,
-                                             causal=True,
-                                             return_param_str=True)
+    model, param_str = tcn.dilated_tcn(output_slice_index='last', # try 'first'.
+                                       num_feat=1,
+                                       num_classes=10,
+                                       nb_filters=64,
+                                       kernel_size=8,
+                                       dilatations=[1, 2, 4, 8],
+                                       nb_stacks=8,
+                                       max_len=x_train[0:1].shape[1],
+                                       activation='norm_relu',
+                                       use_skip_connections=False,
+                                       return_param_str=True)
 
     print(f'x_train.shape = {x_train.shape}')
     print(f'y_train.shape = {y_train.shape}')

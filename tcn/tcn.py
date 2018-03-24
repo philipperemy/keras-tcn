@@ -18,20 +18,11 @@ def wave_net_activation(x):
     return Merge(mode='mul')([tanh_out, sigm_out])
 
 
-def residual_block(x, s, i, activation, causal, nb_filters, kernel_size):
+def residual_block(x, s, i, activation, nb_filters, kernel_size):
     original_x = x
-
-    if causal:
-        # x = ZeroPadding1D(((2 ** i) // 2, 0))(x)
-        conv = AtrousConvolution1D(filters=nb_filters, kernel_size=kernel_size,
-                                   atrous_rate=2 ** i, padding='causal',
-                                   name='dilated_conv_%d_tanh_s%d' % (2 ** i, s))(x)
-        # conv = Cropping1D((0, (2 ** i) // 2))(conv)
-    else:
-        conv = AtrousConvolution1D(filters=nb_filters, kernel_size=kernel_size,
-                                   atrous_rate=2 ** i, padding='causal',
-                                   name='dilated_conv_%d_tanh_s%d' % (2 ** i, s))(x)
-
+    conv = AtrousConvolution1D(filters=nb_filters, kernel_size=kernel_size,
+                               atrous_rate=2 ** i, padding='causal',
+                               name='dilated_conv_%d_tanh_s%d' % (2 ** i, s))(x)
     if activation == 'norm_relu':
         x = Activation('relu')(conv)
         x = Lambda(channel_normalization)(x)
@@ -51,38 +42,34 @@ def residual_block(x, s, i, activation, causal, nb_filters, kernel_size):
 def dilated_tcn(num_feat, num_classes, nb_filters,
                 kernel_size, dilatations, nb_stacks, max_len,
                 activation='wavenet', use_skip_connections=True,
-                causal=False, return_param_str=False):
+                return_param_str=False, output_slice_index=None):
     """
     dilation_depth : number of layers per stack
     nb_stacks : number of stacks.
     """
-    print('OK LALA')
-
     input_layer = Input(name='input_layer', shape=(max_len, num_feat))
     x = input_layer
-
-    if causal:
-        # x = ZeroPadding1D((kernel_size - 1, 0))(x)
-        x = Convolution1D(nb_filters, kernel_size, padding='causal', name='initial_conv')(x)
-        # x = Cropping1D((0, kernel_size - 1))(x)
-    else:
-        x = Convolution1D(nb_filters, kernel_size, padding='causal', name='initial_conv')(x)
-    print('Kernel size back')
+    x = Convolution1D(nb_filters, kernel_size, padding='causal', name='initial_conv')(x)
 
     skip_connections = []
     for s in range(nb_stacks):
         for i in dilatations:
-            x, skip_out = residual_block(x, s, i, activation, causal, nb_filters, kernel_size)
+            x, skip_out = residual_block(x, s, i, activation, nb_filters, kernel_size)
             skip_connections.append(skip_out)
 
     if use_skip_connections:
         x = Merge(mode='sum')(skip_connections)
     x = Activation('relu')(x)
 
-    # x = Convolution1D(nb_filters, tail_conv, padding='same')(x)
-    # x = Activation('relu')(x)
+    if output_slice_index is not None:  # can test with 0 or -1.
+        if output_slice_index == 'last':
+            output_slice_index = -1
+        if output_slice_index == 'first':
+            output_slice_index = 0
+        x = Lambda(lambda tt: tt[:, output_slice_index, :])(x)
+
+    print('x.shape=', x.shape)
     x = Dense(num_classes)(x)
-    # x = Convolution1D(num_classes, tail_conv, padding='same')(x)
 
     x = Activation('softmax', name='output_softmax')(x)
     output_layer = x
@@ -92,15 +79,11 @@ def dilated_tcn(num_feat, num_classes, nb_filters,
     model = Model(input_layer, output_layer)
 
     adam = optimizers.Adam(lr=0.002, clipnorm=1.)
-    model.compile(adam, loss='sparse_categorical_crossentropy',
-                  sample_weight_mode='temporal', metrics=['accuracy'])
+    model.compile(adam, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
     print('Adam with norm clipping.')
 
     if return_param_str:
         param_str = 'D-TCN_C{}_B{}_L{}'.format(2, nb_stacks, dilatations)
-        if causal:
-            param_str += '_causal'
-
         return model, param_str
     else:
         return model
