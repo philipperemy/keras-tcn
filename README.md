@@ -12,6 +12,27 @@
   <b>Visualization of a stack of dilated causal convolutional layers (Wavenet, 2016)</b><br><br>
 </p>
 
+## Installation
+
+```
+git clone git@github.com:philipperemy/keras-tcn.git
+cd keras-tcn
+virtualenv -p python3.6 venv
+source venv/bin/activate
+pip install -r requirements.txt # change to tensorflow if you dont have a gpu.
+pip install . # install keras-tcn
+```
+
+## Run
+
+```
+cd copy_memory/
+python main.py # run copy memory task
+
+cd mnist_pixel/
+python main.py # run sequential mnist pixel task
+```
+
 ## Tasks
 
 <p align="center">
