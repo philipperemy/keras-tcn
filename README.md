@@ -1,6 +1,17 @@
 # Keras TCN
 *Keras Temporal Convolutional Network*
 
+ * [Keras TCN](#keras-tcn)
+    * [Why Temporal Convolutional Network?](#why-temporal-convolutional-network)
+    * [API](#api)
+       * [Regression (Many to one) e.g. adding problem](#--regression-many-to-one-eg-adding-problem)
+       * [Classification (Many to one) e.g. copy memory task](#--classification-many-to-one-eg-copy-memory-task)
+       * [Classification (Many to one) e.g. sequential mnist task](#--classification-many-to-one-eg-sequential-mnist-task)
+    * [Installation](#installation)
+    * [Run](#run)
+    * [Tasks](#tasks)
+    * [References](#references)
+
 ## Why Temporal Convolutional Network?
 
 - TCNs exhibit longer memory than recurrent architectures with the same capacity.
@@ -11,17 +22,6 @@
   <img src="misc/Dilated_Conv.png">
   <b>Visualization of a stack of dilated causal convolutional layers (Wavenet, 2016)</b><br><br>
 </p>
-
-## Installation
-
-```
-git clone git@github.com:philipperemy/keras-tcn.git
-cd keras-tcn
-virtualenv -p python3.6 venv
-source venv/bin/activate
-pip install -r requirements.txt # change to tensorflow if you dont have a gpu.
-pip install . # install keras-tcn
-```
 
 ## API
 
@@ -78,6 +78,16 @@ model = tcn.dilated_tcn(output_slice_index='last',
                         activation='norm_relu')
 ```
 
+## Installation
+
+```
+git clone git@github.com:philipperemy/keras-tcn.git
+cd keras-tcn
+virtualenv -p python3.6 venv
+source venv/bin/activate
+pip install -r requirements.txt # change to tensorflow if you dont have a gpu.
+pip install . # install keras-tcn
+```
 
 ## Run
 
