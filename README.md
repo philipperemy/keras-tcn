@@ -23,6 +23,62 @@ pip install -r requirements.txt # change to tensorflow if you dont have a gpu.
 pip install . # install keras-tcn
 ```
 
+## API
+
+After installation, the model can be imported like this:
+
+```
+from tcn import tcn
+```
+
+In the following examples, we assume the input to have a shape `(batch_size, timesteps, input_dim)`.
+
+The model is a Keras model. The model functions (`model.summary`, `model.fit`, `model.predict`...) are all functional.
+
+
+
+### - Regression (Many to one) e.g. adding problem
+
+```
+model = tcn.dilated_tcn(output_slice_index='last',
+                        num_feat=input_dim,
+                        nb_filters=24,
+                        kernel_size=8,
+                        dilatations=[1, 2, 4, 8],
+                        nb_stacks=8,
+                        max_len=timesteps,
+                        activation='norm_relu',
+                        regression=True)
+```
+
+### - Classification (Many to one) e.g. copy memory task
+
+```
+model = tcn.dilated_tcn(num_feat=input_dim,
+                        num_classes=10,
+                        nb_filters=10,
+                        kernel_size=8,
+                        dilatations=[1, 2, 4, 8],
+                        nb_stacks=8,
+                        max_len=timesteps,
+                        activation='norm_relu')
+```
+
+### - Classification (Many to one) e.g. sequential mnist task
+
+```
+model = tcn.dilated_tcn(output_slice_index='last',
+                        num_feat=input_dim,
+                        num_classes=10,
+                        nb_filters=64,
+                        kernel_size=8,
+                        dilatations=[1, 2, 4, 8],
+                        nb_stacks=8,
+                        max_len=timesteps,
+                        activation='norm_relu')
+```
+
+
 ## Run
 
 ```
