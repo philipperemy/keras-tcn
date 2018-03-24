@@ -1,0 +1,4 @@
+setuptools
+keras
+numpy
+tensorflow-gpu
