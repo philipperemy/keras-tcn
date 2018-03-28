@@ -71,7 +71,7 @@ def dilated_tcn(num_feat, num_classes, nb_filters,
 
     print('x.shape=', x.shape)
 
-    if regression is None:
+    if not regression:
         # classification
         x = Dense(num_classes)(x)
         x = Activation('softmax', name='output_softmax')(x)
