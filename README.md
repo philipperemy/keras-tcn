@@ -51,7 +51,7 @@ model = tcn.dilated_tcn(output_slice_index='last',
                         regression=True)
 ```
 
-### - Classification (Many to one) e.g. copy memory task
+### - Classification (Many to many) e.g. copy memory task
 
 ```
 model = tcn.dilated_tcn(num_feat=input_dim,
