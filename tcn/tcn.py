@@ -1,8 +1,10 @@
 import keras.backend as K
 from keras import optimizers
-from keras.layers import AtrousConvolution1D, SpatialDropout1D, Activation, Lambda, \
-    Convolution1D, Merge, Dense
+from keras.layers import Conv1D, SpatialDropout1D
+from keras.layers import Activation, Lambda
+from keras.layers import Convolution1D, Dense
 from keras.models import Input, Model
+import keras.layers
 
 
 def channel_normalization(x):
@@ -15,14 +17,14 @@ def channel_normalization(x):
 def wave_net_activation(x):
     tanh_out = Activation('tanh')(x)
     sigm_out = Activation('sigmoid')(x)
-    return Merge(mode='mul')([tanh_out, sigm_out])
+    return keras.layers.multiply([tanh_out, sigm_out])
 
 
 def residual_block(x, s, i, activation, nb_filters, kernel_size):
     original_x = x
-    conv = AtrousConvolution1D(filters=nb_filters, kernel_size=kernel_size,
-                               atrous_rate=2 ** i, padding='causal',
-                               name='dilated_conv_%d_tanh_s%d' % (2 ** i, s))(x)
+    conv = Conv1D(filters=nb_filters, kernel_size=kernel_size,
+                  dilation_rate=2 ** i, padding='causal',
+                  name='dilated_conv_%d_tanh_s%d' % (2 ** i, s))(x)
     if activation == 'norm_relu':
         x = Activation('relu')(conv)
         x = Lambda(channel_normalization)(x)
@@ -35,7 +37,7 @@ def residual_block(x, s, i, activation, nb_filters, kernel_size):
 
     # 1x1 conv.
     x = Convolution1D(nb_filters, 1, padding='same')(x)
-    res_x = Merge(mode='sum')([original_x, x])
+    res_x = keras.layers.add([original_x, x])
     return res_x, x
 
 
@@ -59,7 +61,7 @@ def dilated_tcn(num_feat, num_classes, nb_filters,
             skip_connections.append(skip_out)
 
     if use_skip_connections:
-        x = Merge(mode='sum')(skip_connections)
+        x = keras.layers.add(skip_connections)
     x = Activation('relu')(x)
 
     if output_slice_index is not None:  # can test with 0 or -1.
