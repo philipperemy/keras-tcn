@@ -120,6 +120,8 @@ The task consists of feeding a large array of decimal numbers to the network, al
 
 #### Implementation results
 
+The model takes time to learn this task. It's symbolized by a very long plateau (could take ~8 epochs on some runs).
+
 ```
 200000/200000 [==============================] - 451s 2ms/step - loss: 0.1749 - val_loss: 0.1662
 200000/200000 [==============================] - 449s 2ms/step - loss: 0.1681 - val_loss: 0.1676
