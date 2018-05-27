@@ -92,10 +92,9 @@ python setup.py install # install keras-tcn as a package
 
 ## Run
 
+Once `keras-tcn` is installed as a package, you can take a glimpse of what's possible to do with TCNs. Some tasks examples are  available in the repository for this purpose:
+
 ```
-
-# Install it as a package first.
-
 cd adding_problem/
 python main.py # run adding problem task
 
