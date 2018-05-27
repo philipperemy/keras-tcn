@@ -1,5 +1,4 @@
-setuptools
 keras
 numpy
 tensorflow-gpu
-h5py
+h5py>=2.8.0rc1
