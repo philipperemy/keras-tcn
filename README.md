@@ -87,7 +87,7 @@ cd keras-tcn
 virtualenv -p python3.6 venv
 source venv/bin/activate
 pip install -r requirements.txt # change to tensorflow if you dont have a gpu.
-pip install . # install keras-tcn
+python setup.py install # install keras-tcn as a package
 ```
 
 ## Run
