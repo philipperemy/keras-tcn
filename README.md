@@ -125,11 +125,28 @@ python main.py # run sequential mnist pixel task
 200000/200000 [==============================] - 448s 2ms/step - loss: 0.0040 - val_loss: 0.0012
 ```
 
+### Copy Memory Task
+
+#### Explanation
 
 <p align="center">
   <img src="misc/Copy_Memory_Task.png">
   <b>Copy Memory Task</b><br><br>
 </p>
+
+#### Implementation results
+
+```
+10000/10000 [==============================] - 20s 2ms/step - loss: 0.3474 - acc: 0.8985 - val_loss: 0.0362 - val_acc: 0.9859
+10000/10000 [==============================] - 13s 1ms/step - loss: 0.0360 - acc: 0.9859 - val_loss: 0.0353 - val_acc: 0.9859
+10000/10000 [==============================] - 13s 1ms/step - loss: 0.0351 - acc: 0.9859 - val_loss: 0.0345 - val_acc: 0.9859
+10000/10000 [==============================] - 13s 1ms/step - loss: 0.0342 - acc: 0.9860 - val_loss: 0.0336 - val_acc: 0.9860
+10000/10000 [==============================] - 13s 1ms/step - loss: 0.0332 - acc: 0.9865 - val_loss: 0.0307 - val_acc: 0.9883
+10000/10000 [==============================] - 13s 1ms/step - loss: 0.0240 - acc: 0.9898 - val_loss: 0.0157 - val_acc: 0.9933
+10000/10000 [==============================] - 13s 1ms/step - loss: 0.0136 - acc: 0.9951 - val_loss: 0.0094 - val_acc: 0.9976
+10000/10000 [==============================] - 13s 1ms/step - loss: 0.0087 - acc: 0.9978 - val_loss: 0.0049 - val_acc: 1.0000
+10000/10000 [==============================] - 14s 1ms/step - loss: 0.0050 - acc: 0.9992 - val_loss: 0.0020 - val_acc: 1.0000
+```
 
 ### Sequential MNIST
 
