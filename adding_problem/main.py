@@ -12,7 +12,7 @@ class PrintSomeValues(keras.callbacks.Callback):
     def on_epoch_begin(self, epoch, logs={}):
         print(f'x_test[0:1] = {x_test[0:1]}.')
         print(f'y_test[0:1] = {y_test[0:1]}.')
-        print(f'p.shape = {self.model.predict(x_test[0:1])}.')
+        print(f'pred = {self.model.predict(x_test[0:1])}.')
 
 
 def run_task():
