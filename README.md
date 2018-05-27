@@ -42,7 +42,7 @@ The model is a Keras model. The model functions (`model.summary`, `model.fit`, `
 ```
 model = tcn.dilated_tcn(output_slice_index='last',
                         num_feat=input_dim,
-						num_classes=None,
+			num_classes=None,
                         nb_filters=24,
                         kernel_size=8,
                         dilatations=[1, 2, 4, 8],
