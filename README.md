@@ -93,6 +93,9 @@ python setup.py install # install keras-tcn as a package
 ## Run
 
 ```
+
+# Install it as a package first.
+
 cd adding_problem/
 python main.py # run adding problem task
 
@@ -106,6 +109,8 @@ python main.py # run sequential mnist pixel task
 ## Tasks
 
 ### Adding Task
+
+The task consists of feeding a large array of decimal numbers to the network, along with a boolean array of the same length. The objective is to sum the two decimals where the boolean array contain the two 1s.
 
 #### Explanation
 
@@ -127,6 +132,13 @@ python main.py # run sequential mnist pixel task
 ```
 
 ### Copy Memory Task
+
+The copy memory consists of a very large array:
+- At the beginning, there's the vector x of length N. This is the vector to copy.
+- At the end, N+1 9s are present. The first 9 is seen as a delimiter.
+- In the middle, only 0s are there.
+
+The idea is to copy the content of the vector x to the end of the large array. The task is made sufficiently complex by increasing the number of 0s in the middle.
 
 #### Explanation
 
