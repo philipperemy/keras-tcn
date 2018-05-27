@@ -115,11 +115,33 @@ python main.py # run sequential mnist pixel task
   <b>Copy Memory Task</b><br><br>
 </p>
 
+### Sequential MNIST
+
+#### Explanation
+
+The idea here is to consider MNIST images as 1-D sequences and feed them to the network. This task is particularly hard because sequences are 28*28 = 784 elements. In order to classify correctly, the network has to remember all the sequence. Usual LSTM are unable to perform well on this task.
 
 <p align="center">
   <img src="misc/Sequential_MNIST_Task.png">
   <b>Sequential MNIST</b><br><br>
 </p>
+
+#### Implementation results
+
+```
+60000/60000 [==============================] - 569s 9ms/step - loss: 0.2209 - acc: 0.9303 - val_loss: 0.0699 - val_acc: 0.9781
+Epoch 2/100
+60000/60000 [==============================] - 545s 9ms/step - loss: 0.0784 - acc: 0.9760 - val_loss: 0.0507 - val_acc: 0.9843
+Epoch 3/100
+60000/60000 [==============================] - 553s 9ms/step - loss: 0.0599 - acc: 0.9824 - val_loss: 0.0512 - val_acc: 0.9840
+Epoch 4/100
+60000/60000 [==============================] - 555s 9ms/step - loss: 0.0493 - acc: 0.9851 - val_loss: 0.0569 - val_acc: 0.9824
+Epoch 5/100
+60000/60000 [==============================] - 549s 9ms/step - loss: 0.0421 - acc: 0.9868 - val_loss: 0.0424 - val_acc: 0.9864
+Epoch 6/100
+60000/60000 [==============================] - 558s 9ms/step - loss: 0.0358 - acc: 0.9886 - val_loss: 0.0416 - val_acc: 0.9874
+```
+
 
 
 ## References
