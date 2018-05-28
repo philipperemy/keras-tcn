@@ -52,6 +52,8 @@ model = tcn.dilated_tcn(output_slice_index='last',
                         regression=True)
 ```
 
+For a Many to Many regression, a cheap fix for now is to change the [number of units of the final Dense layer](https://github.com/philipperemy/keras-tcn/blob/8151b4a87f906fd856fd1c113c48392d542d0994/tcn/tcn.py#L90).
+
 ### - Classification (Many to many) e.g. copy memory task
 
 ```
