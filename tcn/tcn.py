@@ -1,26 +1,65 @@
+from typing import List, Tuple
 import keras.backend as K
 from keras import optimizers
 from keras.layers import Conv1D, SpatialDropout1D
 from keras.layers import Activation, Lambda
 from keras.layers import Convolution1D, Dense
 from keras.models import Input, Model
+from keras.engine.topology import Layer
 import keras.layers
 
 
 def channel_normalization(x):
-    # Normalize by the highest activation
+    # type: (Layer) -> Layer
+    """ Normalize a layer to the maximum activation
+
+    This keeps a layers values between zero and one.
+    It helps with relu's unbounded activation
+
+    Args:
+        x: The layer to normalize
+
+    Returns:
+        A maximal normalized layer
+    """
     max_values = K.max(K.abs(x), 2, keepdims=True) + 1e-5
     out = x / max_values
     return out
 
 
 def wave_net_activation(x):
+    # type: (Layer) -> Layer
+    """This method defines the activation used for WaveNet
+
+    described in https://deepmind.com/blog/wavenet-generative-model-raw-audio/
+
+    Args:
+        x: The layer we want to apply the activation to
+
+    Returns:
+        A new layer with the wavenet activation applied
+    """
     tanh_out = Activation('tanh')(x)
     sigm_out = Activation('sigmoid')(x)
     return keras.layers.multiply([tanh_out, sigm_out])
 
 
 def residual_block(x, s, i, activation, nb_filters, kernel_size):
+    # type: (Layer, int, int, str, int, int) -> Tuple[Layer, Layer]
+    """Defines the residual block for the WaveNet TCN
+
+    Args:
+        x: The previous layer in the model
+        s: The stack index i.e. which stack in the overall TCN
+        i: The dilation power of 2 we are using for this residual block
+        activation: The name of the type of activation to use
+        nb_filters: The number of convolutional filters to use in this block
+        kernel_size: The size of the convolutional kernel
+
+    Returns:
+        A tuple where the first element is the residual model layer, and the second
+        is the skip connection.
+    """
     original_x = x
     conv = Conv1D(filters=nb_filters, kernel_size=kernel_size,
                   dilation_rate=2 ** i, padding='causal',
@@ -41,22 +80,47 @@ def residual_block(x, s, i, activation, nb_filters, kernel_size):
     return res_x, x
 
 
-def dilated_tcn(num_feat, num_classes, nb_filters,
-                kernel_size, dilatations, nb_stacks, max_len,
-                activation='wavenet', use_skip_connections=True,
-                return_param_str=False, output_slice_index=None,
-                regression=False):
+def dilated_tcn(num_feat,  # type: int
+                num_classes,  # type: int
+                nb_filters,  # type: int
+                kernel_size,  # type: int
+                dilations,  # type: List[int]
+                nb_stacks,  # type: int
+                max_len,  # type: int
+                activation='wavenet',  # type: str
+                use_skip_connections=True,  # type: bool
+                return_param_str=False,  # type: bool
+                output_slice_index=None,  # type: int
+                regression=False  # type: bool
+                ):
+    # type: (...) -> keras.Model
+    """Creates a TCN model for text and audio classification
+
+    Args:
+        num_feat: The number of channels in the input, if the audio is mono then 1 dual then 2, etc.
+        num_classes: The size of the final dense layer, how many classes we are predicting
+        nb_filters: The number of filters to use in the convolutional layers
+        kernel_size: The size of the kernel to use in each convolutional layer
+        dilations: The list of power of two dilation rates to use. i.e. [0, 1, 2] corresponds
+            to dilations of [1, 2, 4]
+        nb_stacks : The number of stacks of residual blocks to use.
+        max_len: The maximum sequence length, use None if the sequence length is dynamic
+        activation: The activations to use
+        use_skip_connections: If we want to add skip connections from input to each residual block
+        output_slice_index: The index at which to slice the output, if none will just grab the last one.
+        regression: Whether the output should be continuous or discrete.
+
+    Returns:
+        A compiled keras TCN.
     """
-    dilation_depth : number of layers per stack
-    nb_stacks : number of stacks.
-    """
+
     input_layer = Input(name='input_layer', shape=(max_len, num_feat))
     x = input_layer
     x = Convolution1D(nb_filters, kernel_size, padding='causal', name='initial_conv')(x)
 
     skip_connections = []
     for s in range(nb_stacks):
-        for i in dilatations:
+        for i in dilations:
             x, skip_out = residual_block(x, s, i, activation, nb_filters, kernel_size)
             skip_connections.append(skip_out)
 
@@ -97,7 +161,7 @@ def dilated_tcn(num_feat, num_classes, nb_filters,
         model.compile(adam, loss='mean_squared_error')
 
     if return_param_str:
-        param_str = 'D-TCN_C{}_B{}_L{}'.format(2, nb_stacks, dilatations)
+        param_str = 'D-TCN_C{}_B{}_L{}'.format(2, nb_stacks, dilations)
         return model, param_str
     else:
         return model
