@@ -1,12 +1,12 @@
-from typing import List, Tuple
 import keras.backend as K
+import keras.layers
 from keras import optimizers
-from keras.layers import Conv1D, SpatialDropout1D
+from keras.engine.topology import Layer
 from keras.layers import Activation, Lambda
+from keras.layers import Conv1D, SpatialDropout1D
 from keras.layers import Convolution1D, Dense
 from keras.models import Input, Model
-from keras.engine.topology import Layer
-import keras.layers
+from typing import List, Tuple
 
 
 def channel_normalization(x):
@@ -90,7 +90,7 @@ def dilated_tcn(num_feat,  # type: int
                 activation='wavenet',  # type: str
                 use_skip_connections=True,  # type: bool
                 return_param_str=False,  # type: bool
-                output_slice_index=None,  # type: int
+                output_slice_index=None,
                 regression=False  # type: bool
                 ):
     # type: (...) -> keras.Model

@@ -1,6 +1,6 @@
 import keras
-
 from utils import data_generator
+
 from tcn import tcn
 
 x_train, y_train = data_generator(601, 10, 10000)
@@ -24,7 +24,7 @@ def run_task():
                                        num_classes=10,
                                        nb_filters=10,
                                        kernel_size=8,
-                                       dilatations=[1, 2, 4, 8],
+                                       dilations=[1, 2, 4, 8],
                                        nb_stacks=8,
                                        max_len=x_train[0:1].shape[1],
                                        activation='norm_relu',

@@ -21,7 +21,7 @@ def run_task():
                                        num_classes=0,
                                        nb_filters=24,
                                        kernel_size=8,
-                                       dilatations=[1, 2, 4, 8],
+                                       dilations=[1, 2, 4, 8],
                                        nb_stacks=8,
                                        max_len=x_train.shape[1],
                                        activation='norm_relu',
