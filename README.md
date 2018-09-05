@@ -1,17 +1,6 @@
 # Keras TCN
 *Keras Temporal Convolutional Network*
 
- * [Keras TCN](#keras-tcn)
-    * [Why Temporal Convolutional Network?](#why-temporal-convolutional-network)
-    * [API](#api)
-       * [Regression (Many to one) e.g. adding problem](#--regression-many-to-one-eg-adding-problem)
-       * [Classification (Many to one) e.g. copy memory task](#--classification-many-to-one-eg-copy-memory-task)
-       * [Classification (Many to one) e.g. sequential mnist task](#--classification-many-to-one-eg-sequential-mnist-task)
-    * [Installation](#installation)
-    * [Run](#run)
-    * [Tasks](#tasks)
-    * [References](#references)
-
 ## Why Temporal Convolutional Network?
 
 - TCNs exhibit longer memory than recurrent architectures with the same capacity.
@@ -29,57 +18,52 @@ After installation, the model can be imported like this:
 
 ```
 from tcn import tcn
+
+model = tcn.dilated_tcn(...)
+model.fit(x, y) # Keras model.
 ```
 
-In the following examples, we assume the input to have a shape `(batch_size, timesteps, input_dim)`.
+### Input shape
 
-The model is a Keras model. The model functions (`model.summary`, `model.fit`, `model.predict`...) are all functional.
+3D tensor with shape `(batch_size, timesteps, input_dim)`.
 
+### Output shape
 
+It depends on the task (cf. below for examples):
 
-### - Regression (Many to one) e.g. adding problem
-
-```
-model = tcn.dilated_tcn(output_slice_index='last',
-                        num_feat=input_dim,
-			num_classes=None,
-                        nb_filters=24,
-                        kernel_size=8,
-                        dilations=[1, 2, 4, 8],
-                        nb_stacks=8,
-                        max_len=timesteps,
-                        activation='norm_relu',
-                        regression=True)
-```
+- Regression (Many to one) e.g. adding problem
+- Classification (Many to many) e.g. copy memory task
+- Classification (Many to one) e.g. sequential mnist task
 
 For a Many to Many regression, a cheap fix for now is to change the [number of units of the final Dense layer](https://github.com/philipperemy/keras-tcn/blob/8151b4a87f906fd856fd1c113c48392d542d0994/tcn/tcn.py#L90).
 
-### - Classification (Many to many) e.g. copy memory task
+### Receptive field
 
-```
-model = tcn.dilated_tcn(num_feat=input_dim,
-                        num_classes=10,
-                        nb_filters=10,
-                        kernel_size=8,
-                        dilations=[1, 2, 4, 8],
-                        nb_stacks=8,
-                        max_len=timesteps,
-                        activation='norm_relu')
-```
+- Receptive field = **nb_residuals_blocks * kernel_size * last_dilation**.
+- If a TCN has only one residual block with a kernel size of 2 and dilations [1, 2, 4, 8], its receptive field is 2 * 1 * 8 = 16. The image below illustrates it:
 
-### - Classification (Many to one) e.g. sequential mnist task
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/40159126/41830054-10e56fda-7871-11e8-8591-4fa46680c17f.png">
+  <b>ks = 2, dilations = [1, 2, 4, 8], 1 block</b><br><br>
+</p>
 
-```
-model = tcn.dilated_tcn(output_slice_index='last',
-                        num_feat=input_dim,
-                        num_classes=10,
-                        nb_filters=64,
-                        kernel_size=8,
-                        dilations=[1, 2, 4, 8],
-                        nb_stacks=8,
-                        max_len=timesteps,
-                        activation='norm_relu')
-```
+- If the TCN has now 2 residual blocks, wou would get the situation below, that is, an increase in the receptive field to 32:
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/40159126/41830618-a8f82a8a-7874-11e8-9d4f-2ebb70a31465.jpg">
+  <b>ks = 2, dilations = [1, 2, 4, 8], 2 blocks</b><br><br>
+</p>
+
+
+- If we increased the number of stacks to 3, the size of the receptive field would increase again, such as below:
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/40159126/41830628-ae6e73d4-7874-11e8-8ecd-cea37efa33f1.jpg">
+  <b>ks = 2, dilations = [1, 2, 4, 8], 3 blocks</b><br><br>
+</p>
+
+Thanks a lot to [@alextheseal](https://github.com/alextheseal) for providing such visuals.
+
 
 ## Installation
 
@@ -89,7 +73,7 @@ cd keras-tcn
 virtualenv -p python3.6 venv
 source venv/bin/activate
 pip install -r requirements.txt # change to tensorflow if you dont have a gpu.
-python setup.py install # install keras-tcn as a package
+pip install . --upgrade # install it as a package.
 ```
 
 ## Run
