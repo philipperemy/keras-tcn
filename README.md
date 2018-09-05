@@ -1,6 +1,29 @@
 # Keras TCN
 *Keras Temporal Convolutional Network*
 
+## Table of Contents
+
+   * [Keras TCN](#keras-tcn)
+      * [Why Temporal Convolutional Network?](#why-temporal-convolutional-network)
+      * [API](#api)
+         * [Input shape](#input-shape)
+         * [Output shape](#output-shape)
+         * [Receptive field](#receptive-field)
+      * [Installation](#installation)
+      * [Run](#run)
+      * [Tasks](#tasks)
+         * [Adding Task](#adding-task)
+            * [Explanation](#explanation)
+            * [Implementation results](#implementation-results)
+         * [Copy Memory Task](#copy-memory-task)
+            * [Explanation](#explanation-1)
+            * [Implementation results (first epochs)](#implementation-results-first-epochs)
+         * [Sequential MNIST](#sequential-mnist)
+            * [Explanation](#explanation-2)
+            * [Implementation results](#implementation-results-1)
+      * [References](#references)
+
+
 ## Why Temporal Convolutional Network?
 
 - TCNs exhibit longer memory than recurrent architectures with the same capacity.
