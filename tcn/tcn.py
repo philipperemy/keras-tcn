@@ -62,8 +62,8 @@ def residual_block(x, s, i, activation, nb_filters, kernel_size):
     """
     original_x = x
     conv = Conv1D(filters=nb_filters, kernel_size=kernel_size,
-                  dilation_rate=2 ** i, padding='causal',
-                  name='dilated_conv_%d_tanh_s%d' % (2 ** i, s))(x)
+                  dilation_rate=i, padding='causal',
+                  name='dilated_conv_%d_tanh_s%d' % (i, s))(x)
     if activation == 'norm_relu':
         x = Activation('relu')(conv)
         x = Lambda(channel_normalization)(x)
