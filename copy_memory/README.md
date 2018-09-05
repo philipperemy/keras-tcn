@@ -19,4 +19,4 @@ to make sure these the model we use can cover the sequence length T+20.
 
 - Using the `--seq_len` flag, one can change the # of values to recall (the typical setup is 10).
 
-From: From: https://github.com/locuslab/TCN/
+From: https://github.com/locuslab/TCN/
