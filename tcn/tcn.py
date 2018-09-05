@@ -160,7 +160,7 @@ def dilated_tcn(num_feat,  # type: int
         print(f'model.x = {input_layer.shape}')
         print(f'model.y = {output_layer.shape}')
         model = Model(input_layer, output_layer)
-        adam = optimizers.Adam(clipnorm=1.)
+        adam = optimizers.Adam(lr=0.002, clipnorm=1.)
         model.compile(adam, loss='mean_squared_error')
 
     if return_param_str:
