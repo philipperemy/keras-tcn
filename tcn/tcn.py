@@ -103,8 +103,7 @@ def dilated_tcn(num_feat,  # type: int
         num_classes: The size of the final dense layer, how many classes we are predicting
         nb_filters: The number of filters to use in the convolutional layers
         kernel_size: The size of the kernel to use in each convolutional layer
-        dilations: The list of power of two dilation rates to use. i.e. [0, 1, 2] corresponds
-            to dilations of [1, 2, 4]
+        dilations: The list of the dilations. Example is: [1, 2, 4, 8, 16, 32, 64].
         nb_stacks : The number of stacks of residual blocks to use.
         max_len: The maximum sequence length, use None if the sequence length is dynamic
         activation: The activations to use
