@@ -5,6 +5,7 @@ from tcn import tcn
 
 
 def get_activations(model, model_inputs, print_shape_only=False, layer_name=None):
+    # From: https://github.com/philipperemy/keras-visualize-activations
     print('----- activations -----')
     activations = []
     inp = model.input
