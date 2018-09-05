@@ -48,11 +48,11 @@ def run_task():
                                        num_classes=10,
                                        nb_filters=64,
                                        kernel_size=8,
-                                       dilations=[1, 2, 4, 8],
-                                       nb_stacks=8,
+                                       dilations=[1, 2, 4, 8, 16],
+                                       nb_stacks=10,
                                        max_len=x_train[0:1].shape[1],
                                        activation='norm_relu',
-                                       use_skip_connections=False,
+                                       use_skip_connections=True,
                                        return_param_str=True)
 
     print(f'x_train.shape = {x_train.shape}')

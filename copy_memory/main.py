@@ -3,8 +3,8 @@ from utils import data_generator
 
 from tcn import tcn
 
-x_train, y_train = data_generator(601, 10, 10000)
-x_test, y_test = data_generator(601, 10, 2000)
+x_train, y_train = data_generator(601, 10, 30000)
+x_test, y_test = data_generator(601, 10, 6000)
 
 
 class PrintSomeValues(keras.callbacks.Callback):
@@ -23,12 +23,12 @@ def run_task():
     model, param_str = tcn.dilated_tcn(num_feat=1,
                                        num_classes=10,
                                        nb_filters=10,
-                                       kernel_size=8,
-                                       dilations=[1, 2, 4, 8],
-                                       nb_stacks=8,
+                                       kernel_size=10,
+                                       dilations=[1, 2, 4, 8, 16, 32],
+                                       nb_stacks=6,
                                        max_len=x_train[0:1].shape[1],
                                        activation='norm_relu',
-                                       use_skip_connections=False,
+                                       use_skip_connections=True,
                                        return_param_str=True)
 
     print(f'x_train.shape = {x_train.shape}')
@@ -40,8 +40,8 @@ def run_task():
     # http://chappers.github.io/web%20micro%20log/2017/01/26/quick-models-in-keras/
     model.summary()
 
-    model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=100,
-              callbacks=[psv], batch_size=128)
+    model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=1000,
+              callbacks=[psv], batch_size=256)
 
 
 if __name__ == '__main__':

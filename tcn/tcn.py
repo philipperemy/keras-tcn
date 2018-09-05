@@ -44,8 +44,8 @@ def wave_net_activation(x):
     return keras.layers.multiply([tanh_out, sigm_out])
 
 
-def residual_block(x, s, i, activation, nb_filters, kernel_size):
-    # type: (Layer, int, int, str, int, int) -> Tuple[Layer, Layer]
+def residual_block(x, s, i, activation, nb_filters, kernel_size, dropout_rate=0):
+    # type: (Layer, int, int, str, int, int, float) -> Tuple[Layer, Layer]
     """Defines the residual block for the WaveNet TCN
 
     Args:
@@ -55,6 +55,7 @@ def residual_block(x, s, i, activation, nb_filters, kernel_size):
         activation: The name of the type of activation to use
         nb_filters: The number of convolutional filters to use in this block
         kernel_size: The size of the convolutional kernel
+        dropout_rate: Float between 0 and 1. Fraction of the input units to drop.
 
     Returns:
         A tuple where the first element is the residual model layer, and the second
@@ -72,7 +73,7 @@ def residual_block(x, s, i, activation, nb_filters, kernel_size):
     else:
         x = Activation(activation)(conv)
 
-    x = SpatialDropout1D(0.05)(x)
+    x = SpatialDropout1D(dropout_rate, name='spatial_dropout1d_%d_s%d_%f' % (i, s, dropout_rate))(x)
 
     # 1x1 conv.
     x = Convolution1D(nb_filters, 1, padding='same')(x)
@@ -91,7 +92,8 @@ def dilated_tcn(num_feat,  # type: int
                 use_skip_connections=True,  # type: bool
                 return_param_str=False,  # type: bool
                 output_slice_index=None,
-                regression=False  # type: bool
+                regression=False,  # type: bool
+                dropout_rate=0.05  # type: float
                 ):
     # type: (...) -> keras.Model
     """Creates a TCN model for text and audio classification
@@ -109,6 +111,7 @@ def dilated_tcn(num_feat,  # type: int
         use_skip_connections: If we want to add skip connections from input to each residual block
         output_slice_index: The index at which to slice the output, if none will just grab the last one.
         regression: Whether the output should be continuous or discrete.
+        dropout_rate: Float between 0 and 1. Fraction of the input units to drop.
 
     Returns:
         A compiled keras TCN.
@@ -116,12 +119,12 @@ def dilated_tcn(num_feat,  # type: int
 
     input_layer = Input(name='input_layer', shape=(max_len, num_feat))
     x = input_layer
-    x = Convolution1D(nb_filters, kernel_size, padding='causal', name='initial_conv')(x)
+    x = Convolution1D(nb_filters, 1, padding='causal', name='initial_conv')(x)
 
     skip_connections = []
     for s in range(nb_stacks):
         for i in dilations:
-            x, skip_out = residual_block(x, s, i, activation, nb_filters, kernel_size)
+            x, skip_out = residual_block(x, s, i, activation, nb_filters, kernel_size, dropout_rate)
             skip_connections.append(skip_out)
 
     if use_skip_connections:
@@ -157,7 +160,7 @@ def dilated_tcn(num_feat,  # type: int
         print(f'model.x = {input_layer.shape}')
         print(f'model.y = {output_layer.shape}')
         model = Model(input_layer, output_layer)
-        adam = optimizers.Adam(lr=0.002, clipnorm=1.)
+        adam = optimizers.Adam(clipnorm=1.)
         model.compile(adam, loss='mean_squared_error')
 
     if return_param_str:

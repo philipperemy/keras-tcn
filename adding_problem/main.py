@@ -19,15 +19,16 @@ def run_task():
     model, param_str = tcn.dilated_tcn(output_slice_index='last',
                                        num_feat=x_train.shape[2],
                                        num_classes=0,
-                                       nb_filters=24,
-                                       kernel_size=8,
-                                       dilations=[1, 2, 4, 8],
+                                       nb_filters=30,
+                                       kernel_size=6,
+                                       dilations=[1, 2, 4, 8, 16, 32],
                                        nb_stacks=8,
                                        max_len=x_train.shape[1],
                                        activation='norm_relu',
                                        use_skip_connections=False,
                                        return_param_str=True,
-                                       regression=True)
+                                       regression=True,
+                                       dropout_rate=0)
 
     print(f'x_train.shape = {x_train.shape}')
     print(f'y_train.shape = {y_train.shape}')
