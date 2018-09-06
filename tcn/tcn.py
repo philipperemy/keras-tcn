@@ -81,6 +81,19 @@ def residual_block(x, s, i, activation, nb_filters, kernel_size, dropout_rate=0)
     return res_x, x
 
 
+def process_dilations(dilations):
+    def is_power_of_two(num):
+        return num != 0 and ((num & (num - 1)) == 0)
+
+    if all([is_power_of_two(i) for i in dilations]):
+        return dilations
+
+    else:
+        new_dilations = [2 ** i for i in dilations]
+        print(f'Updated dilations from {dilations} to {new_dilations} because of backwards compatibility.')
+        return new_dilations
+
+
 def dilated_tcn(num_feat,  # type: int
                 num_classes,  # type: int
                 nb_filters,  # type: int
@@ -90,7 +103,6 @@ def dilated_tcn(num_feat,  # type: int
                 max_len,  # type: int
                 activation='wavenet',  # type: str
                 use_skip_connections=True,  # type: bool
-                return_param_str=False,  # type: bool
                 output_slice_index=None,
                 regression=False,  # type: bool
                 dropout_rate=0.05  # type: float
@@ -115,6 +127,8 @@ def dilated_tcn(num_feat,  # type: int
     Returns:
         A compiled keras TCN.
     """
+
+    dilations = process_dilations(dilations)
 
     input_layer = Input(name='input_layer', shape=(max_len, num_feat))
     x = input_layer
@@ -162,8 +176,6 @@ def dilated_tcn(num_feat,  # type: int
         adam = optimizers.Adam(lr=0.002, clipnorm=1.)
         model.compile(adam, loss='mean_squared_error')
 
-    if return_param_str:
-        param_str = 'D-TCN_C{}_B{}_L{}'.format(2, nb_stacks, dilations)
-        return model, param_str
-    else:
-        return model
+    model_name = 'D-TCN_C{}_B{}_L{}'.format(2, nb_stacks, dilations)
+    print(f'Model name = {model_name}.')
+    return model
