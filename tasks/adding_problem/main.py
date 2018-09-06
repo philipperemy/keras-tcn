@@ -16,7 +16,7 @@ class PrintSomeValues(keras.callbacks.Callback):
 
 
 def run_task():
-    model = tcn.compiled_tcn(output_slice_index='last',
+    model = tcn.compiled_tcn(return_sequences=False,
                              num_feat=x_train.shape[2],
                              num_classes=0,
                              nb_filters=24,

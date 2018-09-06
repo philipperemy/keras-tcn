@@ -102,7 +102,7 @@ def TCN(input_layer,
         activation='norm_relu',
         use_skip_connections=True,
         dropout_rate=0.0,
-        output_slice_index=None):
+        return_sequences=True):
     """Creates a TCN layer.
 
     Args:
@@ -112,8 +112,8 @@ def TCN(input_layer,
         dilations: The list of the dilations. Example is: [1, 2, 4, 8, 16, 32, 64].
         nb_stacks : The number of stacks of residual blocks to use.
         activation: The activations to use (norm_relu, wavenet, relu...).
-        use_skip_connections: If we want to add skip connections from input to each residual block.
-        output_slice_index: The index at which to slice the output, if none will just return the whole timesteps.
+        use_skip_connections: Boolean. If we want to add skip connections from input to each residual block.
+        return_sequences: Boolean. Whether to return the last output in the output sequence, or the full sequence.
         dropout_rate: Float between 0 and 1. Fraction of the input units to drop.
 
     Returns:
@@ -131,11 +131,9 @@ def TCN(input_layer,
     if use_skip_connections:
         x = keras.layers.add(skip_connections)
     x = Activation('relu')(x)
-    if output_slice_index is not None:  # can test with 0 or -1.
-        if output_slice_index == 'last':
-            output_slice_index = -1
-        if output_slice_index == 'first':
-            output_slice_index = 0
+
+    if not return_sequences:
+        output_slice_index = -1
         x = Lambda(lambda tt: tt[:, output_slice_index, :])(x)
     return x
 
@@ -149,7 +147,7 @@ def compiled_tcn(num_feat,  # type: int
                  max_len,  # type: int
                  activation='norm_relu',  # type: str
                  use_skip_connections=True,  # type: bool
-                 output_slice_index=None,
+                 return_sequences=True,
                  regression=False,  # type: bool
                  dropout_rate=0.05  # type: float
                  ):
@@ -165,8 +163,8 @@ def compiled_tcn(num_feat,  # type: int
         nb_stacks : The number of stacks of residual blocks to use.
         max_len: The maximum sequence length, use None if the sequence length is dynamic.
         activation: The activations to use.
-        use_skip_connections: If we want to add skip connections from input to each residual block.
-        output_slice_index: The index at which to slice the output, if none will just return the whole timesteps.
+        use_skip_connections: Boolean. If we want to add skip connections from input to each residual block.
+        return_sequences: Boolean. Whether to return the last output in the output sequence, or the full sequence.
         regression: Whether the output should be continuous or discrete.
         dropout_rate: Float between 0 and 1. Fraction of the input units to drop.
 
@@ -179,7 +177,7 @@ def compiled_tcn(num_feat,  # type: int
     input_layer = Input(name='input_layer', shape=(max_len, num_feat))
 
     x = TCN(input_layer, nb_filters, kernel_size, nb_stacks, dilations, activation,
-            use_skip_connections, dropout_rate, output_slice_index)
+            use_skip_connections, dropout_rate, return_sequences)
 
     print('x.shape=', x.shape)
 

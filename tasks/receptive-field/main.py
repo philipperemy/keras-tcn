@@ -7,7 +7,7 @@ def run_task(sequence_length=8):
     x_train, y_train = data_generator(batch_size=2048, sequence_length=sequence_length)
     print(x_train.shape)
     print(y_train.shape)
-    model = tcn.compiled_tcn(output_slice_index='last',
+    model = tcn.compiled_tcn(return_sequences=False,
                              num_feat=1,
                              num_classes=10,
                              nb_filters=10,

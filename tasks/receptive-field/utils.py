@@ -1,5 +1,4 @@
 import numpy as np
-from keras.utils import to_categorical
 
 
 def data_generator(batch_size=1024, sequence_length=32):

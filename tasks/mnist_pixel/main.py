@@ -6,7 +6,7 @@ from tcn import tcn
 def run_task():
     (x_train, y_train), (x_test, y_test) = data_generator()
 
-    model = tcn.compiled_tcn(output_slice_index='last',  # try 'first'.
+    model = tcn.compiled_tcn(return_sequences=False,
                              num_feat=1,
                              num_classes=10,
                              nb_filters=25,

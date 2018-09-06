@@ -29,7 +29,8 @@ def run_task():
                              nb_stacks=2,
                              max_len=x_train[0:1].shape[1],
                              activation='norm_relu',
-                             use_skip_connections=True)
+                             use_skip_connections=True,
+                             return_sequences=True)
 
     print(f'x_train.shape = {x_train.shape}')
     print(f'y_train.shape = {y_train.shape}')
