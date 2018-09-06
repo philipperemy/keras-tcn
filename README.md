@@ -37,7 +37,7 @@
 
 ## API
 
-The usual way is just to import the TCN layer and use it inside a Keras model. I provide a snippet below to show how to use it on a regression task (cf. `tasks/` for other examples):
+The usual way is to import the TCN layer and use it inside a Keras model. I provide a snippet below to illustrate it on a regression task (cf. `tasks/` for other examples):
 
 ```
 from keras.layers import Dense
