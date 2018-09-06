@@ -176,6 +176,6 @@ def dilated_tcn(num_feat,  # type: int
         adam = optimizers.Adam(lr=0.002, clipnorm=1.)
         model.compile(adam, loss='mean_squared_error')
 
-    model_name = 'D-TCN_C{}_B{}_L{}'.format(2, nb_stacks, dilations)
+    model_name = 'D-TCN_C{}_B{}_L{}'.format(2, nb_stacks, '-'.join(dilations))
     print(f'Model name = {model_name}.')
     return model
