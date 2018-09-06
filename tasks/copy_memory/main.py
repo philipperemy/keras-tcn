@@ -1,7 +1,7 @@
 import keras
-from utils import data_generator
 
 from tcn import tcn
+from utils import data_generator
 
 x_train, y_train = data_generator(601, 10, 30000)
 x_test, y_test = data_generator(601, 10, 6000)
@@ -20,16 +20,15 @@ def run_task():
     print(sum(x_train[0].tolist(), []))
     print(sum(y_train[0].tolist(), []))
 
-    model, param_str = tcn.dilated_tcn(num_feat=1,
-                                       num_classes=10,
-                                       nb_filters=10,
-                                       kernel_size=8,
-                                       dilations=[1, 2, 4, 8, 16, 32, 64, 128, 256],
-                                       nb_stacks=2,
-                                       max_len=x_train[0:1].shape[1],
-                                       activation='norm_relu',
-                                       use_skip_connections=True,
-                                       return_param_str=True)
+    model = tcn.dilated_tcn(num_feat=1,
+                            num_classes=10,
+                            nb_filters=10,
+                            kernel_size=8,
+                            dilations=[1, 2, 4, 8, 16, 32, 64, 128, 256],
+                            nb_stacks=2,
+                            max_len=x_train[0:1].shape[1],
+                            activation='norm_relu',
+                            use_skip_connections=True)
 
     print(f'x_train.shape = {x_train.shape}')
     print(f'y_train.shape = {y_train.shape}')
