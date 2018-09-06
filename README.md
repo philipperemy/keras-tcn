@@ -42,8 +42,15 @@ After installation, the model can be imported like this:
 ```
 from tcn import tcn
 
-model = tcn.dilated_tcn(...)
+model = tcn.compiled_tcn(...)
 model.fit(x, y) # Keras model.
+
+# or use it as a TCN layer inside another model by:
+
+x = Input(...)
+x = tcn.TCN(x, ...)
+x = Dense(...)(x)
+
 ```
 
 ### Input shape

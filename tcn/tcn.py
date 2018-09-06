@@ -94,32 +94,78 @@ def process_dilations(dilations):
         return new_dilations
 
 
-def dilated_tcn(num_feat,  # type: int
-                num_classes,  # type: int
-                nb_filters,  # type: int
-                kernel_size,  # type: int
-                dilations,  # type: List[int]
-                nb_stacks,  # type: int
-                max_len,  # type: int
-                activation='wavenet',  # type: str
-                use_skip_connections=True,  # type: bool
-                output_slice_index=None,
-                regression=False,  # type: bool
-                dropout_rate=0.05  # type: float
-                ):
-    # type: (...) -> keras.Model
-    """Creates a TCN model for text and audio classification
+def TCN(input_layer,
+        nb_filters=64,
+        kernel_size=2,
+        nb_stacks=1,
+        dilations=None,
+        activation='norm_relu',
+        use_skip_connections=True,
+        dropout_rate=0.0,
+        output_slice_index=None):
+    """Creates a TCN layer.
 
     Args:
-        num_feat: The number of channels in the input, if the audio is mono then 1 dual then 2, etc.
-        num_classes: The size of the final dense layer, how many classes we are predicting
-        nb_filters: The number of filters to use in the convolutional layers
-        kernel_size: The size of the kernel to use in each convolutional layer
+        input_layer: A tensor of shape (batch_size, timesteps, input_dim).
+        nb_filters: The number of filters to use in the convolutional layers.
+        kernel_size: The size of the kernel to use in each convolutional layer.
         dilations: The list of the dilations. Example is: [1, 2, 4, 8, 16, 32, 64].
         nb_stacks : The number of stacks of residual blocks to use.
-        max_len: The maximum sequence length, use None if the sequence length is dynamic
-        activation: The activations to use
-        use_skip_connections: If we want to add skip connections from input to each residual block
+        activation: The activations to use (norm_relu, wavenet, relu...).
+        use_skip_connections: If we want to add skip connections from input to each residual block.
+        output_slice_index: The index at which to slice the output, if none will just grab the last one.
+        dropout_rate: Float between 0 and 1. Fraction of the input units to drop.
+
+    Returns:
+        A TCN layer.
+    """
+    if dilations is None:
+        dilations = [1, 2, 4, 8, 16, 32]
+    x = input_layer
+    x = Convolution1D(nb_filters, 1, padding='causal', name='initial_conv')(x)
+    skip_connections = []
+    for s in range(nb_stacks):
+        for i in dilations:
+            x, skip_out = residual_block(x, s, i, activation, nb_filters, kernel_size, dropout_rate)
+            skip_connections.append(skip_out)
+    if use_skip_connections:
+        x = keras.layers.add(skip_connections)
+    x = Activation('relu')(x)
+    if output_slice_index is not None:  # can test with 0 or -1.
+        if output_slice_index == 'last':
+            output_slice_index = -1
+        if output_slice_index == 'first':
+            output_slice_index = 0
+        x = Lambda(lambda tt: tt[:, output_slice_index, :])(x)
+    return x
+
+
+def compiled_tcn(num_feat,  # type: int
+                 num_classes,  # type: int
+                 nb_filters,  # type: int
+                 kernel_size,  # type: int
+                 dilations,  # type: List[int]
+                 nb_stacks,  # type: int
+                 max_len,  # type: int
+                 activation='norm_relu',  # type: str
+                 use_skip_connections=True,  # type: bool
+                 output_slice_index=None,
+                 regression=False,  # type: bool
+                 dropout_rate=0.05  # type: float
+                 ):
+    # type: (...) -> keras.Model
+    """Creates a compiled TCN model for a given task (i.e. regression or classification).
+
+    Args:
+        num_feat: A tensor of shape (batch_size, timesteps, input_dim).
+        num_classes: The size of the final dense layer, how many classes we are predicting.
+        nb_filters: The number of filters to use in the convolutional layers.
+        kernel_size: The size of the kernel to use in each convolutional layer.
+        dilations: The list of the dilations. Example is: [1, 2, 4, 8, 16, 32, 64].
+        nb_stacks : The number of stacks of residual blocks to use.
+        max_len: The maximum sequence length, use None if the sequence length is dynamic.
+        activation: The activations to use.
+        use_skip_connections: If we want to add skip connections from input to each residual block.
         output_slice_index: The index at which to slice the output, if none will just grab the last one.
         regression: Whether the output should be continuous or discrete.
         dropout_rate: Float between 0 and 1. Fraction of the input units to drop.
@@ -131,25 +177,9 @@ def dilated_tcn(num_feat,  # type: int
     dilations = process_dilations(dilations)
 
     input_layer = Input(name='input_layer', shape=(max_len, num_feat))
-    x = input_layer
-    x = Convolution1D(nb_filters, 1, padding='causal', name='initial_conv')(x)
 
-    skip_connections = []
-    for s in range(nb_stacks):
-        for i in dilations:
-            x, skip_out = residual_block(x, s, i, activation, nb_filters, kernel_size, dropout_rate)
-            skip_connections.append(skip_out)
-
-    if use_skip_connections:
-        x = keras.layers.add(skip_connections)
-    x = Activation('relu')(x)
-
-    if output_slice_index is not None:  # can test with 0 or -1.
-        if output_slice_index == 'last':
-            output_slice_index = -1
-        if output_slice_index == 'first':
-            output_slice_index = 0
-        x = Lambda(lambda tt: tt[:, output_slice_index, :])(x)
+    x = TCN(input_layer, nb_filters, kernel_size, nb_stacks, dilations, activation,
+            use_skip_connections, dropout_rate, output_slice_index)
 
     print('x.shape=', x.shape)
 
