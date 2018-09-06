@@ -1,11 +1,11 @@
 # Keras TCN
 *Keras Temporal Convolutional Network*
 
-## Table of Contents
-
    * [Keras TCN](#keras-tcn)
+      * [Table of Contents](#table-of-contents)
       * [Why Temporal Convolutional Network?](#why-temporal-convolutional-network)
       * [API](#api)
+         * [Arguments](#arguments)
          * [Input shape](#input-shape)
          * [Output shape](#output-shape)
          * [Receptive field](#receptive-field)
