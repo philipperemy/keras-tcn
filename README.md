@@ -64,7 +64,7 @@ x = Dense(...)(x)
 - `nb_stacks`: The number of stacks of residual blocks to use.
 - `activation`: The activations to use in the residual blocks (norm_relu, wavenet, relu...).
 - `use_skip_connections`: If we want to add skip connections from input to each residual block.
-- `output_slice_index`: The index at which to slice the output, if none will just return the whole timesteps.
+- `output_slice_index`: The index at which to slice the output, if none will just return the whole timesteps (similar to `return_sequences` of `keras.LSTM`).
 - `dropout_rate`: Float between 0 and 1. Fraction of the input units to drop.
 
 ### Input shape
