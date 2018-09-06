@@ -37,16 +37,7 @@
 
 ## API
 
-After installation, the out of the box (understand compiled Model on a regression or classification task here) can be imported and used like this:
-
-```
-from tcn import tcn
-
-model = tcn.compiled_tcn(...)
-model.fit(x, y) # Keras model.
-```
-
-The usual way is just to import the TCN layer and use it inside another model. I provide a snippet below to show how to use it on a regression task (cf. `tasks/` for other examples):
+The usual way is just to import the TCN layer and use it inside a Keras model. I provide a snippet below to show how to use it on a regression task (cf. `tasks/` for other examples):
 
 ```
 from keras.layers import Dense
@@ -77,6 +68,15 @@ m.compile(optimizer='adam', loss='mse')
 
 x, y = get_x_y()
 m.fit(x, y, epochs=10, validation_split=0.2)
+```
+
+I also provide a ready to use TCN model that can be imported and used this way (cf. `tasks/` for the full code):
+
+```
+from tcn import tcn
+
+model = tcn.compiled_tcn(...)
+model.fit(x, y) # Keras model.
 ```
 
 ### Arguments
