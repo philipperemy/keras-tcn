@@ -53,6 +53,20 @@ x = Dense(...)(x)
 
 ```
 
+### Arguments
+
+`tcn.TCN(input_layer, nb_filters=64, kernel_size=2, nb_stacks=1, dilations=None, activation='norm_relu', use_skip_connections=True, dropout_rate=0.0, output_slice_index=None)`
+
+- `input_layer`: A tensor of shape (batch_size, timesteps, input_dim).
+- `nb_filters`: The number of filters to use in the convolutional layers.
+- `kernel_size`: The size of the kernel to use in each convolutional layer.
+- `dilations`: A dilation list. Example is: [1, 2, 4, 8, 16, 32, 64].
+- `nb_stacks`: The number of stacks of residual blocks to use.
+- `activation`: The activations to use in the residual blocks (norm_relu, wavenet, relu...).
+- `use_skip_connections`: If we want to add skip connections from input to each residual block.
+- `output_slice_index`: The index at which to slice the output, if none will just return the whole timesteps.
+- `dropout_rate`: Float between 0 and 1. Fraction of the input units to drop.
+
 ### Input shape
 
 3D tensor with shape `(batch_size, timesteps, input_dim)`.
