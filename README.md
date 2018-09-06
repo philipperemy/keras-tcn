@@ -44,13 +44,39 @@ from tcn import tcn
 
 model = tcn.compiled_tcn(...)
 model.fit(x, y) # Keras model.
+```
 
-# or use it as a TCN layer inside another model by:
+Or use it as a TCN layer inside another model by:
 
-x = Input(...)
-x = tcn.TCN(x, ...)
-x = Dense(...)(x)
+```
+from keras.layers import Dense
+from keras.models import Input, Model
 
+from tcn import tcn
+
+batch_size, timesteps, input_dim = None, 20, 1
+
+
+def get_x_y(size=1000):
+    import numpy as np
+    pos_indices = np.random.choice(size, size=int(size // 2), replace=False)
+    x_train = np.zeros(shape=(size, timesteps, 1))
+    y_train = np.zeros(shape=(size, 1))
+    x_train[pos_indices, 0] = 1.0
+    y_train[pos_indices, 0] = 1.0
+    return x_train, y_train
+
+
+i = Input(batch_shape=(batch_size, timesteps, input_dim))
+
+o = tcn.TCN(i, return_sequences=False)  # regression problem here.
+o = Dense(1)(o)
+
+m = Model(inputs=[i], outputs=[o])
+m.compile(optimizer='adam', loss='mse')
+
+x, y = get_x_y()
+m.fit(x, y, epochs=10, validation_split=0.2)
 ```
 
 ### Arguments
