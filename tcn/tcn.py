@@ -166,7 +166,7 @@ def compiled_tcn(num_feat,  # type: int
         max_len: The maximum sequence length, use None if the sequence length is dynamic.
         activation: The activations to use.
         use_skip_connections: If we want to add skip connections from input to each residual block.
-        output_slice_index: The index at which to slice the output, if none will just grab the last one.
+        output_slice_index: The index at which to slice the output, if none will just return the whole timesteps.
         regression: Whether the output should be continuous or discrete.
         dropout_rate: Float between 0 and 1. Fraction of the input units to drop.
 
