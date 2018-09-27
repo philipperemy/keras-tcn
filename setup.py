@@ -7,7 +7,7 @@ setup(
     author='Philippe Remy',
     license='MIT',
     packages=['tcn'],
-    install_requires=['tensorflow',
-                      'numpy',
+    # manually install tensorflow or tensorflow-gpu
+    install_requires=['numpy',
                       'keras']
 )
