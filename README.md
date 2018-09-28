@@ -1,4 +1,9 @@
 # Keras TCN
+
+```
+pip install keras-tcn
+```
+
 *Keras Temporal Convolutional Network*
 
    * [Keras TCN](#keras-tcn)
