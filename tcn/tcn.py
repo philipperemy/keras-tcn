@@ -44,7 +44,7 @@ def wave_net_activation(x):
     return keras.layers.multiply([tanh_out, sigm_out])
 
 
-def residual_block(x, s, i, activation, nb_filters, kernel_size, dropout_rate=0):
+def residual_block(x, s, i, activation, nb_filters, kernel_size, dropout_rate=0, name=''):
     # type: (Layer, int, int, str, int, int, float) -> Tuple[Layer, Layer]
     """Defines the residual block for the WaveNet TCN
 
@@ -64,7 +64,7 @@ def residual_block(x, s, i, activation, nb_filters, kernel_size, dropout_rate=0)
     original_x = x
     conv = Conv1D(filters=nb_filters, kernel_size=kernel_size,
                   dilation_rate=i, padding='causal',
-                  name='dilated_conv_%d_tanh_s%d' % (i, s))(x)
+                  name=name+'_dilated_conv_%d_tanh_s%d' % (i, s))(x)
     if activation == 'norm_relu':
         x = Activation('relu')(conv)
         x = Lambda(channel_normalization)(x)
@@ -73,7 +73,7 @@ def residual_block(x, s, i, activation, nb_filters, kernel_size, dropout_rate=0)
     else:
         x = Activation(activation)(conv)
 
-    x = SpatialDropout1D(dropout_rate, name='spatial_dropout1d_%d_s%d_%f' % (i, s, dropout_rate))(x)
+    x = SpatialDropout1D(dropout_rate, name=name+'_spatial_dropout1d_%d_s%d_%f' % (i, s, dropout_rate))(x)
 
     # 1x1 conv.
     x = Convolution1D(nb_filters, 1, padding='same')(x)
@@ -102,7 +102,8 @@ def TCN(input_layer,
         activation='norm_relu',
         use_skip_connections=True,
         dropout_rate=0.0,
-        return_sequences=True):
+        return_sequences=True,
+		name=''):
     """Creates a TCN layer.
 
     Args:
@@ -122,11 +123,11 @@ def TCN(input_layer,
     if dilations is None:
         dilations = [1, 2, 4, 8, 16, 32]
     x = input_layer
-    x = Convolution1D(nb_filters, 1, padding='causal', name='initial_conv')(x)
+    x = Convolution1D(nb_filters, 1, padding='causal', name=name+'_initial_conv')(x)
     skip_connections = []
     for s in range(nb_stacks):
         for i in dilations:
-            x, skip_out = residual_block(x, s, i, activation, nb_filters, kernel_size, dropout_rate)
+            x, skip_out = residual_block(x, s, i, activation, nb_filters, kernel_size, dropout_rate, name=name)
             skip_connections.append(skip_out)
     if use_skip_connections:
         x = keras.layers.add(skip_connections)
