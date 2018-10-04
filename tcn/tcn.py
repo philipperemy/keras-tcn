@@ -103,7 +103,7 @@ def TCN(input_layer,
         use_skip_connections=True,
         dropout_rate=0.0,
         return_sequences=True,
-		name=''):
+        name=''):
     """Creates a TCN layer.
 
     Args:
