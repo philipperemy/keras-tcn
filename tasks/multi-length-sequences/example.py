@@ -7,6 +7,22 @@ from tcn import tcn
 # if you increase the sequence length make sure the receptive field of the TCN is big enough.
 MAX_TIME_STEP = 30
 
+"""
+Input: sequence of length 7
+Input: sequence of length 25
+Input: sequence of length 29
+Input: sequence of length 21
+Input: sequence of length 20
+Input: sequence of length 13
+Input: sequence of length 9
+Input: sequence of length 7
+Input: sequence of length 4
+Input: sequence of length 14
+Input: sequence of length 10
+Input: sequence of length 11
+...
+"""
+
 
 def get_x_y(max_time_steps):
     for k in range(int(1e9)):
