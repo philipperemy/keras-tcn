@@ -102,6 +102,8 @@ model.fit(x, y) # Keras model.
 
 3D tensor with shape `(batch_size, timesteps, input_dim)`.
 
+`timesteps` can be None. This can be useful if each sequence is of a different length: [Multiple Length Sequence Example](tasks/multi-length-sequences/example.py).
+
 ### Output shape
 
 It depends on the task (cf. below for examples):
