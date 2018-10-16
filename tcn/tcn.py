@@ -194,7 +194,7 @@ def compiled_tcn(num_feat,  # type: int
 
     dilations = process_dilations(dilations)
 
-    input_layer = Input(name=name + '_input_layer', shape=(max_len, num_feat))
+    input_layer = Input(shape=(max_len, num_feat))
 
     x = TCN(nb_filters, kernel_size, nb_stacks, dilations, activation,
             use_skip_connections, dropout_rate, return_sequences, name)(input_layer)
