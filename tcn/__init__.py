@@ -1,3 +1,3 @@
-from tcn import tcn
+from tcn.tcn import TCN, compiled_tcn
 
-__version__ = '2.1.2'
+__version__ = '2.2.3'

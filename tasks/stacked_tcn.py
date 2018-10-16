@@ -2,7 +2,7 @@ import numpy as np
 from keras.layers import Dense
 from keras.models import Input, Model
 
-from tcn import tcn
+from tcn import TCN
 
 # if you increase the sequence length make sure the receptive field of the TCN is big enough.
 MAX_TIME_STEP = 30
@@ -36,15 +36,18 @@ def get_x_y(max_time_steps):
         print('\nInput: sequence of length {}\n'.format(time_steps))
         yield x_train, np.expand_dims(y_train, axis=-1)
 
+# This example uses multi length sequences
 
 i = Input(batch_shape=(1, None, 1))
-
-o = tcn.TCN(i, return_sequences=False)  # regression problem here.
+o = TCN(return_sequences=True, name='TCN_1')(i)
+o = TCN(return_sequences=False, name='TCN_2')(o)
 o = Dense(1, activation='sigmoid')(o)
 
 m = Model(inputs=[i], outputs=[o])
 m.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
+m.summary()
+
 size = 1000
 gen = get_x_y(max_time_steps=MAX_TIME_STEP)
-m.fit_generator(gen, epochs=3, steps_per_epoch=size, max_queue_size=1)
+m.fit_generator(gen, epochs=2, steps_per_epoch=size, max_queue_size=1)

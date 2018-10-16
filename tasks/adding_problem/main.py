@@ -1,7 +1,7 @@
 import keras
 from utils import data_generator
 
-from tcn import tcn
+from tcn import compiled_tcn
 
 x_train, y_train = data_generator(n=200000, seq_length=600)
 x_test, y_test = data_generator(n=40000, seq_length=600)
@@ -16,18 +16,18 @@ class PrintSomeValues(keras.callbacks.Callback):
 
 
 def run_task():
-    model = tcn.compiled_tcn(return_sequences=False,
-                             num_feat=x_train.shape[2],
-                             num_classes=0,
-                             nb_filters=24,
-                             kernel_size=8,
-                             dilations=[2 ** i for i in range(9)],
-                             nb_stacks=2,
-                             max_len=x_train.shape[1],
-                             activation='norm_relu',
-                             use_skip_connections=True,
-                             regression=True,
-                             dropout_rate=0)
+    model = compiled_tcn(return_sequences=False,
+                         num_feat=x_train.shape[2],
+                         num_classes=0,
+                         nb_filters=24,
+                         kernel_size=8,
+                         dilations=[2 ** i for i in range(9)],
+                         nb_stacks=2,
+                         max_len=x_train.shape[1],
+                         activation='norm_relu',
+                         use_skip_connections=True,
+                         regression=True,
+                         dropout_rate=0)
 
     print(f'x_train.shape = {x_train.shape}')
     print(f'y_train.shape = {y_train.shape}')
