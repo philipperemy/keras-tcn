@@ -93,9 +93,8 @@ model.fit(x, y) # Keras model.
 
 ### Arguments
 
-`tcn.TCN(input_layer, nb_filters=64, kernel_size=2, nb_stacks=1, dilations=None, activation='norm_relu', use_skip_connections=True, dropout_rate=0.0, output_slice_index=None)`
+`tcn.TCN(nb_filters=64, kernel_size=2, nb_stacks=1, dilations=None, activation='norm_relu', use_skip_connections=True, dropout_rate=0.0, return_sequences=True, name='tcn')`
 
-- `input_layer`: Tensor. A tensor of shape (batch_size, timesteps, input_dim).
 - `nb_filters`: Integer. The number of filters to use in the convolutional layers.
 - `kernel_size`: Integer. The size of the kernel to use in each convolutional layer.
 - `dilations`: List. A dilation list. Example is: [1, 2, 4, 8, 16, 32, 64].
@@ -104,6 +103,7 @@ model.fit(x, y) # Keras model.
 - `use_skip_connections`: Boolean. If we want to add skip connections from input to each residual block.
 - `return_sequences`: Boolean. Whether to return the last output in the output sequence, or the full sequence.
 - `dropout_rate`: Float between 0 and 1. Fraction of the input units to drop.
+- `name`: Name of the model. Useful when having multiple TCN.
 
 ### Input shape
 
