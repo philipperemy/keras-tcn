@@ -135,6 +135,17 @@ class TCN:
         self.kernel_size = kernel_size
         self.nb_filters = nb_filters
 
+        # backwards incompatibility warning.
+        # o = tcn.TCN(i, return_sequences=False) =>
+        # o = tcn.TCN(return_sequences=False)(i)
+
+        if not isinstance(nb_filters, int):
+            print('An interface change occurred after the version 2.1.2.')
+            print('Before: tcn.TCN(i, return_sequences=False, ...)')
+            print('Now should be: tcn.TCN(return_sequences=False, ...)(i)')
+            print('Second solution is to pip install keras-tcn==2.1.2 to downgrade.')
+            raise Exception()
+
     def __call__(self, inputs):
         if self.dilations is None:
             self.dilations = [1, 2, 4, 8, 16, 32]
