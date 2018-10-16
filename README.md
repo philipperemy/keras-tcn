@@ -48,7 +48,7 @@ The usual way is to import the TCN layer and use it inside a Keras model. I prov
 from keras.layers import Dense
 from keras.models import Input, Model
 
-from tcn import tcn
+from tcn import TCN
 
 batch_size, timesteps, input_dim = None, 20, 1
 
@@ -65,7 +65,7 @@ def get_x_y(size=1000):
 
 i = Input(batch_shape=(batch_size, timesteps, input_dim))
 
-o = tcn.TCN(i, return_sequences=False)  # regression problem here.
+o = TCN(return_sequences=False)(i)  # regression problem here.
 o = Dense(1)(o)
 
 m = Model(inputs=[i], outputs=[o])
@@ -75,12 +75,19 @@ x, y = get_x_y()
 m.fit(x, y, epochs=10, validation_split=0.2)
 ```
 
+In the example above, TCNs can also be stacked together, like this:
+
+```
+o = TCN(return_sequences=True, name='TCN_1')(i)
+o = TCN(return_sequences=False, name='TCN_2')(o)
+```
+
 I also provide a ready to use TCN model that can be imported and used this way (cf. `tasks/` for the full code):
 
 ```
-from tcn import tcn
+from tcn import compiled_tcn
 
-model = tcn.compiled_tcn(...)
+model = compiled_tcn(...)
 model.fit(x, y) # Keras model.
 ```
 
@@ -102,7 +109,7 @@ model.fit(x, y) # Keras model.
 
 3D tensor with shape `(batch_size, timesteps, input_dim)`.
 
-`timesteps` can be None. This can be useful if each sequence is of a different length: [Multiple Length Sequence Example](tasks/multi-length-sequences/example.py).
+`timesteps` can be None. This can be useful if each sequence is of a different length: [Multiple Length Sequence Example](tasks/multi_length_sequences.py).
 
 ### Output shape
 

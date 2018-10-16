@@ -2,7 +2,7 @@ import numpy as np
 from keras.layers import Dense
 from keras.models import Input, Model
 
-from tcn import tcn
+from tcn import TCN
 
 # if you increase the sequence length make sure the receptive field of the TCN is big enough.
 MAX_TIME_STEP = 30
@@ -39,7 +39,7 @@ def get_x_y(max_time_steps):
 
 i = Input(batch_shape=(1, None, 1))
 
-o = tcn.TCN(i, return_sequences=False)  # regression problem here.
+o = TCN(return_sequences=False)(i)  # regression problem here.
 o = Dense(1, activation='sigmoid')(o)
 
 m = Model(inputs=[i], outputs=[o])
