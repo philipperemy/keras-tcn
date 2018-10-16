@@ -75,6 +75,13 @@ x, y = get_x_y()
 m.fit(x, y, epochs=10, validation_split=0.2)
 ```
 
+In the example above, TCNs can also be stacked together, like this:
+
+```
+o = TCN(return_sequences=True, name='TCN_1')(i)
+o = TCN(return_sequences=False, name='TCN_2')(o)
+```
+
 I also provide a ready to use TCN model that can be imported and used this way (cf. `tasks/` for the full code):
 
 ```
@@ -102,7 +109,7 @@ model.fit(x, y) # Keras model.
 
 3D tensor with shape `(batch_size, timesteps, input_dim)`.
 
-`timesteps` can be None. This can be useful if each sequence is of a different length: [Multiple Length Sequence Example](tasks/multi-length-sequences/example.py).
+`timesteps` can be None. This can be useful if each sequence is of a different length: [Multiple Length Sequence Example](tasks/multi_length_sequences.py).
 
 ### Output shape
 
