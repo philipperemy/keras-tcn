@@ -204,7 +204,7 @@ def compiled_tcn(num_feat,  # type: int
     if not regression:
         # classification
         x = Dense(num_classes)(x)
-        x = Activation('softmax', name=name + '_output_softmax')(x)
+        x = Activation('softmax')(x)
         output_layer = x
         print(f'model.x = {input_layer.shape}')
         print(f'model.y = {output_layer.shape}')
@@ -216,7 +216,7 @@ def compiled_tcn(num_feat,  # type: int
     else:
         # regression
         x = Dense(1)(x)
-        x = Activation('linear', name=name + '_output_dense')(x)
+        x = Activation('linear')(x)
         output_layer = x
         print(f'model.x = {input_layer.shape}')
         print(f'model.y = {output_layer.shape}')
