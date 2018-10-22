@@ -44,7 +44,7 @@ pip install keras-tcn
 
 The usual way is to import the TCN layer and use it inside a Keras model. I provide a snippet below to illustrate it on a regression task (cf. `tasks/` for other examples):
 
-```
+```python
 from keras.layers import Dense
 from keras.models import Input, Model
 
@@ -77,14 +77,14 @@ m.fit(x, y, epochs=10, validation_split=0.2)
 
 In the example above, TCNs can also be stacked together, like this:
 
-```
+```python
 o = TCN(return_sequences=True, name='TCN_1')(i)
 o = TCN(return_sequences=False, name='TCN_2')(o)
 ```
 
 I also provide a ready to use TCN model that can be imported and used this way (cf. `tasks/` for the full code):
 
-```
+```python
 from tcn import compiled_tcn
 
 model = compiled_tcn(...)
@@ -151,7 +151,7 @@ Thanks a lot to [@alextheseal](https://github.com/alextheseal) for providing suc
 
 ## Installation
 
-```
+```bash
 git clone git@github.com:philipperemy/keras-tcn.git
 cd keras-tcn
 virtualenv -p python3.6 venv
@@ -164,7 +164,7 @@ pip install . --upgrade # install it as a package.
 
 Once `keras-tcn` is installed as a package, you can take a glimpse of what's possible to do with TCNs. Some tasks examples are  available in the repository for this purpose:
 
-```
+```bash
 cd adding_problem/
 python main.py # run adding problem task
 
