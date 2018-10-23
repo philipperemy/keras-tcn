@@ -65,7 +65,7 @@ def get_x_y(size=1000):
 
 i = Input(batch_shape=(batch_size, timesteps, input_dim))
 
-o = TCN(return_sequences=False)(i)  # regression problem here.
+o = TCN(return_sequences=False)(i)  # The TCN layers are here.
 o = Dense(1)(o)
 
 m = Model(inputs=[i], outputs=[o])
