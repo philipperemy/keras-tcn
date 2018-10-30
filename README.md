@@ -262,3 +262,6 @@ The idea here is to consider MNIST images as 1-D sequences and feed them to the 
 - https://arxiv.org/pdf/1803.01271.pdf (An Empirical Evaluation of Generic Convolutional and Recurrent Networks
 for Sequence Modeling)
 - https://arxiv.org/pdf/1609.03499.pdf (Original Wavenet paper)
+
+### Repo views (since 2018/10/30)
+[![HitCount](http://hits.dwyl.io/philipperemy/keras-tcn.svg)](http://hits.dwyl.io/philipperemy/keras-tcn)
