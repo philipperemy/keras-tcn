@@ -92,7 +92,7 @@ def process_dilations(dilations):
 
     else:
         new_dilations = [2 ** i for i in dilations]
-        print(f'Updated dilations from {dilations} to {new_dilations} because of backwards compatibility.')
+        # print(f'Updated dilations from {dilations} to {new_dilations} because of backwards compatibility.')
         return new_dilations
 
 
