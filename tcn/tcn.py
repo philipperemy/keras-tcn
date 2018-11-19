@@ -44,7 +44,7 @@ def wave_net_activation(x):
     return keras.layers.multiply([tanh_out, sigm_out])
 
 
-def residual_block(x, s, i, activation, nb_filters, kernel_size, dropout_rate=0, name=''):
+def residual_block(x, s, i, activation, nb_filters, kernel_size, padding, dropout_rate=0, name=''):
     # type: (Layer, int, int, str, int, int, float, str) -> Tuple[Layer, Layer]
     """Defines the residual block for the WaveNet TCN
 
@@ -65,7 +65,7 @@ def residual_block(x, s, i, activation, nb_filters, kernel_size, dropout_rate=0,
 
     original_x = x
     conv = Conv1D(filters=nb_filters, kernel_size=kernel_size,
-                  dilation_rate=i, padding='causal',
+                  dilation_rate=i, padding=padding,
                   name=name + '_dilated_conv_%d_tanh_s%d' % (i, s))(x)
     if activation == 'norm_relu':
         x = Activation('relu')(conv)
@@ -121,6 +121,7 @@ class TCN:
                  nb_stacks=1,
                  dilations=None,
                  activation='norm_relu',
+                 padding='causal',
                  use_skip_connections=True,
                  dropout_rate=0.0,
                  return_sequences=True,
@@ -134,6 +135,7 @@ class TCN:
         self.nb_stacks = nb_stacks
         self.kernel_size = kernel_size
         self.nb_filters = nb_filters
+        self.padding = padding
 
         # backwards incompatibility warning.
         # o = tcn.TCN(i, return_sequences=False) =>
@@ -150,12 +152,12 @@ class TCN:
         if self.dilations is None:
             self.dilations = [1, 2, 4, 8, 16, 32]
         x = inputs
-        x = Convolution1D(self.nb_filters, 1, padding='causal', name=self.name + '_initial_conv')(x)
+        x = Convolution1D(self.nb_filters, 1, padding=self.padding, name=self.name + '_initial_conv')(x)
         skip_connections = []
         for s in range(self.nb_stacks):
             for i in self.dilations:
                 x, skip_out = residual_block(x, s, i, self.activation, self.nb_filters,
-                                             self.kernel_size, self.dropout_rate, name=self.name)
+                                             self.kernel_size, self.padding, self.dropout_rate, name=self.name)
                 skip_connections.append(skip_out)
         if self.use_skip_connections:
             x = keras.layers.add(skip_connections)
@@ -175,6 +177,7 @@ def compiled_tcn(num_feat,  # type: int
                  nb_stacks,  # type: int
                  max_len,  # type: int
                  activation='norm_relu',  # type: str
+                 padding='causal',  # type: str
                  use_skip_connections=True,  # type: bool
                  return_sequences=True,
                  regression=False,  # type: bool
@@ -208,7 +211,7 @@ def compiled_tcn(num_feat,  # type: int
     input_layer = Input(shape=(max_len, num_feat))
 
     x = TCN(nb_filters, kernel_size, nb_stacks, dilations, activation,
-            use_skip_connections, dropout_rate, return_sequences, name)(input_layer)
+            padding, use_skip_connections, dropout_rate, return_sequences, name)(input_layer)
 
     print('x.shape=', x.shape)
 
