@@ -55,6 +55,7 @@ def residual_block(x, s, i, activation, nb_filters, kernel_size, padding, dropou
         activation: The name of the type of activation to use
         nb_filters: The number of convolutional filters to use in this block
         kernel_size: The size of the convolutional kernel
+        padding: The padding used in the convolutional layers, 'same' or 'causal'.
         dropout_rate: Float between 0 and 1. Fraction of the input units to drop.
         name: Name of the model. Useful when having multiple TCN.
 
@@ -106,6 +107,7 @@ class TCN:
             dilations: The list of the dilations. Example is: [1, 2, 4, 8, 16, 32, 64].
             nb_stacks : The number of stacks of residual blocks to use.
             activation: The activations to use (norm_relu, wavenet, relu...).
+            padding: The padding to use in the convolutional layers, 'causal' or 'same'.
             use_skip_connections: Boolean. If we want to add skip connections from input to each residual block.
             return_sequences: Boolean. Whether to return the last output in the output sequence, or the full sequence.
             dropout_rate: Float between 0 and 1. Fraction of the input units to drop.
@@ -140,6 +142,10 @@ class TCN:
         # backwards incompatibility warning.
         # o = tcn.TCN(i, return_sequences=False) =>
         # o = tcn.TCN(return_sequences=False)(i)
+
+        if padding != 'causal' and padding != 'same':
+            print("Only 'causal' or 'same' paddings are compatible for this layer.")
+            raise Exception()
 
         if not isinstance(nb_filters, int):
             print('An interface change occurred after the version 2.1.2.')
@@ -196,6 +202,7 @@ def compiled_tcn(num_feat,  # type: int
         nb_stacks : The number of stacks of residual blocks to use.
         max_len: The maximum sequence length, use None if the sequence length is dynamic.
         activation: The activations to use.
+        padding: The padding to use in the convolutional layers.
         use_skip_connections: Boolean. If we want to add skip connections from input to each residual block.
         return_sequences: Boolean. Whether to return the last output in the output sequence, or the full sequence.
         regression: Whether the output should be continuous or discrete.
