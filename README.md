@@ -93,13 +93,14 @@ model.fit(x, y) # Keras model.
 
 ### Arguments
 
-`tcn.TCN(nb_filters=64, kernel_size=2, nb_stacks=1, dilations=None, activation='norm_relu', use_skip_connections=True, dropout_rate=0.0, return_sequences=True, name='tcn')`
+`tcn.TCN(nb_filters=64, kernel_size=2, nb_stacks=1, dilations=None, activation='norm_relu', padding='causal', use_skip_connections=True, dropout_rate=0.0, return_sequences=True, name='tcn')`
 
 - `nb_filters`: Integer. The number of filters to use in the convolutional layers.
 - `kernel_size`: Integer. The size of the kernel to use in each convolutional layer.
 - `dilations`: List. A dilation list. Example is: [1, 2, 4, 8, 16, 32, 64].
 - `nb_stacks`: Integer. The number of stacks of residual blocks to use.
 - `activation`: String. The activations to use in the residual blocks (norm_relu, wavenet, relu...).
+- `padding`: String. The padding to use in the convolutions. 'causal' for a causal network (as in the original implementation) and 'same' for a non-causal network.
 - `use_skip_connections`: Boolean. If we want to add skip connections from input to each residual block.
 - `return_sequences`: Boolean. Whether to return the last output in the output sequence, or the full sequence.
 - `dropout_rate`: Float between 0 and 1. Fraction of the input units to drop.
@@ -148,6 +149,16 @@ For a Many to Many regression, a cheap fix for now is to change the [number of u
 
 Thanks a lot to [@alextheseal](https://github.com/alextheseal) for providing such visuals.
 
+### Non-causal TCN
+
+Making the TCN architecture non-causal allows it to take the future into consideration to do its prediction as shown in the figure below.
+
+However, it is not anymore suitable for real-time applications.
+
+<p align="center">
+  <img src="misc/Non_Causal.png">
+  <b>Non-Causal TCN - ks = 3, dilations = [1, 2, 4, 8], 1 block</b><br><br>
+</p>
 
 ## Installation
 
