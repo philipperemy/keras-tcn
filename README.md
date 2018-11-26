@@ -93,7 +93,7 @@ model.fit(x, y) # Keras model.
 
 ### Arguments
 
-`tcn.TCN(nb_filters=64, kernel_size=2, nb_stacks=1, dilations=None, activation='norm_relu', use_skip_connections=True, dropout_rate=0.0, return_sequences=True, name='tcn')`
+`tcn.TCN(nb_filters=64, kernel_size=2, nb_stacks=1, dilations=None, activation='norm_relu', padding='causal', use_skip_connections=True, dropout_rate=0.0, return_sequences=True, name='tcn')`
 
 - `nb_filters`: Integer. The number of filters to use in the convolutional layers.
 - `kernel_size`: Integer. The size of the kernel to use in each convolutional layer.

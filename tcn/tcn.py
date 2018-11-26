@@ -144,8 +144,7 @@ class TCN:
         # o = tcn.TCN(return_sequences=False)(i)
 
         if padding != 'causal' and padding != 'same':
-            print("Only 'causal' or 'same' paddings are compatible for this layer.")
-            raise Exception()
+            raise ValueError("Only 'causal' or 'same' paddings are compatible for this layer.")
 
         if not isinstance(nb_filters, int):
             print('An interface change occurred after the version 2.1.2.')
