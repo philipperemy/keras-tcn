@@ -193,7 +193,7 @@ def compiled_tcn(num_feat,  # type: int
     """Creates a compiled TCN model for a given task (i.e. regression or classification).
 
     Args:
-        num_feat: A tensor of shape (batch_size, timesteps, input_dim).
+        num_feat: The number of features of your input, i.e. the last dimension of: (batch_size, timesteps, input_dim).
         num_classes: The size of the final dense layer, how many classes we are predicting.
         nb_filters: The number of filters to use in the convolutional layers.
         kernel_size: The size of the kernel to use in each convolutional layer.
