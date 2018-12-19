@@ -1,6 +1,6 @@
 # Keras TCN
 
-```
+```bash
 pip install keras-tcn
 ```
 
