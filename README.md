@@ -7,13 +7,13 @@ pip install keras-tcn
 *Keras Temporal Convolutional Network*
 
    * [Keras TCN](#keras-tcn)
-      * [Table of Contents](#table-of-contents)
       * [Why Temporal Convolutional Network?](#why-temporal-convolutional-network)
       * [API](#api)
          * [Arguments](#arguments)
          * [Input shape](#input-shape)
          * [Output shape](#output-shape)
          * [Receptive field](#receptive-field)
+         * [Non-causal TCN](#non-causal-tcn)
       * [Installation](#installation)
       * [Run](#run)
       * [Tasks](#tasks)
@@ -27,7 +27,6 @@ pip install keras-tcn
             * [Explanation](#explanation-2)
             * [Implementation results](#implementation-results-1)
       * [References](#references)
-
 
 ## Why Temporal Convolutional Network?
 
