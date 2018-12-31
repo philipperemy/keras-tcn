@@ -2,9 +2,9 @@ import keras.backend as K
 import keras.layers
 from keras import optimizers
 from keras.engine.topology import Layer
-from keras.layers import Activation, Lambda
-from keras.layers import Conv1D, SpatialDropout1D
-from keras.layers import Convolution1D, Dense
+from tensorflow.keras.layers import Activation, Lambda
+from tensorflow.keras.layers import Conv1D, SpatialDropout1D
+from tensorflow.keras.layers import Convolution1D, Dense
 from keras.models import Input, Model
 from typing import List, Tuple
 
