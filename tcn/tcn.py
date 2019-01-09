@@ -45,7 +45,7 @@ def wave_net_activation(x):
 
 
 def residual_block(x, s, i, activation, nb_filters, kernel_size, padding, dropout_rate=0, name=''):
-    # type: (Layer, int, int, str, int, int, float, str) -> Tuple[Layer, Layer]
+    # type: (Layer, int, int, str, int, int, str, float, str) -> Tuple[Layer, Layer]
     """Defines the residual block for the WaveNet TCN
 
     Args:
@@ -100,8 +100,10 @@ def process_dilations(dilations):
 class TCN:
     """Creates a TCN layer.
 
+        Input shape:
+            A tensor of shape (batch_size, timesteps, input_dim).
+
         Args:
-            input_layer: A tensor of shape (batch_size, timesteps, input_dim).
             nb_filters: The number of filters to use in the convolutional layers.
             kernel_size: The size of the kernel to use in each convolutional layer.
             dilations: The list of the dilations. Example is: [1, 2, 4, 8, 16, 32, 64].
@@ -121,7 +123,7 @@ class TCN:
                  nb_filters=64,
                  kernel_size=2,
                  nb_stacks=1,
-                 dilations=None,
+                 dilations=[1, 2, 4, 8, 16, 32],
                  activation='norm_relu',
                  padding='causal',
                  use_skip_connections=True,
@@ -139,12 +141,8 @@ class TCN:
         self.nb_filters = nb_filters
         self.padding = padding
 
-        # backwards incompatibility warning.
-        # o = tcn.TCN(i, return_sequences=False) =>
-        # o = tcn.TCN(return_sequences=False)(i)
-
         if padding != 'causal' and padding != 'same':
-            raise ValueError("Only 'causal' or 'same' paddings are compatible for this layer.")
+            raise ValueError("Only 'causal' or 'same' padding are compatible for this layer.")
 
         if not isinstance(nb_filters, int):
             print('An interface change occurred after the version 2.1.2.')
@@ -154,8 +152,6 @@ class TCN:
             raise Exception()
 
     def __call__(self, inputs):
-        if self.dilations is None:
-            self.dilations = [1, 2, 4, 8, 16, 32]
         x = inputs
         x = Convolution1D(self.nb_filters, 1, padding=self.padding, name=self.name + '_initial_conv')(x)
         skip_connections = []
@@ -232,18 +228,17 @@ def compiled_tcn(num_feat,  # type: int
 
         # https://github.com/keras-team/keras/pull/11373
         # It's now in Keras@master but still not available with pip.
-        # TODO To remove later.
-        def accuracy(y_true, y_pred):
-            # reshape in case it's in shape (num_samples, 1) instead of (num_samples,)
-            if K.ndim(y_true) == K.ndim(y_pred):
-                y_true = K.squeeze(y_true, -1)
-            # convert dense predictions to labels
-            y_pred_labels = K.argmax(y_pred, axis=-1)
-            y_pred_labels = K.cast(y_pred_labels, K.floatx())
-            return K.cast(K.equal(y_true, y_pred_labels), K.floatx())
+        # def accuracy(y_true, y_pred):
+        #     # reshape in case it's in shape (num_samples, 1) instead of (num_samples,)
+        #     if K.ndim(y_true) == K.ndim(y_pred):
+        #         y_true = K.squeeze(y_true, -1)
+        #     # convert dense predictions to labels
+        #     y_pred_labels = K.argmax(y_pred, axis=-1)
+        #     y_pred_labels = K.cast(y_pred_labels, K.floatx())
+        #     return K.cast(K.equal(y_true, y_pred_labels), K.floatx())
 
         adam = optimizers.Adam(lr=0.002, clipnorm=1.)
-        model.compile(adam, loss='sparse_categorical_crossentropy', metrics=[accuracy])
+        model.compile(adam, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
         print('Adam with norm clipping.')
     else:
         # regression
