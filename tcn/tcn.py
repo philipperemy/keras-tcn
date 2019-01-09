@@ -228,17 +228,18 @@ def compiled_tcn(num_feat,  # type: int
 
         # https://github.com/keras-team/keras/pull/11373
         # It's now in Keras@master but still not available with pip.
-        # def accuracy(y_true, y_pred):
-        #     # reshape in case it's in shape (num_samples, 1) instead of (num_samples,)
-        #     if K.ndim(y_true) == K.ndim(y_pred):
-        #         y_true = K.squeeze(y_true, -1)
-        #     # convert dense predictions to labels
-        #     y_pred_labels = K.argmax(y_pred, axis=-1)
-        #     y_pred_labels = K.cast(y_pred_labels, K.floatx())
-        #     return K.cast(K.equal(y_true, y_pred_labels), K.floatx())
+        # TODO To remove later.
+        def accuracy(y_true, y_pred):
+            # reshape in case it's in shape (num_samples, 1) instead of (num_samples,)
+            if K.ndim(y_true) == K.ndim(y_pred):
+                y_true = K.squeeze(y_true, -1)
+            # convert dense predictions to labels
+            y_pred_labels = K.argmax(y_pred, axis=-1)
+            y_pred_labels = K.cast(y_pred_labels, K.floatx())
+            return K.cast(K.equal(y_true, y_pred_labels), K.floatx())
 
         adam = optimizers.Adam(lr=0.002, clipnorm=1.)
-        model.compile(adam, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+        model.compile(adam, loss='sparse_categorical_crossentropy', metrics=[accuracy])
         print('Adam with norm clipping.')
     else:
         # regression
