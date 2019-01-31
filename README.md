@@ -1,5 +1,6 @@
 # Keras TCN
 
+[![Downloads](https://pepy.tech/badge/keras-tcn)](https://pepy.tech/project/keras-tcn)
 ```bash
 pip install keras-tcn
 ```
