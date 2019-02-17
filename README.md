@@ -6,7 +6,7 @@
 pip install keras-tcn
 ```
 
-*Keras Temporal Convolutional Network*
+*Keras Temporal Convolutional Network (compatible with python 3)*
 
    * [Keras TCN](#keras-tcn)
       * [Why Temporal Convolutional Network?](#why-temporal-convolutional-network)
