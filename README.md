@@ -1,12 +1,13 @@
 # Keras TCN
 
+
 [![Downloads](https://pepy.tech/badge/keras-tcn)](https://pepy.tech/project/keras-tcn)
 [![Downloads](https://pepy.tech/badge/keras-tcn/month)](https://pepy.tech/project/keras-tcn)
 ```bash
 pip install keras-tcn
 ```
 
-*Keras Temporal Convolutional Network (compatible with python 3)*
+*Keras Temporal Convolutional Network*
 
    * [Keras TCN](#keras-tcn)
       * [Why Temporal Convolutional Network?](#why-temporal-convolutional-network)
@@ -163,7 +164,7 @@ However, it is not anymore suitable for real-time applications.
 
 Special thanks to: [@qlemaire22](https://github.com/qlemaire22)
 
-## Installation
+## Installation (Python 3)
 
 ```bash
 git clone git@github.com:philipperemy/keras-tcn.git
@@ -173,6 +174,8 @@ source venv/bin/activate
 pip install -r requirements.txt # change to tensorflow if you dont have a gpu.
 pip install . --upgrade # install it as a package.
 ```
+
+Note: Only compatible with Python 3 at the moment. Should be almost compatible with python 2.
 
 ## Run
 
