@@ -33,7 +33,7 @@ def residual_block(x, dilation_rate, nb_filters, kernel_size, padding, dropout_r
                    kernel_size=kernel_size,
                    dilation_rate=dilation_rate,
                    padding=padding)(x)
-        x = BatchNormalization()(x)
+        x = BatchNormalization()(x)  # should be WeightNorm here TODO.
         x = Activation('relu')(x)
         x = SpatialDropout1D(rate=dropout_rate)(x)
 
@@ -105,13 +105,14 @@ class TCN:
 
         if not isinstance(nb_filters, int):
             print('An interface change occurred after the version 2.1.2.')
-            print('Before: tcn.TCN(i, return_sequences=False, ...)')
-            print('Now should be: tcn.TCN(return_sequences=False, ...)(i)')
-            print('Second solution is to pip install keras-tcn==2.1.2 to downgrade.')
+            print('Before: tcn.TCN(x, return_sequences=False, ...)')
+            print('Now should be: tcn.TCN(return_sequences=False, ...)(x)')
+            print('The alternative is to downgrade to 2.1.2 (pip install keras-tcn==2.1.2).')
             raise Exception()
 
     def __call__(self, inputs):
         x = inputs
+        # 1D FCN.
         x = Convolution1D(self.nb_filters, 1, padding=self.padding)(x)
         skip_connections = []
         for s in range(self.nb_stacks):
