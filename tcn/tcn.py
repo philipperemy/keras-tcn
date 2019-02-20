@@ -1,12 +1,13 @@
+from typing import List, Tuple
+
 import keras.backend as K
 import keras.layers
 from keras import optimizers
 from keras.engine.topology import Layer
-from keras.layers import Activation, Lambda
+from keras.layers import Activation, Lambda, BatchNormalization
 from keras.layers import Conv1D, SpatialDropout1D
 from keras.layers import Convolution1D, Dense
 from keras.models import Input, Model
-from typing import List, Tuple
 
 
 def channel_normalization(x):
@@ -66,18 +67,15 @@ def residual_block(x, s, i, c, activation, nb_filters, kernel_size, padding, dro
     """
 
     original_x = x
-    conv = Conv1D(filters=nb_filters, kernel_size=kernel_size,
-                  dilation_rate=i, padding=padding,
-                  name=name + '_d_%s_conv_%d-%d_tanh_s%d' % (padding, i, c, s))(x)
-    if activation == 'norm_relu':
-        x = Activation('relu')(conv)
-        x = Lambda(channel_normalization)(x)
-    elif activation == 'wavenet':
-        x = wave_net_activation(conv)
-    else:
-        x = Activation(activation)(conv)
 
-    x = SpatialDropout1D(dropout_rate, name=name + '_spatial_dropout1d_%d-%d_s%d_%f' % (i, c, s, dropout_rate))(x)
+    for _ in range(2):
+        x = Conv1D(filters=nb_filters,
+                   kernel_size=kernel_size,
+                   dilation_rate=i,
+                   padding=padding)(x)
+        x = BatchNormalization()(x)
+        x = Activation('relu')(x)
+        x = SpatialDropout1D(rate=dropout_rate)(x)
 
     # 1x1 conv.
     x = Convolution1D(nb_filters, 1, padding='same')(x)
