@@ -182,13 +182,11 @@ def compiled_tcn(num_feat,  # type: int
         x = Dense(num_classes)(x)
         x = Activation('softmax')(x)
         output_layer = x
-        print(f'model.x = {input_layer.shape}')
-        print(f'model.y = {output_layer.shape}')
         model = Model(input_layer, output_layer)
 
         # https://github.com/keras-team/keras/pull/11373
         # It's now in Keras@master but still not available with pip.
-        # TODO To remove later.
+        # TODO remove later.
         def accuracy(y_true, y_pred):
             # reshape in case it's in shape (num_samples, 1) instead of (num_samples,)
             if K.ndim(y_true) == K.ndim(y_pred):
@@ -200,16 +198,15 @@ def compiled_tcn(num_feat,  # type: int
 
         adam = optimizers.Adam(lr=0.002, clipnorm=1.)
         model.compile(adam, loss='sparse_categorical_crossentropy', metrics=[accuracy])
-        print('Adam with norm clipping.')
     else:
         # regression
         x = Dense(1)(x)
         x = Activation('linear')(x)
         output_layer = x
-        print(f'model.x = {input_layer.shape}')
-        print(f'model.y = {output_layer.shape}')
         model = Model(input_layer, output_layer)
         adam = optimizers.Adam(lr=0.002, clipnorm=1.)
         model.compile(adam, loss='mean_squared_error')
-
+    print(f'model.x = {input_layer.shape}')
+    print(f'model.y = {output_layer.shape}')
+    print('Adam with norm clipping.')
     return model
