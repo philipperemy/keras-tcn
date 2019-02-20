@@ -10,68 +10,28 @@ from keras.layers import Convolution1D, Dense
 from keras.models import Input, Model
 
 
-def channel_normalization(x):
-    # type: (Layer) -> Layer
-    """ Normalize a layer to the maximum activation
-
-    This keeps a layers values between zero and one.
-    It helps with relu's unbounded activation
-
-    Args:
-        x: The layer to normalize
-
-    Returns:
-        A maximal normalized layer
-    """
-    max_values = K.max(K.abs(x), 2, keepdims=True) + 1e-5
-    out = x / max_values
-    return out
-
-
-def wave_net_activation(x):
-    # type: (Layer) -> Layer
-    """This method defines the activation used for WaveNet
-
-    described in https://deepmind.com/blog/wavenet-generative-model-raw-audio/
-
-    Args:
-        x: The layer we want to apply the activation to
-
-    Returns:
-        A new layer with the wavenet activation applied
-    """
-    tanh_out = Activation('tanh')(x)
-    sigm_out = Activation('sigmoid')(x)
-    return keras.layers.multiply([tanh_out, sigm_out])
-
-
-def residual_block(x, s, i, c, activation, nb_filters, kernel_size, padding, dropout_rate=0, name=''):
-    # type: (Layer, int, int, int, str, int, int, str, float, str) -> Tuple[Layer, Layer]
+def residual_block(x, dilation_rate, nb_filters, kernel_size, padding, dropout_rate=0):
+    # type: (Layer, int, int, int, str, float) -> Tuple[Layer, Layer]
     """Defines the residual block for the WaveNet TCN
 
     Args:
         x: The previous layer in the model
-        s: The stack index i.e. which stack in the overall TCN
-        i: The dilation power of 2 we are using for this residual block
-        c: The dilation name to make it unique. In case we have same dilation twice: [1, 1, 2, 4].
-        activation: The name of the type of activation to use
+        dilation_rate: The dilation power of 2 we are using for this residual block
         nb_filters: The number of convolutional filters to use in this block
         kernel_size: The size of the convolutional kernel
         padding: The padding used in the convolutional layers, 'same' or 'causal'.
         dropout_rate: Float between 0 and 1. Fraction of the input units to drop.
-        name: Name of the model. Useful when having multiple TCN.
 
     Returns:
         A tuple where the first element is the residual model layer, and the second
         is the skip connection.
     """
-
     original_x = x
 
-    for _ in range(2):
+    for k in range(2):
         x = Conv1D(filters=nb_filters,
                    kernel_size=kernel_size,
-                   dilation_rate=i,
+                   dilation_rate=dilation_rate,
                    padding=padding)(x)
         x = BatchNormalization()(x)
         x = Activation('relu')(x)
@@ -152,20 +112,21 @@ class TCN:
 
     def __call__(self, inputs):
         x = inputs
-        x = Convolution1D(self.nb_filters, 1, padding=self.padding, name=self.name + '_initial_conv')(x)
+        x = Convolution1D(self.nb_filters, 1, padding=self.padding)(x)
         skip_connections = []
         for s in range(self.nb_stacks):
-            for i, d in enumerate(self.dilations):
-                x, skip_out = residual_block(x, s, d, i, self.activation, self.nb_filters,
-                                             self.kernel_size, self.padding, self.dropout_rate, name=self.name)
+            for d in self.dilations:
+                x, skip_out = residual_block(x,
+                                             dilation_rate=d,
+                                             nb_filters=self.nb_filters,
+                                             kernel_size=self.kernel_size,
+                                             padding=self.padding,
+                                             dropout_rate=self.dropout_rate)
                 skip_connections.append(skip_out)
         if self.use_skip_connections:
             x = keras.layers.add(skip_connections)
-        x = Activation('relu')(x)
-
         if not self.return_sequences:
-            output_slice_index = -1
-            x = Lambda(lambda tt: tt[:, output_slice_index, :])(x)
+            x = Lambda(lambda tt: tt[:, -1, :])(x)
         return x
 
 
