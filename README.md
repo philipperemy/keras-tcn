@@ -80,8 +80,8 @@ m.fit(x, y, epochs=10, validation_split=0.2)
 In the example above, TCNs can also be stacked together, like this:
 
 ```python
-o = TCN(return_sequences=True, name='TCN_1')(i)
-o = TCN(return_sequences=False, name='TCN_2')(o)
+o = TCN(return_sequences=True)(i)
+o = TCN(return_sequences=False)(o)
 ```
 
 I also provide a ready to use TCN model that can be imported and used this way (cf. `tasks/` for the full code):
