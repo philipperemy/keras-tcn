@@ -66,7 +66,6 @@ class TCN:
             kernel_size: The size of the kernel to use in each convolutional layer.
             dilations: The list of the dilations. Example is: [1, 2, 4, 8, 16, 32, 64].
             nb_stacks : The number of stacks of residual blocks to use.
-            activation: The activations to use (norm_relu, wavenet, relu...).
             padding: The padding to use in the convolutional layers, 'causal' or 'same'.
             use_skip_connections: Boolean. If we want to add skip connections from input to each residual block.
             return_sequences: Boolean. Whether to return the last output in the output sequence, or the full sequence.
@@ -82,7 +81,6 @@ class TCN:
                  kernel_size=2,
                  nb_stacks=1,
                  dilations=[1, 2, 4, 8, 16, 32],
-                 activation='norm_relu',
                  padding='causal',
                  use_skip_connections=True,
                  dropout_rate=0.0,
@@ -92,7 +90,6 @@ class TCN:
         self.return_sequences = return_sequences
         self.dropout_rate = dropout_rate
         self.use_skip_connections = use_skip_connections
-        self.activation = activation
         self.dilations = dilations
         self.nb_stacks = nb_stacks
         self.kernel_size = kernel_size
