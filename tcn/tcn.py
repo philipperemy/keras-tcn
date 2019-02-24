@@ -134,7 +134,6 @@ def compiled_tcn(num_feat,  # type: int
                  dilations,  # type: List[int]
                  nb_stacks,  # type: int
                  max_len,  # type: int
-                 activation='norm_relu',  # type: str
                  padding='causal',  # type: str
                  use_skip_connections=True,  # type: bool
                  return_sequences=True,
@@ -153,7 +152,6 @@ def compiled_tcn(num_feat,  # type: int
         dilations: The list of the dilations. Example is: [1, 2, 4, 8, 16, 32, 64].
         nb_stacks : The number of stacks of residual blocks to use.
         max_len: The maximum sequence length, use None if the sequence length is dynamic.
-        activation: The activations to use.
         padding: The padding to use in the convolutional layers.
         use_skip_connections: Boolean. If we want to add skip connections from input to each residual block.
         return_sequences: Boolean. Whether to return the last output in the output sequence, or the full sequence.
@@ -169,8 +167,8 @@ def compiled_tcn(num_feat,  # type: int
 
     input_layer = Input(shape=(max_len, num_feat))
 
-    x = TCN(nb_filters, kernel_size, nb_stacks, dilations, activation,
-            padding, use_skip_connections, dropout_rate, return_sequences, name)(input_layer)
+    x = TCN(nb_filters, kernel_size, nb_stacks, dilations, padding,
+            use_skip_connections, dropout_rate, return_sequences, name)(input_layer)
 
     print('x.shape=', x.shape)
 
