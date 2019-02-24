@@ -14,7 +14,6 @@ def run_task():
                          dilations=[2 ** i for i in range(9)],
                          nb_stacks=2,
                          max_len=x_train[0:1].shape[1],
-                         activation='norm_relu',
                          use_skip_connections=True)
 
     print(f'x_train.shape = {x_train.shape}')
