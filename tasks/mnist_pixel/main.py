@@ -9,12 +9,11 @@ def run_task():
     model = compiled_tcn(return_sequences=False,
                          num_feat=1,
                          num_classes=10,
-                         nb_filters=25,
-                         kernel_size=7,
+                         nb_filters=20,
+                         kernel_size=6,
                          dilations=[2 ** i for i in range(9)],
-                         nb_stacks=2,
+                         nb_stacks=1,
                          max_len=x_train[0:1].shape[1],
-                         activation='norm_relu',
                          use_skip_connections=True)
 
     print(f'x_train.shape = {x_train.shape}')

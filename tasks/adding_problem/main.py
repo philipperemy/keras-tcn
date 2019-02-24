@@ -1,7 +1,7 @@
 import keras
-from utils import data_generator
 
 from tcn import compiled_tcn
+from utils import data_generator
 
 x_train, y_train = data_generator(n=200000, seq_length=600)
 x_test, y_test = data_generator(n=40000, seq_length=600)
@@ -22,9 +22,8 @@ def run_task():
                          nb_filters=24,
                          kernel_size=8,
                          dilations=[2 ** i for i in range(9)],
-                         nb_stacks=2,
+                         nb_stacks=1,
                          max_len=x_train.shape[1],
-                         activation='norm_relu',
                          use_skip_connections=True,
                          regression=True,
                          dropout_rate=0)
@@ -39,7 +38,7 @@ def run_task():
     model.summary()
 
     model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=500,
-              callbacks=[psv], batch_size=128)
+              callbacks=[psv], batch_size=256)
 
 
 if __name__ == '__main__':
