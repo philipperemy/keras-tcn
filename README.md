@@ -95,13 +95,12 @@ model.fit(x, y) # Keras model.
 
 ### Arguments
 
-`TCN(nb_filters=64, kernel_size=2, nb_stacks=1, dilations=[1, 2, 4, 8, 16, 32], activation='norm_relu', padding='causal', use_skip_connections=True, dropout_rate=0.0, return_sequences=True, name='tcn')`
+`TCN(nb_filters=64, kernel_size=2, nb_stacks=1, dilations=[1, 2, 4, 8, 16, 32], padding='causal', use_skip_connections=True, dropout_rate=0.0, return_sequences=True, name='tcn')`
 
 - `nb_filters`: Integer. The number of filters to use in the convolutional layers.
 - `kernel_size`: Integer. The size of the kernel to use in each convolutional layer.
 - `dilations`: List. A dilation list. Example is: [1, 2, 4, 8, 16, 32, 64].
 - `nb_stacks`: Integer. The number of stacks of residual blocks to use.
-- `activation`: String. The activations to use in the residual blocks (norm_relu, wavenet, relu...).
 - `padding`: String. The padding to use in the convolutions. 'causal' for a causal network (as in the original implementation) and 'same' for a non-causal network.
 - `use_skip_connections`: Boolean. If we want to add skip connections from input to each residual block.
 - `return_sequences`: Boolean. Whether to return the last output in the output sequence, or the full sequence.
