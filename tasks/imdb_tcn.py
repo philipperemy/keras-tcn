@@ -2,6 +2,7 @@
 #Trains a TCN on the IMDB sentiment classification task.
 Output after 1 epochs on CPU: ~0.8611
 Time per epoch on CPU (Core i7): ~64s.
+Based on: https://github.com/keras-team/keras/blob/master/examples/imdb_bidirectional_lstm.py
 """
 import numpy as np
 from keras import Model, Input
