@@ -84,7 +84,7 @@ class TCN:
                  padding='causal',
                  use_skip_connections=True,
                  dropout_rate=0.0,
-                 return_sequences=True,
+                 return_sequences=False,
                  name='tcn'):
         self.name = name
         self.return_sequences = return_sequences
