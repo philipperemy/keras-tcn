@@ -84,7 +84,7 @@ class TCN:
                  padding='causal',
                  use_skip_connections=True,
                  dropout_rate=0.0,
-                 return_sequences=True,
+                 return_sequences=False,
                  name='tcn'):
         self.name = name
         self.return_sequences = return_sequences
@@ -136,7 +136,7 @@ def compiled_tcn(num_feat,  # type: int
                  max_len,  # type: int
                  padding='causal',  # type: str
                  use_skip_connections=True,  # type: bool
-                 return_sequences=False,
+                 return_sequences=True,
                  regression=False,  # type: bool
                  dropout_rate=0.05,  # type: float
                  name='tcn'  # type: str
