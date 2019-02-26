@@ -35,8 +35,7 @@ i = Input(shape=(maxlen,))
 x = Embedding(max_features, 128)(i)
 x = TCN(nb_filters=64,
         kernel_size=6,
-        dilations=[1, 2, 4, 8, 16, 32, 64],
-        return_sequences=False)(x)
+        dilations=[1, 2, 4, 8, 16, 32, 64])(x)
 x = Dropout(0.5)(x)
 x = Dense(1, activation='sigmoid')(x)
 

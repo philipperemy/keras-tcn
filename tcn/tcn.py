@@ -136,7 +136,7 @@ def compiled_tcn(num_feat,  # type: int
                  max_len,  # type: int
                  padding='causal',  # type: str
                  use_skip_connections=True,  # type: bool
-                 return_sequences=True,
+                 return_sequences=False,
                  regression=False,  # type: bool
                  dropout_rate=0.05,  # type: float
                  name='tcn'  # type: str
