@@ -28,6 +28,8 @@ def run_task():
                          nb_stacks=1,
                          max_len=x_train[0:1].shape[1],
                          use_skip_connections=True,
+                         opt='rmsprop',
+                         lr=5e-4,
                          return_sequences=True)
 
     print(f'x_train.shape = {x_train.shape}')
