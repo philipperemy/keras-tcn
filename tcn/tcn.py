@@ -37,7 +37,7 @@ def residual_block(x, dilation_rate, nb_filters, kernel_size, padding, dropout_r
         x = SpatialDropout1D(rate=dropout_rate)(x)
 
     # 1x1 conv to match the shapes (channel dimension).
-    x = Convolution1D(nb_filters, 1, padding='same')(x)
+    x = Convolution1D(nb_filters, 1, padding='same')(prev_x)
     res_x = keras.layers.add([prev_x, x])
     return res_x, x
 
