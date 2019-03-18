@@ -139,8 +139,9 @@ def compiled_tcn(num_feat,  # type: int
                  return_sequences=True,
                  regression=False,  # type: bool
                  dropout_rate=0.05,  # type: float
-                 name='tcn'  # type: str
-                 ):
+                 name='tcn',  # type: str,
+                 opt='adam',
+                 lr=0.002):
     # type: (...) -> keras.Model
     """Creates a compiled TCN model for a given task (i.e. regression or classification).
 
@@ -158,7 +159,8 @@ def compiled_tcn(num_feat,  # type: int
         regression: Whether the output should be continuous or discrete.
         dropout_rate: Float between 0 and 1. Fraction of the input units to drop.
         name: Name of the model. Useful when having multiple TCN.
-
+        opt: Optimizer name.
+        lr: Learning rate.
     Returns:
         A compiled keras TCN.
     """
@@ -171,6 +173,14 @@ def compiled_tcn(num_feat,  # type: int
             use_skip_connections, dropout_rate, return_sequences, name)(input_layer)
 
     print('x.shape=', x.shape)
+
+    def get_opt():
+        if opt == 'adam':
+            return optimizers.Adam(lr=lr, clipnorm=1.)
+        elif opt == 'rmsprop':
+            return optimizers.RMSprop(lr=lr, clipnorm=1.)
+        else:
+            raise Exception('Only Adam and RMSProp are available here')
 
     if not regression:
         # classification
@@ -191,16 +201,14 @@ def compiled_tcn(num_feat,  # type: int
             y_pred_labels = K.cast(y_pred_labels, K.floatx())
             return K.cast(K.equal(y_true, y_pred_labels), K.floatx())
 
-        adam = optimizers.Adam(lr=0.002, clipnorm=1.)
-        model.compile(adam, loss='sparse_categorical_crossentropy', metrics=[accuracy])
+        model.compile(get_opt(), loss='sparse_categorical_crossentropy', metrics=[accuracy])
     else:
         # regression
         x = Dense(1)(x)
         x = Activation('linear')(x)
         output_layer = x
         model = Model(input_layer, output_layer)
-        adam = optimizers.Adam(lr=0.002, clipnorm=1.)
-        model.compile(adam, loss='mean_squared_error')
+        model.compile(get_opt(), loss='mean_squared_error')
     print(f'model.x = {input_layer.shape}')
     print(f'model.y = {output_layer.shape}')
     print('Adam with norm clipping.')
