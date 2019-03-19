@@ -279,5 +279,8 @@ The idea here is to consider MNIST images as 1-D sequences and feed them to the 
 for Sequence Modeling)
 - https://arxiv.org/pdf/1609.03499.pdf (Original Wavenet paper)
 
+## Useful links
+- https://github.com/Baichenjia/Tensorflow-TCN (Tensorflow Eager implementation of TCNs)
+
 ### Repo views (since 2018/10/30)
 [![HitCount](http://hits.dwyl.io/philipperemy/keras-tcn.svg)](http://hits.dwyl.io/philipperemy/keras-tcn)
