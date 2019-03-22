@@ -161,6 +161,8 @@ However, it is not anymore suitable for real-time applications.
   <b>Non-Causal TCN - ks = 3, dilations = [1, 2, 4, 8], 1 block</b><br><br>
 </p>
 
+To use a non-causal TCN, specify `padding=valid` or `padding=same` when initializing the TCN layers.
+
 Special thanks to: [@qlemaire22](https://github.com/qlemaire22)
 
 ## Installation (Python 3)
