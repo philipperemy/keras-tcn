@@ -4,7 +4,7 @@ import keras.backend as K
 import keras.layers
 from keras import optimizers
 from keras.engine.topology import Layer
-from keras.layers import Activation, Lambda, BatchNormalization
+from keras.layers import Activation, Lambda
 from keras.layers import Conv1D, SpatialDropout1D
 from keras.layers import Convolution1D, Dense
 from keras.models import Input, Model
@@ -144,6 +144,7 @@ def compiled_tcn(num_feat,  # type: int
                  lr=0.002):
     # type: (...) -> keras.Model
     """Creates a compiled TCN model for a given task (i.e. regression or classification).
+    Classification uses a sparse categorical loss. Please input class ids and not one-hot encodings.
 
     Args:
         num_feat: The number of features of your input, i.e. the last dimension of: (batch_size, timesteps, input_dim).
