@@ -211,5 +211,4 @@ def compiled_tcn(num_feat,  # type: int
         model.compile(get_opt(), loss='mean_squared_error')
     print(f'model.x = {input_layer.shape}')
     print(f'model.y = {output_layer.shape}')
-    print('Adam with norm clipping.')
     return model
