@@ -97,7 +97,7 @@ model.fit(x, y) # Keras model.
 
 `TCN(nb_filters=64, kernel_size=2, nb_stacks=1, dilations=[1, 2, 4, 8, 16, 32], padding='causal', use_skip_connections=True, dropout_rate=0.0, return_sequences=True, name='tcn')`
 
-- `nb_filters`: Integer. The number of filters to use in the convolutional layers.
+- `nb_filters`: Integer. The number of filters to use in the convolutional layers. Would be similar to `units` for LSTM.
 - `kernel_size`: Integer. The size of the kernel to use in each convolutional layer.
 - `dilations`: List. A dilation list. Example is: [1, 2, 4, 8, 16, 32, 64].
 - `nb_stacks`: Integer. The number of stacks of residual blocks to use.
