@@ -115,7 +115,8 @@ model.fit(x, y) # Keras model.
 
 ### Output shape
 
-if `return_sequences`: 3D tensor with shape `(batch_size, timesteps, nb_filters)`, else, 2D tensor with shape `(batch_size, nb_filters)`.
+- if `return_sequences=True`: 3D tensor with shape `(batch_size, timesteps, nb_filters)`.
+- if `return_sequences=False`: 2D tensor with shape `(batch_size, nb_filters)`.
 
 ### Supported task types
 
