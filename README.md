@@ -115,7 +115,9 @@ model.fit(x, y) # Keras model.
 
 ### Output shape
 
-It depends on the task (cf. below for examples):
+if `return_sequences`: 3D tensor with shape `(batch_size, timesteps, nb_filters)`, else, 2D tensor with shape `(batch_size, nb_filters)`.
+
+### Supported task types
 
 - Regression (Many to one) e.g. adding problem
 - Classification (Many to many) e.g. copy memory task
