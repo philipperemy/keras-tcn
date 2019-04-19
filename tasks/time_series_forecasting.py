@@ -8,9 +8,9 @@ from keras.layers import Dense
 from tcn import TCN
 
 ##
-# It's a very naive example to show how to do time series forecasting.
-# - There's no training-testing sets here. Everything is training set for simplicity.
-# - There's no normalization.
+# It's a very naive (toy) example to show how to do time series forecasting.
+# - There are no training-testing sets here. Everything is training set for simplicity.
+# - There is no input/output normalization.
 # - The model is simple.
 ##
 
@@ -40,7 +40,6 @@ model = Model(inputs=[i], outputs=[m])
 
 model.summary()
 
-# try using different optimizers and different optimizer configs
 model.compile('adam', 'mae')
 
 print('Train...')
