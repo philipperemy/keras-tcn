@@ -1,10 +1,18 @@
 # https://datamarket.com/data/set/22ox/monthly-milk-production-pounds-per-cow-jan-62-dec-75#!ds=22ox&display=line
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from keras import Input, Model
 from keras.layers import Dense
 
 from tcn import TCN
+
+##
+# It's a very naive example to show how to do time series forecasting.
+# - There's no training-testing sets here. Everything is training set for simplicity.
+# - There's no normalization.
+# - The model is simple.
+##
 
 milk = pd.read_csv('monthly-milk-production-pounds-p.csv', index_col=0, parse_dates=True)
 
@@ -36,4 +44,12 @@ model.summary()
 model.compile('adam', 'mae')
 
 print('Train...')
-model.fit(x, y, epochs=1000, verbose=2)
+model.fit(x, y, epochs=100, verbose=2)
+
+p = model.predict(x)
+
+plt.plot(p)
+plt.plot(y)
+plt.title('Monthly Milk Production (in pounds)')
+plt.legend(['predicted', 'actual'])
+plt.show()
