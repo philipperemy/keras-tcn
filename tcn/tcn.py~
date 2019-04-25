@@ -170,6 +170,7 @@ def compiled_tcn(num_feat,  # type: int
     dilations = process_dilations(dilations)
 
     # input_layer = Input(shape=(max_len, num_feat))
+
     # --- Vincent Added to deal with reshaping input ---
     total_input = max_len*num_feat          # max_len~wind size and num_feat~selected columns
     input_layer = Input(shape(total_input, ))
