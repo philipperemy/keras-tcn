@@ -7,6 +7,7 @@ from keras.engine.topology import Layer
 from keras.layers import Activation, Lambda
 from keras.layers import Conv1D, SpatialDropout1D
 from keras.layers import Convolution1D, Dense
+from keras.layers import Reshape # Vincent Added
 from keras.models import Input, Model
 
 
@@ -168,10 +169,16 @@ def compiled_tcn(num_feat,  # type: int
 
     dilations = process_dilations(dilations)
 
-    input_layer = Input(shape=(max_len, num_feat))
+    # input_layer = Input(shape=(max_len, num_feat))
+    # --- Vincent Added to deal with reshaping input ---
+    total_input = max_len*num_feat          # max_len~wind size and num_feat~selected columns
+    input_layer = Input(shape(total_input, ))
+    reshape_layer = Reshape((max_len, num_feat, 1), input_shape=(total_input, ))(input_layer)
+
+    # --- Vincent Stopped breaking stuff here ---
 
     x = TCN(nb_filters, kernel_size, nb_stacks, dilations, padding,
-            use_skip_connections, dropout_rate, return_sequences, name)(input_layer)
+            use_skip_connections, dropout_rate, return_sequences, name)(reshape_layer)
 
     print('x.shape=', x.shape)
 
