@@ -174,7 +174,7 @@ def compiled_tcn(num_feat,  # type: int
     # --- Vincent Added to deal with reshaping input ---
     total_input = max_len*num_feat          # max_len~wind size and num_feat~selected columns
     input_layer = Input(shape=(total_input, ))
-    reshape_layer = Reshape((max_len, num_feat, 1), input_shape=(total_input, ))(input_layer)
+    reshape_layer = Reshape((max_len, num_feat), input_shape=(total_input, ))(input_layer)
 
     # --- Vincent Stopped breaking stuff here ---
 
