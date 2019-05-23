@@ -1,5 +1,6 @@
 from typing import List, Tuple
 
+import tensorflow
 import tensorflow.keras.backend as K
 
 from tensorflow.keras import optimizers
