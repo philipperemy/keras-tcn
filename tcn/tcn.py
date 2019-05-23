@@ -45,7 +45,7 @@ def residual_block(x,
 
     # 1x1 conv to match the shapes (channel dimension).
     prev_x = Conv1D(nb_filters, 1, padding='same')(prev_x)
-    res_x = tf.keras.layers.add([prev_x, x])
+    res_x = tensorflow.keras.layers.add([prev_x, x])
     return res_x, x
 
 
@@ -133,7 +133,7 @@ class TCN:
                     dropout_rate=self.dropout_rate)
                 skip_connections.append(skip_out)
         if self.use_skip_connections:
-            x = tf.keras.layers.add(skip_connections)
+            x = tensorflow.keras.layers.add(skip_connections)
         if not self.return_sequences:
             x = Lambda(lambda tt: tt[:, -1, :])(x)
         return x
