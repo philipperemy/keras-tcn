@@ -3,12 +3,12 @@ from typing import List, Tuple
 import tensorflow.keras.backend as K
 
 from tensorflow.keras import optimizers
+from tensorflow.keras import Input, Model
 from tensorflow.keras.layers import Layer
 from tensorflow.keras.layers import Activation, Lambda
 from tensorflow.keras.layers import Conv1D, SpatialDropout1D
 from tensorflow.keras.layers import Convolution1D, Dense
 from tensorflow.keras.layers import Reshape  # Vincent Added
-from tensorflow.keras.models import Input, Model
 
 
 def residual_block(x,
