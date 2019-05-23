@@ -1,17 +1,22 @@
 from typing import List, Tuple
 
-import keras.backend as K
-import keras.layers
-from keras import optimizers
-from keras.engine.topology import Layer
-from keras.layers import Activation, Lambda
-from keras.layers import Conv1D, SpatialDropout1D
-from keras.layers import Convolution1D, Dense
-from keras.layers import Reshape # Vincent Added
-from keras.models import Input, Model
+import tensorflow.keras.backend as K
+
+from tensorflow.keras import optimizers
+from tensorflow.keras.engine.topology import Layer
+from tensorflow.keras.layers import Activation, Lambda
+from tensorflow.keras.layers import Conv1D, SpatialDropout1D
+from tensorflow.keras.layers import Convolution1D, Dense
+from tensorflow.keras.layers import Reshape  # Vincent Added
+from tensorflow.keras.models import Input, Model
 
 
-def residual_block(x, dilation_rate, nb_filters, kernel_size, padding, dropout_rate=0):
+def residual_block(x,
+                   dilation_rate,
+                   nb_filters,
+                   kernel_size,
+                   padding,
+                   dropout_rate=0):
     # type: (Layer, int, int, int, str, float) -> Tuple[Layer, Layer]
     """Defines the residual block for the WaveNet TCN
 
@@ -29,10 +34,11 @@ def residual_block(x, dilation_rate, nb_filters, kernel_size, padding, dropout_r
     """
     prev_x = x
     for k in range(2):
-        x = Conv1D(filters=nb_filters,
-                   kernel_size=kernel_size,
-                   dilation_rate=dilation_rate,
-                   padding=padding)(x)
+        x = Conv1D(
+            filters=nb_filters,
+            kernel_size=kernel_size,
+            dilation_rate=dilation_rate,
+            padding=padding)(x)
         # x = BatchNormalization()(x)  # TODO should be WeightNorm here.
         x = Activation('relu')(x)
         x = SpatialDropout1D(rate=dropout_rate)(x)
@@ -51,7 +57,7 @@ def process_dilations(dilations):
         return dilations
 
     else:
-        new_dilations = [2 ** i for i in dilations]
+        new_dilations = [2**i for i in dilations]
         # print(f'Updated dilations from {dilations} to {new_dilations} because of backwards compatibility.')
         return new_dilations
 
@@ -98,13 +104,17 @@ class TCN:
         self.padding = padding
 
         if padding != 'causal' and padding != 'same':
-            raise ValueError("Only 'causal' or 'same' padding are compatible for this layer.")
+            raise ValueError(
+                "Only 'causal' or 'same' padding are compatible for this layer."
+            )
 
         if not isinstance(nb_filters, int):
             print('An interface change occurred after the version 2.1.2.')
             print('Before: tcn.TCN(x, return_sequences=False, ...)')
             print('Now should be: tcn.TCN(return_sequences=False, ...)(x)')
-            print('The alternative is to downgrade to 2.1.2 (pip install keras-tcn==2.1.2).')
+            print(
+                'The alternative is to downgrade to 2.1.2 (pip install keras-tcn==2.1.2).'
+            )
             raise Exception()
 
     def __call__(self, inputs):
@@ -114,12 +124,13 @@ class TCN:
         skip_connections = []
         for s in range(self.nb_stacks):
             for d in self.dilations:
-                x, skip_out = residual_block(x,
-                                             dilation_rate=d,
-                                             nb_filters=self.nb_filters,
-                                             kernel_size=self.kernel_size,
-                                             padding=self.padding,
-                                             dropout_rate=self.dropout_rate)
+                x, skip_out = residual_block(
+                    x,
+                    dilation_rate=d,
+                    nb_filters=self.nb_filters,
+                    kernel_size=self.kernel_size,
+                    padding=self.padding,
+                    dropout_rate=self.dropout_rate)
                 skip_connections.append(skip_out)
         if self.use_skip_connections:
             x = keras.layers.add(skip_connections)
@@ -128,21 +139,22 @@ class TCN:
         return x
 
 
-def compiled_tcn(num_feat,  # type: int
-                 num_classes,  # type: int
-                 nb_filters,  # type: int
-                 kernel_size,  # type: int
-                 dilations,  # type: List[int]
-                 nb_stacks,  # type: int
-                 max_len,  # type: int
-                 padding='causal',  # type: str
-                 use_skip_connections=True,  # type: bool
-                 return_sequences=True,
-                 regression=False,  # type: bool
-                 dropout_rate=0.05,  # type: float
-                 name='tcn',  # type: str,
-                 opt='adam',
-                 lr=0.002):
+def compiled_tcn(
+        num_feat,  # type: int
+        num_classes,  # type: int
+        nb_filters,  # type: int
+        kernel_size,  # type: int
+        dilations,  # type: List[int]
+        nb_stacks,  # type: int
+        max_len,  # type: int
+        padding='causal',  # type: str
+        use_skip_connections=True,  # type: bool
+        return_sequences=True,
+        regression=False,  # type: bool
+        dropout_rate=0.05,  # type: float
+        name='tcn',  # type: str,
+        opt='adam',
+        lr=0.002):
     # type: (...) -> keras.Model
     """Creates a compiled TCN model for a given task (i.e. regression or classification).
     Classification uses a sparse categorical loss. Please input class ids and not one-hot encodings.
@@ -172,14 +184,16 @@ def compiled_tcn(num_feat,  # type: int
     # input_layer = Input(shape=(max_len, num_feat))
 
     # --- Vincent Added to deal with reshaping input ---
-    total_input = max_len*num_feat          # max_len~wind size and num_feat~selected columns
+    total_input = max_len * num_feat  # max_len~wind size and num_feat~selected columns
     input_layer = Input(shape=(total_input, ))
-    reshape_layer = Reshape((max_len, num_feat), input_shape=(total_input, ))(input_layer)
+    reshape_layer = Reshape((max_len, num_feat),
+                            input_shape=(total_input, ))(input_layer)
 
     # --- Vincent Stopped breaking stuff here ---
 
     x = TCN(nb_filters, kernel_size, nb_stacks, dilations, padding,
-            use_skip_connections, dropout_rate, return_sequences, name)(reshape_layer)
+            use_skip_connections, dropout_rate, return_sequences,
+            name)(reshape_layer)
 
     print('x.shape=', x.shape)
 
@@ -210,7 +224,10 @@ def compiled_tcn(num_feat,  # type: int
             y_pred_labels = K.cast(y_pred_labels, K.floatx())
             return K.cast(K.equal(y_true, y_pred_labels), K.floatx())
 
-        model.compile(get_opt(), loss='sparse_categorical_crossentropy', metrics=[accuracy])
+        model.compile(
+            get_opt(),
+            loss='sparse_categorical_crossentropy',
+            metrics=[accuracy])
     else:
         # regression
         x = Dense(1)(x)
