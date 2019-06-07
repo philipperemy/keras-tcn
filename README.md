@@ -287,6 +287,3 @@ for Sequence Modeling)
 
 ## Useful links
 - https://github.com/Baichenjia/Tensorflow-TCN (Tensorflow Eager implementation of TCNs)
-
-### Repo views (since 2018/10/30)
-[![HitCount](http://hits.dwyl.io/philipperemy/keras-tcn.svg)](http://hits.dwyl.io/philipperemy/keras-tcn)
