@@ -123,7 +123,8 @@ class TCN:
         if self.use_skip_connections:
             x = keras.layers.add(skip_connections)
         if not self.return_sequences:
-            x = Lambda(lambda tt: tt[:, -1, :])(x)
+            output_slice_index = int(x.get_shape().as_list()[1]/2) if self.padding == 'same' else -1
+            x = Lambda(lambda tt: tt[:, output_slice_index, :])(x)
         return x
 
 
