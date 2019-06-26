@@ -6,12 +6,12 @@ from keras import optimizers
 from keras.engine.topology import Layer
 from keras.layers import Activation, Lambda
 from keras.layers import Conv1D, SpatialDropout1D
-from keras.layers import Convolution1D, Dense
+from keras.layers import Convolution1D, Dense, BatchNormalization
 from keras.models import Input, Model
 
 
-def residual_block(x, dilation_rate, nb_filters, kernel_size, padding, activation='relu', dropout_rate=0):
-    # type: (Layer, int, int, int, str, str, float) -> Tuple[Layer, Layer]
+def residual_block(x, dilation_rate, nb_filters, kernel_size, padding, activation='relu', dropout_rate=0, use_batch_norm=False):
+    # type: (Layer, int, int, int, str, str, float, bool) -> Tuple[Layer, Layer]
     """Defines the residual block for the WaveNet TCN
 
     Args:
@@ -32,7 +32,8 @@ def residual_block(x, dilation_rate, nb_filters, kernel_size, padding, activatio
                    kernel_size=kernel_size,
                    dilation_rate=dilation_rate,
                    padding=padding)(x)
-        # x = BatchNormalization()(x)  # TODO should be WeightNorm here.
+        if use_batch_norm:
+            x = BatchNormalization()(x)  # TODO should be WeightNorm here, but using batchNorm instead
         x = Activation('relu')(x)
         x = SpatialDropout1D(rate=dropout_rate)(x)
 
@@ -87,7 +88,8 @@ class TCN:
                  dropout_rate=0.0,
                  return_sequences=False,
                  activation='linear',
-                 name='tcn'):
+                 name='tcn',
+                 use_batch_norm=False):
         self.name = name
         self.return_sequences = return_sequences
         self.dropout_rate = dropout_rate
@@ -98,6 +100,7 @@ class TCN:
         self.nb_filters = nb_filters
         self.activation = activation
         self.padding = padding
+        self.use_batch_norm = use_batch_norm
 
         if padding != 'causal' and padding != 'same':
             raise ValueError("Only 'causal' or 'same' padding are compatible for this layer.")
@@ -122,7 +125,8 @@ class TCN:
                                              kernel_size=self.kernel_size,
                                              padding=self.padding,
                                              activation=self.activation,
-                                             dropout_rate=self.dropout_rate)
+                                             dropout_rate=self.dropout_rate,
+                                             use_batch_norm=self.use_batch_norm)
                 skip_connections.append(skip_out)
         if self.use_skip_connections:
             x = keras.layers.add(skip_connections)
@@ -146,7 +150,8 @@ def compiled_tcn(num_feat,  # type: int
                  name='tcn',  # type: str,
                  activation='linear',  # type:str,
                  opt='adam',
-                 lr=0.002):
+                 lr=0.002,
+                 use_batch_norm=False):
     # type: (...) -> keras.Model
     """Creates a compiled TCN model for a given task (i.e. regression or classification).
     Classification uses a sparse categorical loss. Please input class ids and not one-hot encodings.
@@ -178,7 +183,7 @@ def compiled_tcn(num_feat,  # type: int
 
     x = TCN(nb_filters, kernel_size, nb_stacks, dilations, padding,
             use_skip_connections, dropout_rate, return_sequences,
-            activation, name)(input_layer)
+            activation, name, use_batch_norm)(input_layer)
 
     print('x.shape=', x.shape)
 
