@@ -23,6 +23,7 @@ def residual_block(x, dilation_rate, nb_filters, kernel_size, padding, activatio
         padding: The padding used in the convolutional layers, 'same' or 'causal'.
         activation: The final activation used in o = Activation(x + F(x))
         dropout_rate: Float between 0 and 1. Fraction of the input units to drop.
+        use_batch_norm: Whether to use batch normalization in the residual layers or not.
     Returns:
         A tuple where the first element is the residual model layer, and the second
         is the skip connection.
