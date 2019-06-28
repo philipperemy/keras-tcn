@@ -10,7 +10,8 @@ from keras.layers import Convolution1D, Dense, BatchNormalization
 from keras.models import Input, Model
 
 
-def residual_block(x, dilation_rate, nb_filters, kernel_size, padding, activation='relu', dropout_rate=0, use_batch_norm=False):
+def residual_block(x, dilation_rate, nb_filters, kernel_size, padding, activation='relu', dropout_rate=0,
+                   use_batch_norm=False):
     # type: (Layer, int, int, int, str, str, float, bool) -> Tuple[Layer, Layer]
     """Defines the residual block for the WaveNet TCN
 
@@ -73,6 +74,7 @@ class TCN:
             activation: The activation used in the residual blocks o = Activation(x + F(x)).
             dropout_rate: Float between 0 and 1. Fraction of the input units to drop.
             name: Name of the model. Useful when having multiple TCN.
+            use_batch_norm: Whether to use the BatchNorm in the residual layers or not.
 
         Returns:
             A TCN layer.
@@ -173,6 +175,7 @@ def compiled_tcn(num_feat,  # type: int
         name: Name of the model. Useful when having multiple TCN.
         opt: Optimizer name.
         lr: Learning rate.
+        use_batch_norm: Whether to use the BatchNorm in the residual layers or not.
     Returns:
         A compiled keras TCN.
     """

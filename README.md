@@ -96,7 +96,7 @@ model.fit(x, y) # Keras model.
 
 ### Arguments
 
-`TCN(nb_filters=64, kernel_size=2, nb_stacks=1, dilations=[1, 2, 4, 8, 16, 32], padding='causal', use_skip_connections=True, dropout_rate=0.0, return_sequences=True, activation='linear', name='tcn')`
+`TCN(nb_filters=64, kernel_size=2, nb_stacks=1, dilations=[1, 2, 4, 8, 16, 32], padding='causal', use_skip_connections=True, dropout_rate=0.0, return_sequences=True, activation='linear', name='tcn', use_batch_norm=False)`
 
 - `nb_filters`: Integer. The number of filters to use in the convolutional layers. Would be similar to `units` for LSTM.
 - `kernel_size`: Integer. The size of the kernel to use in each convolutional layer.
@@ -108,9 +108,7 @@ model.fit(x, y) # Keras model.
 - `dropout_rate`: Float between 0 and 1. Fraction of the input units to drop.
 - `activation`: The activation used in the residual blocks o = activation(x + F(x)).
 - `name`: Name of the model. Useful when having multiple TCN.
-- `use_batch_norm`: Whether or not to use BatchNormalization layat on each TCN block. Notice that the original paper 
-purposed weigth normalization instead of batch normalization, but, since it's not available on keras yet, 
-BatchNormalization is a good proxy for it.
+- `use_batch_norm`: Whether to use the BatchNorm in the residual layers or not.
 
 ### Input shape
 
