@@ -108,7 +108,7 @@ model.fit(x, y) # Keras model.
 - `dropout_rate`: Float between 0 and 1. Fraction of the input units to drop.
 - `activation`: The activation used in the residual blocks o = activation(x + F(x)).
 - `name`: Name of the model. Useful when having multiple TCN.
-- `use_batch_norm`: Whether to use the BatchNorm in the residual layers or not.
+- `use_batch_norm`: Whether to use batch normalization in the residual layers or not.
 
 ### Input shape
 

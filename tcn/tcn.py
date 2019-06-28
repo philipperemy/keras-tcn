@@ -74,7 +74,7 @@ class TCN:
             activation: The activation used in the residual blocks o = Activation(x + F(x)).
             dropout_rate: Float between 0 and 1. Fraction of the input units to drop.
             name: Name of the model. Useful when having multiple TCN.
-            use_batch_norm: Whether to use the BatchNorm in the residual layers or not.
+            use_batch_norm: Whether to use batch normalization in the residual layers or not.
 
         Returns:
             A TCN layer.
@@ -175,7 +175,7 @@ def compiled_tcn(num_feat,  # type: int
         name: Name of the model. Useful when having multiple TCN.
         opt: Optimizer name.
         lr: Learning rate.
-        use_batch_norm: Whether to use the BatchNorm in the residual layers or not.
+        use_batch_norm: Whether to use batch normalization in the residual layers or not.
     Returns:
         A compiled keras TCN.
     """
