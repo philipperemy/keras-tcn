@@ -108,7 +108,7 @@ model.fit(x, y) # Keras model.
 - `dropout_rate`: Float between 0 and 1. Fraction of the input units to drop.
 - `activation`: The activation used in the residual blocks o = activation(x + F(x)).
 - `name`: Name of the model. Useful when having multiple TCN.
-- `use_batch_norm`: Whether or not to use BatchNormalization layat on each TCN block. Notice that the original paper 
+- `use_batch_norm`: Whether or not to use BatchNormalization layer on each TCN block. Notice that the original paper 
 purposed weigth normalization instead of batch normalization, but, since it's not available on keras yet, 
 BatchNormalization is a good proxy for it.
 

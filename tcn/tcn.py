@@ -22,6 +22,7 @@ def residual_block(x, dilation_rate, nb_filters, kernel_size, padding, activatio
         padding: The padding used in the convolutional layers, 'same' or 'causal'.
         activation: The final activation used in o = Activation(x + F(x))
         dropout_rate: Float between 0 and 1. Fraction of the input units to drop.
+        use_batch_norm: Whether or not to use BatchNormalization layer on each TCN block.
     Returns:
         A tuple where the first element is the residual model layer, and the second
         is the skip connection.
@@ -73,7 +74,9 @@ class TCN:
             activation: The activation used in the residual blocks o = Activation(x + F(x)).
             dropout_rate: Float between 0 and 1. Fraction of the input units to drop.
             name: Name of the model. Useful when having multiple TCN.
-
+            use_batch_norm: Whether or not to use BatchNormalization layer on each TCN block. Notice that the original
+                paper purposed weigth normalization instead of batch normalization, but, since it's not available
+                on keras yet, BatchNormalization is a good proxy for it.
         Returns:
             A TCN layer.
         """
@@ -173,6 +176,9 @@ def compiled_tcn(num_feat,  # type: int
         name: Name of the model. Useful when having multiple TCN.
         opt: Optimizer name.
         lr: Learning rate.
+        use_batch_norm: Whether or not to use BatchNormalization layer on each TCN block. Notice that the original
+                paper purposed weigth normalization instead of batch normalization, but, since it's not available
+                on keras yet, BatchNormalization is a good proxy for it.
     Returns:
         A compiled keras TCN.
     """
