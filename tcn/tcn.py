@@ -1,13 +1,12 @@
 from typing import List, Tuple
-
-import keras.backend as K
-import keras.layers
-from keras import optimizers
-from keras.engine.topology import Layer
-from keras.layers import Activation, Lambda
-from keras.layers import Conv1D, SpatialDropout1D
-from keras.layers import Convolution1D, Dense, BatchNormalization
-from keras.models import Input, Model
+import tensorflow.keras.backend as K
+from tensorflow.keras import optimizers
+from tensorflow.keras.layers import Layer
+from tensorflow.keras.layers import Activation, Lambda, add
+from tensorflow.keras.layers import Conv1D, SpatialDropout1D
+from tensorflow.keras.layers import Convolution1D, Dense, BatchNormalization
+from tensorflow.keras.layers import Input
+from tensorflow.keras import Model
 
 
 def residual_block(x, dilation_rate, nb_filters, kernel_size, padding, activation='relu', dropout_rate=0,
@@ -41,7 +40,7 @@ def residual_block(x, dilation_rate, nb_filters, kernel_size, padding, activatio
 
     # 1x1 conv to match the shapes (channel dimension).
     prev_x = Conv1D(nb_filters, 1, padding='same')(prev_x)
-    res_x = keras.layers.add([prev_x, x])
+    res_x = add([prev_x, x])
     res_x = Activation(activation)(res_x)
     return res_x, x
 
@@ -132,7 +131,7 @@ class TCN:
                                              use_batch_norm=self.use_batch_norm)
                 skip_connections.append(skip_out)
         if self.use_skip_connections:
-            x = keras.layers.add(skip_connections)
+            x = add(skip_connections)
         if not self.return_sequences:
             x = Lambda(lambda tt: tt[:, -1, :])(x)
         return x
