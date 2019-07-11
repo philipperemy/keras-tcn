@@ -10,6 +10,5 @@ setup(
     long_description=open('README.md').read(),
     packages=['tcn'],
     # manually install tensorflow or tensorflow-gpu
-    install_requires=['numpy',
-                      'keras']
+    install_requires=['numpy']
 )
