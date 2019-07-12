@@ -6,13 +6,13 @@ from keras import optimizers
 from keras.engine.topology import Layer
 from keras.layers import Activation, Lambda
 from keras.layers import Conv1D, SpatialDropout1D
-from keras.layers import Convolution1D, Dense, BatchNormalization
+from keras.layers import Dense, BatchNormalization
 from keras.models import Input, Model
 
 
 def residual_block(x, dilation_rate, nb_filters, kernel_size, padding, activation='relu', dropout_rate=0,
-                   use_batch_norm=False):
-    # type: (Layer, int, int, int, str, str, float, bool) -> Tuple[Layer, Layer]
+                   kernel_initializer='he_normal', use_batch_norm=False):
+    # type: (Layer, int, int, int, str, str, float, str, bool) -> Tuple[Layer, Layer]
     """Defines the residual block for the WaveNet TCN
 
     Args:
@@ -23,6 +23,7 @@ def residual_block(x, dilation_rate, nb_filters, kernel_size, padding, activatio
         padding: The padding used in the convolutional layers, 'same' or 'causal'.
         activation: The final activation used in o = Activation(x + F(x))
         dropout_rate: Float between 0 and 1. Fraction of the input units to drop.
+        kernel_initializer: Initializer for the kernel weights matrix (Conv1D).
         use_batch_norm: Whether to use batch normalization in the residual layers or not.
     Returns:
         A tuple where the first element is the residual model layer, and the second
@@ -33,6 +34,7 @@ def residual_block(x, dilation_rate, nb_filters, kernel_size, padding, activatio
         x = Conv1D(filters=nb_filters,
                    kernel_size=kernel_size,
                    dilation_rate=dilation_rate,
+                   kernel_initializer=kernel_initializer,
                    padding=padding)(x)
         if use_batch_norm:
             x = BatchNormalization()(x)  # TODO should be WeightNorm here, but using batchNorm instead
@@ -75,6 +77,7 @@ class TCN:
             activation: The activation used in the residual blocks o = Activation(x + F(x)).
             dropout_rate: Float between 0 and 1. Fraction of the input units to drop.
             name: Name of the model. Useful when having multiple TCN.
+            kernel_initializer: Initializer for the kernel weights matrix (Conv1D).
             use_batch_norm: Whether to use batch normalization in the residual layers or not.
 
         Returns:
@@ -92,6 +95,7 @@ class TCN:
                  return_sequences=False,
                  activation='linear',
                  name='tcn',
+                 kernel_initializer='he_normal',
                  use_batch_norm=False):
         self.name = name
         self.return_sequences = return_sequences
@@ -103,6 +107,7 @@ class TCN:
         self.nb_filters = nb_filters
         self.activation = activation
         self.padding = padding
+        self.kernel_initializer = kernel_initializer
         self.use_batch_norm = use_batch_norm
 
         if padding != 'causal' and padding != 'same':
@@ -118,7 +123,7 @@ class TCN:
     def __call__(self, inputs):
         x = inputs
         # 1D FCN.
-        x = Convolution1D(self.nb_filters, 1, padding=self.padding)(x)
+        x = Conv1D(self.nb_filters, 1, padding=self.padding, kernel_initializer=self.kernel_initializer)(x)
         skip_connections = []
         for s in range(self.nb_stacks):
             for d in self.dilations:
@@ -129,6 +134,7 @@ class TCN:
                                              padding=self.padding,
                                              activation=self.activation,
                                              dropout_rate=self.dropout_rate,
+                                             kernel_initializer=self.kernel_initializer,
                                              use_batch_norm=self.use_batch_norm)
                 skip_connections.append(skip_out)
         if self.use_skip_connections:
@@ -151,6 +157,7 @@ def compiled_tcn(num_feat,  # type: int
                  regression=False,  # type: bool
                  dropout_rate=0.05,  # type: float
                  name='tcn',  # type: str,
+                 kernel_initializer='he_normal',  # type: str,
                  activation='linear',  # type:str,
                  opt='adam',
                  lr=0.002,
@@ -174,6 +181,7 @@ def compiled_tcn(num_feat,  # type: int
         dropout_rate: Float between 0 and 1. Fraction of the input units to drop.
         activation: The activation used in the residual blocks o = Activation(x + F(x)).
         name: Name of the model. Useful when having multiple TCN.
+        kernel_initializer: Initializer for the kernel weights matrix (Conv1D).
         opt: Optimizer name.
         lr: Learning rate.
         use_batch_norm: Whether to use batch normalization in the residual layers or not.
@@ -187,7 +195,7 @@ def compiled_tcn(num_feat,  # type: int
 
     x = TCN(nb_filters, kernel_size, nb_stacks, dilations, padding,
             use_skip_connections, dropout_rate, return_sequences,
-            activation, name, use_batch_norm)(input_layer)
+            activation, name, kernel_initializer, use_batch_norm)(input_layer)
 
     print('x.shape=', x.shape)
 
