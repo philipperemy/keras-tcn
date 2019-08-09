@@ -45,7 +45,7 @@ pip install keras-tcn
 
 ## API
 
-The usual way is to import the TCN layer and use it inside a Keras model. I provide a snippet below to illustrate it on a regression task (cf. `tasks/` for other examples):
+The usual way is to import the TCN layer and use it inside a Keras model. An example is provided below for a regression task (cf. `tasks/` for other examples):
 
 ```python
 from keras.layers import Dense
@@ -85,7 +85,7 @@ o = TCN(return_sequences=True)(i)
 o = TCN(return_sequences=False)(o)
 ```
 
-I also provide a ready to use TCN model that can be imported and used this way (cf. `tasks/` for the full code):
+A ready-to-use TCN model can be used that way (cf. `tasks/` for the full code):
 
 ```python
 from tcn import compiled_tcn
