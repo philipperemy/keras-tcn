@@ -155,7 +155,7 @@ For a Many to Many regression, a cheap fix for now is to change the [number of u
   <b>ks = 2, dilations = [1, 2, 4, 8], 3 blocks</b><br><br>
 </p>
 
-Thanks a lot to [@alextheseal](https://github.com/alextheseal) for providing such visuals.
+Thanks to [@alextheseal](https://github.com/alextheseal) for providing such visuals.
 
 ### Non-causal TCN
 
