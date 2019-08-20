@@ -10,13 +10,14 @@ from keras.layers import Dense, BatchNormalization
 from keras.models import Input, Model
 
 
-def residual_block(x, dilation_rate, nb_filters, kernel_size, padding, activation='relu', dropout_rate=0,
+def residual_block(x, training, dilation_rate, nb_filters, kernel_size, padding, activation='relu', dropout_rate=0,
                    kernel_initializer='he_normal', use_batch_norm=False):
-    # type: (Layer, int, int, int, str, str, float, str, bool) -> Tuple[Layer, Layer]
+    # type: (Layer, bool, int, int, int, str, str, float, str, bool) -> Tuple[Layer, Layer]
     """Defines the residual block for the WaveNet TCN
 
     Args:
         x: The previous layer in the model
+        training: boolean indicating whether the layer should behave in training mode or in inference mode
         dilation_rate: The dilation power of 2 we are using for this residual block
         nb_filters: The number of convolutional filters to use in this block
         kernel_size: The size of the convolutional kernel
@@ -39,7 +40,7 @@ def residual_block(x, dilation_rate, nb_filters, kernel_size, padding, activatio
         if use_batch_norm:
             x = BatchNormalization()(x)  # TODO should be WeightNorm here, but using batchNorm instead
         x = Activation('relu')(x)
-        x = SpatialDropout1D(rate=dropout_rate)(x)
+        x = SpatialDropout1D(rate=dropout_rate)(inputs=x, training=training)
 
     # 1x1 conv to match the shapes (channel dimension).
     prev_x = Conv1D(nb_filters, 1, padding='same')(prev_x)
@@ -88,7 +89,7 @@ class TCN:
                  nb_filters=64,
                  kernel_size=2,
                  nb_stacks=1,
-                 dilations=[1, 2, 4, 8, 16, 32],
+                 dilations=(1, 2, 4, 8, 16, 32),
                  padding='causal',
                  use_skip_connections=True,
                  dropout_rate=0.0,
@@ -120,7 +121,7 @@ class TCN:
             print('The alternative is to downgrade to 2.1.2 (pip install keras-tcn==2.1.2).')
             raise Exception()
 
-    def __call__(self, inputs):
+    def __call__(self, inputs, training=None):
         x = inputs
         # 1D FCN.
         x = Conv1D(self.nb_filters, 1, padding=self.padding, kernel_initializer=self.kernel_initializer)(x)
@@ -128,6 +129,7 @@ class TCN:
         for s in range(self.nb_stacks):
             for d in self.dilations:
                 x, skip_out = residual_block(x,
+                                             training=training,
                                              dilation_rate=d,
                                              nb_filters=self.nb_filters,
                                              kernel_size=self.kernel_size,
