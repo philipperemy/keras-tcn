@@ -4,7 +4,7 @@ try:
     import tensorflow.keras.backend as K
     import tensorflow.keras.layers
     from tensorflow.keras import optimizers
-    from tensorflow.keras.engine.topology import Layer
+    from tensorflow.python.keras.engine import Layer
     from tensorflow.keras.layers import Activation, Lambda
     from tensorflow.keras.layers import Conv1D, SpatialDropout1D
     from tensorflow.keras.layers import Dense, BatchNormalization
