@@ -1,8 +1,13 @@
 import os
 
 import numpy as np
-from keras import Model, Input
-from keras.layers import Dense, Dropout, Embedding
+
+try:
+    from tensorflow.python.keras import Model, Input
+    from tensorflow.python.keras.layers import Dense, Dropout, Embedding
+except:
+    from keras import Model, Input
+    from keras.layers import Dense, Dropout, Embedding
 
 from tcn import TCN
 

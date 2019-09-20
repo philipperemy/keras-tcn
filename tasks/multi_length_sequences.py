@@ -1,6 +1,11 @@
 import numpy as np
-from keras.layers import Dense
-from keras.models import Input, Model
+
+try:
+    from tensorflow.python.keras.layers import Dense
+    from tensorflow.python.keras.models import Input, Model
+except:
+    from keras.layers import Dense
+    from keras.models import Input, Model
 
 from tcn import TCN
 

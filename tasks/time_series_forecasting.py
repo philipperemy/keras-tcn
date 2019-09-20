@@ -1,9 +1,15 @@
 # https://datamarket.com/data/set/22ox/monthly-milk-production-pounds-per-cow-jan-62-dec-75#!ds=22ox&display=line
+import os
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from keras import Input, Model
-from keras.layers import Dense
+
+try:
+    from tensorflow.python.keras import Input, Model
+    from tensorflow.python.keras.layers import Dense
+except:
+    from keras import Input, Model
+    from keras.layers import Dense
 
 from tcn import TCN
 
@@ -14,7 +20,8 @@ from tcn import TCN
 # - The model is simple.
 ##
 
-milk = pd.read_csv('monthly-milk-production-pounds-p.csv', index_col=0, parse_dates=True)
+filepath = os.path.join(os.path.dirname(__file__), 'monthly-milk-production-pounds-p.csv')
+milk = pd.read_csv(filepath, index_col=0, parse_dates=True)
 
 print(milk.head())
 
