@@ -1,17 +1,19 @@
 from typing import List, Tuple
 
 try:
-    import tensorflow.keras.backend as K
-    import tensorflow.keras.layers
-    from tensorflow.keras import optimizers
+    from tensorflow.python import keras
+    from tensorflow.python.keras import backend as k
+    from tensorflow.python.keras import layers
+    from tensorflow.python.keras import optimizers
     from tensorflow.python.keras.engine import Layer
-    from tensorflow.keras.layers import Activation, Lambda
-    from tensorflow.keras.layers import Conv1D, SpatialDropout1D
-    from tensorflow.keras.layers import Dense, BatchNormalization
-    from tensorflow.keras.models import Input, Model
+    from tensorflow.python.keras.layers import Activation, Lambda
+    from tensorflow.python.keras.layers import Conv1D, SpatialDropout1D
+    from tensorflow.python.keras.layers import Dense, BatchNormalization
+    from tensorflow.python.keras.models import Input, Model
 except:
+    import keras
     import keras.backend as K
-    import keras.layers
+    from keras import layers
     from keras import optimizers
     from keras.engine.topology import Layer
     from keras.layers import Activation, Lambda
@@ -54,7 +56,7 @@ def residual_block(x, training, dilation_rate, nb_filters, kernel_size, padding,
 
     # 1x1 conv to match the shapes (channel dimension).
     prev_x = Conv1D(nb_filters, 1, padding='same')(prev_x)
-    res_x = keras.layers.add([prev_x, x])
+    res_x = layers.add([prev_x, x])
     res_x = Activation(activation)(res_x)
     return res_x, x
 
@@ -150,7 +152,7 @@ class TCN:
                                              use_batch_norm=self.use_batch_norm)
                 skip_connections.append(skip_out)
         if self.use_skip_connections:
-            x = keras.layers.add(skip_connections)
+            x = layers.add(skip_connections)
         if not self.return_sequences:
             x = Lambda(lambda tt: tt[:, -1, :])(x)
         return x
