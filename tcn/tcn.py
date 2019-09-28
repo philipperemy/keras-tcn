@@ -234,7 +234,10 @@ class TCN(Layer):
         """
         if not self.built:
             self.build(input_shape)
-        return self.build_output_shape
+        if not self.return_sequences:
+            return self.lambda_ouput_shape
+        else:
+            return self.build_output_shape
 
     def call(self, inputs, training=None):
         x = inputs
