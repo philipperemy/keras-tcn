@@ -101,6 +101,10 @@ class ResidualBlock(Layer):
             self.final_activation = Activation(self.activation)
             self.final_activation.build(self.res_output_shape)  # probably isn't necessary
 
+            # this is done to force keras to add the layers in the list to self._layers
+            for layer in self.residual_layers:
+                self.__setattr__(layer.name, layer)
+
             super(ResidualBlock, self).build(input_shape)  # done to make sure self.built is set True
 
     def call(self, inputs, training=None):
@@ -227,6 +231,10 @@ class TCN(Layer):
                 # build newest residual block
                 self.residual_blocks[-1].build(self.build_output_shape)
                 self.build_output_shape = self.residual_blocks[-1].res_output_shape
+
+        # this is done to force keras to add the layers in the list to self._layers
+        for layer in self.residual_blocks:
+            self.__setattr__(layer.name, layer)
 
         self.lambda_layer = Lambda(lambda tt: tt[:, -1, :1])
         self.lambda_ouput_shape = self.lambda_layer.compute_output_shape(self.build_output_shape)
