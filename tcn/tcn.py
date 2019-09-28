@@ -118,7 +118,10 @@ class ResidualBlock(Layer):
 
         x2 = self.shape_match_conv(inputs)
         x = add([x2, x])
-        return self.final_activation(x), x
+        return [self.final_activation(x), x]
+
+    def compute_output_shape(self, input_shape):
+        return [self.res_output_shape, self.res_output_shape]
 
 
 def process_dilations(dilations):
