@@ -112,7 +112,7 @@ class ResidualBlock(Layer):
         x = inputs
         for layer in self.residual_layers:
             if type(layer) is SpatialDropout1D:
-                x = layer(x, training)
+                x = layer(x, training=training)
             else:
                 x = layer(x)
 
@@ -241,7 +241,7 @@ class TCN(Layer):
         x = self.main_conv1D(x)
         skip_connections = list()
         for layer in self.residual_blocks:
-            x, skip_out = layer(x, training)
+            x, skip_out = layer(x, training=training)
             skip_connections.append(skip_out)
 
         if self.use_skip_connections:
