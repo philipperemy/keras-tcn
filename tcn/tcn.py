@@ -115,7 +115,7 @@ class ResidualBlock(Layer):
         """
         x = inputs
         for layer in self.residual_layers:
-            if type(layer) is SpatialDropout1D:
+            if isinstance(layer, SpatialDropout1D):
                 x = layer(x, training=training)
             else:
                 x = layer(x)
