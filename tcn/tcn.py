@@ -236,7 +236,7 @@ class TCN(Layer):
         for layer in self.residual_blocks:
             self.__setattr__(layer.name, layer)
 
-        self.lambda_layer = Lambda(lambda tt: tt[:, -1, :1])
+        self.lambda_layer = Lambda(lambda tt: tt[:, -1, :])
         self.lambda_ouput_shape = self.lambda_layer.compute_output_shape(self.build_output_shape)
 
     def compute_output_shape(self, input_shape):
