@@ -261,7 +261,7 @@ class TCN(Layer):
         if self.use_skip_connections:
             x = add(skip_connections)
         if not self.return_sequences:
-            x = Lambda(lambda tt: tt[:, -1, :])(x)
+            x = self.lambda_layer(x)
         return x
 
     def get_config(self):
