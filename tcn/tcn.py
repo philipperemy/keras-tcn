@@ -3,7 +3,7 @@ from typing import List, Tuple
 import keras.backend as K
 import keras.layers
 from keras import optimizers
-from keras.engine.topology import Layer
+from keras.layers import Layer
 from keras.layers import Activation, Lambda, add
 from keras.layers import Conv1D, SpatialDropout1D
 from keras.layers import Dense, BatchNormalization
