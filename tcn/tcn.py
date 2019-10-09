@@ -229,7 +229,7 @@ class TCN(Layer):
                 self.build_output_shape = self.residual_blocks[-1].res_output_shape
 
         if self.use_skip_connections:
-            self.residual_blocks[-1].shape_match_conv = Lamba(lambda x: x, name='Identity')
+            self.residual_blocks[-1].shape_match_conv = Lambda(lambda x: x, name='Identity')
 
     def compute_output_shape(self, input_shape):
         """
