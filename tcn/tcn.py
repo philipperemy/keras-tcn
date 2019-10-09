@@ -128,8 +128,8 @@ class ResidualBlock(Layer):
                 x = layer(x)
 
         x2 = self.shape_match_conv(inputs)
-        x = add([x2, x])
-        return [self.final_activation(x), x]
+        res_x = add([x2, x])
+        return [self.final_activation(res_x), x]
 
     def compute_output_shape(self, input_shape):
         return [self.res_output_shape, self.res_output_shape]
