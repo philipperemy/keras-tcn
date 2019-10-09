@@ -100,7 +100,7 @@ class ResidualBlock(Layer):
                                                    kernel_initializer=self.kernel_initializer)
       
             else:
-                 self.shape_match_conv = Lambda(lambda x: x, name=‘identity’)
+                 self.shape_match_conv = Lambda(lambda x: x, name='identity')
 
             self.shape_match_conv.build(input_shape)
             self.res_output_shape = self.shape_match_conv.compute_output_shape(input_shape)
