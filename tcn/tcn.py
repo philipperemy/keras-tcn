@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List
 
 import keras.backend as K
 import keras.layers
@@ -21,6 +21,7 @@ class ResidualBlock(Layer):
                  dropout_rate=0,
                  kernel_initializer='he_normal',
                  use_batch_norm=False,
+                 last_block=True,
                  **kwargs):
 
         # type: (int, int, int, str, str, float, str, bool, dict) -> None
@@ -48,6 +49,7 @@ class ResidualBlock(Layer):
         self.dropout_rate = dropout_rate
         self.use_batch_norm = use_batch_norm
         self.kernel_initializer = kernel_initializer
+        self.last_block = last_block
 
         super(ResidualBlock, self).__init__(**kwargs)
 
@@ -86,17 +88,22 @@ class ResidualBlock(Layer):
                 self._add_and_activate_layer(Activation(self.activation))
                 self._add_and_activate_layer(SpatialDropout1D(rate=self.dropout_rate))
 
-            # 1x1 conv to match the shapes (channel dimension).
-            name = 'conv1D_{}'.format(k+1)
-            with K.name_scope(name):
-                # make and build this layer separately because it directly uses input_shape
-                self.shape_match_conv = Conv1D(filters=self.nb_filters,
-                                               kernel_size=1,
-                                               padding='same',
-                                               name=name,
-                                               kernel_initializer=self.kernel_initializer)
-                self.shape_match_conv.build(input_shape)
-                self.res_output_shape = self.shape_match_conv.compute_output_shape(input_shape)
+            if not self.last_block:
+                # 1x1 conv to match the shapes (channel dimension).
+                name = 'conv1D_{}'.format(k+1)
+                with K.name_scope(name):
+                    # make and build this layer separately because it directly uses input_shape
+                    self.shape_match_conv = Conv1D(filters=self.nb_filters,
+                                                   kernel_size=1,
+                                                   padding='same',
+                                                   name=name,
+                                                   kernel_initializer=self.kernel_initializer)
+      
+            else:
+                 self.shape_match_conv = Lambda(lambda x: x, name=‘identity’)
+
+            self.shape_match_conv.build(input_shape)
+            self.res_output_shape = self.shape_match_conv.compute_output_shape(input_shape)
 
             self.final_activation = Activation(self.activation)
             self.final_activation.build(self.res_output_shape)  # probably isn't necessary
@@ -216,6 +223,9 @@ class TCN(Layer):
 
         # list to hold all the member ResidualBlocks
         self.residual_blocks = list()
+        total_num_blocks = list()
+        if not self.use_skip_connections:
+            total_num_blocks += 1  # cheap way to do a false case for below
 
         for s in range(self.nb_stacks):
             for d in self.dilations:
@@ -227,6 +237,7 @@ class TCN(Layer):
                                                           dropout_rate=self.dropout_rate,
                                                           use_batch_norm=self.use_batch_norm,
                                                           kernel_initializer=self.kernel_initializer,
+                                                          last_block = len(self.residual_blocks)+1 == total_num_blocks,
                                                           name='residual_block_{}'.format(len(self.residual_blocks))))
                 # build newest residual block
                 self.residual_blocks[-1].build(self.build_output_shape)
