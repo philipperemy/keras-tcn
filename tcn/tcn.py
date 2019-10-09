@@ -223,7 +223,7 @@ class TCN(Layer):
 
         # list to hold all the member ResidualBlocks
         self.residual_blocks = list()
-        total_num_blocks = list()
+        total_num_blocks = self.nb_stacks * len(self.dilations)
         if not self.use_skip_connections:
             total_num_blocks += 1  # cheap way to do a false case for below
 
