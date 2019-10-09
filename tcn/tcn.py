@@ -117,8 +117,8 @@ class ResidualBlock(Layer):
                 x = layer(x)
 
         x2 = self.shape_match_conv(inputs)
-        x = add([x2, x])
-        return [self.final_activation(x), x]
+        res_x = add([x2, x])
+        return [self.final_activation(res_x), x]
 
     def compute_output_shape(self, input_shape):
         return [self.res_output_shape, self.res_output_shape]
@@ -227,6 +227,10 @@ class TCN(Layer):
                 # build newest residual block
                 self.residual_blocks[-1].build(self.build_output_shape)
                 self.build_output_shape = self.residual_blocks[-1].res_output_shape
+
+        if self.use_skip_connections:
+            self.residual_blocks[-1].build(self.build_output_shape)
+            self.build_output_shape = self.residual_blocks[-1].res_output_shape
 
     def compute_output_shape(self, input_shape):
         """
