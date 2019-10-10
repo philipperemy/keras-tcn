@@ -83,7 +83,7 @@ class ResidualBlock(Layer):
                     # TODO should be WeightNorm here, but using batchNorm instead
                     self._add_and_activate_layer(BatchNormalization())
 
-                self._add_and_activate_layer(Activation(self.activation))
+                self._add_and_activate_layer(Activation('relu'))
                 self._add_and_activate_layer(SpatialDropout1D(rate=self.dropout_rate))
 
             # 1x1 conv to match the shapes (channel dimension).
