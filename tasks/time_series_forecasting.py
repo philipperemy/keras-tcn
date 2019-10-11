@@ -5,7 +5,7 @@ import pandas as pd
 from keras import Input, Model
 from keras.layers import Dense
 
-from tcn import TCN
+from tcn.keras import TCN
 
 ##
 # It's a very naive (toy) example to show how to do time series forecasting.

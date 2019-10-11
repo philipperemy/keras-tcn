@@ -1,6 +1,6 @@
 import keras
 
-from tcn import compiled_tcn
+from tcn.keras import compiled_tcn
 from utils import data_generator
 
 x_train, y_train = data_generator(601, 10, 30000)

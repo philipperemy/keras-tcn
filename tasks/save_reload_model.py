@@ -4,7 +4,7 @@ import numpy as np
 from keras import Model, Input
 from keras.layers import Dense, Dropout, Embedding
 
-from tcn import TCN
+from tcn.keras import TCN
 
 # simple TCN model.
 max_len = 100

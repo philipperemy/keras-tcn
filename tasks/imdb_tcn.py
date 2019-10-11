@@ -10,7 +10,7 @@ from keras.datasets import imdb
 from keras.layers import Dense, Dropout, Embedding
 from keras.preprocessing import sequence
 
-from tcn import TCN
+from tcn.keras import TCN
 
 max_features = 20000
 # cut texts after this number of words

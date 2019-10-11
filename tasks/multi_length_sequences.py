@@ -2,7 +2,7 @@ import numpy as np
 from keras.layers import Dense
 from keras.models import Input, Model
 
-from tcn import TCN
+from tcn.keras import TCN
 
 # if you increase the sequence length make sure the receptive field of the TCN is big enough.
 MAX_TIME_STEP = 30

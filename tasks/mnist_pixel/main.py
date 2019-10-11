@@ -1,6 +1,6 @@
 from utils import data_generator
 
-from tcn import compiled_tcn
+from tcn.keras import compiled_tcn
 
 
 def run_task():
