@@ -8,7 +8,7 @@ setup(
     license='MIT',
     long_description_content_type='text/markdown',
     long_description=open('README.md').read(),
-    packages=['tcn'],
+    packages=['tcn', 'tcn.tensorflow', 'tcn.keras', 'tcn.hollow_class'],
     # manually install tensorflow or tensorflow-gpu
     install_requires=['numpy',
                       'keras']
