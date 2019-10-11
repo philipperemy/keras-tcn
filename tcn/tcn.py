@@ -1,52 +1,138 @@
-from typing import List, Tuple
+from typing import List
 
 import keras.backend as K
 import keras.layers
 from keras import optimizers
-from keras.engine.topology import Layer
-from keras.layers import Activation, Lambda
+from keras.layers import Layer
+from keras.layers import Activation, Lambda, add
 from keras.layers import Conv1D, SpatialDropout1D
 from keras.layers import Dense, BatchNormalization
 from keras.models import Input, Model
 
 
-def residual_block(x, training, dilation_rate, nb_filters, kernel_size, padding, activation='relu', dropout_rate=0,
-                   kernel_initializer='he_normal', use_batch_norm=False):
-    # type: (Layer, bool, int, int, int, str, str, float, str, bool) -> Tuple[Layer, Layer]
-    """Defines the residual block for the WaveNet TCN
+class ResidualBlock(Layer):
 
-    Args:
-        x: The previous layer in the model
-        training: boolean indicating whether the layer should behave in training mode or in inference mode
-        dilation_rate: The dilation power of 2 we are using for this residual block
-        nb_filters: The number of convolutional filters to use in this block
-        kernel_size: The size of the convolutional kernel
-        padding: The padding used in the convolutional layers, 'same' or 'causal'.
-        activation: The final activation used in o = Activation(x + F(x))
-        dropout_rate: Float between 0 and 1. Fraction of the input units to drop.
-        kernel_initializer: Initializer for the kernel weights matrix (Conv1D).
-        use_batch_norm: Whether to use batch normalization in the residual layers or not.
-    Returns:
-        A tuple where the first element is the residual model layer, and the second
-        is the skip connection.
-    """
-    prev_x = x
-    for k in range(2):
-        x = Conv1D(filters=nb_filters,
-                   kernel_size=kernel_size,
-                   dilation_rate=dilation_rate,
-                   kernel_initializer=kernel_initializer,
-                   padding=padding)(x)
-        if use_batch_norm:
-            x = BatchNormalization()(x)  # TODO should be WeightNorm here, but using batchNorm instead
-        x = Activation('relu')(x)
-        x = SpatialDropout1D(rate=dropout_rate)(inputs=x, training=training)
+    def __init__(self,
+                 dilation_rate,
+                 nb_filters,
+                 kernel_size,
+                 padding,
+                 activation='relu',
+                 dropout_rate=0,
+                 kernel_initializer='he_normal',
+                 use_batch_norm=False,
+                 last_block=True,
+                 **kwargs):
 
-    # 1x1 conv to match the shapes (channel dimension).
-    prev_x = Conv1D(nb_filters, 1, padding='same')(prev_x)
-    res_x = keras.layers.add([prev_x, x])
-    res_x = Activation(activation)(res_x)
-    return res_x, x
+        # type: (int, int, int, str, str, float, str, bool, dict) -> None
+        """Defines the residual block for the WaveNet TCN
+
+        Args:
+            x: The previous layer in the model
+            training: boolean indicating whether the layer should behave in training mode or in inference mode
+            dilation_rate: The dilation power of 2 we are using for this residual block
+            nb_filters: The number of convolutional filters to use in this block
+            kernel_size: The size of the convolutional kernel
+            padding: The padding used in the convolutional layers, 'same' or 'causal'.
+            activation: The final activation used in o = Activation(x + F(x))
+            dropout_rate: Float between 0 and 1. Fraction of the input units to drop.
+            kernel_initializer: Initializer for the kernel weights matrix (Conv1D).
+            use_batch_norm: Whether to use batch normalization in the residual layers or not.
+            kwargs: Any initializers for Layer class.
+        """
+
+        self.dilation_rate = dilation_rate
+        self.nb_filters = nb_filters
+        self.kernel_size = kernel_size
+        self.padding = padding
+        self.activation = activation
+        self.dropout_rate = dropout_rate
+        self.use_batch_norm = use_batch_norm
+        self.kernel_initializer = kernel_initializer
+        self.last_block = last_block
+
+        super(ResidualBlock, self).__init__(**kwargs)
+
+    def _add_and_activate_layer(self, layer):
+        """Helper function for building layer
+
+        Args:
+            layer: Appends layer to internal layer list and builds it based on the current output
+                   shape of ResidualBlock. Updates current output shape.
+
+        """
+        self.residual_layers.append(layer)
+        self.residual_layers[-1].build(self.res_output_shape)
+        self.res_output_shape = self.residual_layers[-1].compute_output_shape(self.res_output_shape)
+
+    def build(self, input_shape):
+
+        with K.name_scope(self.name):  # name scope used to make sure weights get unique names
+            self.residual_layers = list()
+            self.res_output_shape = input_shape
+
+            for k in range(2):
+                name = 'conv1D_{}'.format(k)
+                with K.name_scope(name):  # name scope used to make sure weights get unique names
+                    self._add_and_activate_layer(Conv1D(filters=self.nb_filters,
+                                                        kernel_size=self.kernel_size,
+                                                        dilation_rate=self.dilation_rate,
+                                                        padding=self.padding,
+                                                        name=name,
+                                                        kernel_initializer=self.kernel_initializer))
+
+                if self.use_batch_norm:
+                    # TODO should be WeightNorm here, but using batchNorm instead
+                    self._add_and_activate_layer(BatchNormalization())
+
+                self._add_and_activate_layer(Activation('relu'))
+                self._add_and_activate_layer(SpatialDropout1D(rate=self.dropout_rate))
+
+            if not self.last_block:
+                # 1x1 conv to match the shapes (channel dimension).
+                name = 'conv1D_{}'.format(k+1)
+                with K.name_scope(name):
+                    # make and build this layer separately because it directly uses input_shape
+                    self.shape_match_conv = Conv1D(filters=self.nb_filters,
+                                                   kernel_size=1,
+                                                   padding='same',
+                                                   name=name,
+                                                   kernel_initializer=self.kernel_initializer)
+      
+            else:
+                 self.shape_match_conv = Lambda(lambda x: x, name='identity')
+
+            self.shape_match_conv.build(input_shape)
+            self.res_output_shape = self.shape_match_conv.compute_output_shape(input_shape)
+
+            self.final_activation = Activation(self.activation)
+            self.final_activation.build(self.res_output_shape)  # probably isn't necessary
+
+            # this is done to force keras to add the layers in the list to self._layers
+            for layer in self.residual_layers:
+                self.__setattr__(layer.name, layer)
+
+            super(ResidualBlock, self).build(input_shape)  # done to make sure self.built is set True
+
+    def call(self, inputs, training=None):
+        """
+
+        Returns: A tuple where the first element is the residual model tensor, and the second
+                 is the skip connection tensor.
+        """
+        x = inputs
+        for layer in self.residual_layers:
+            if isinstance(layer, SpatialDropout1D):
+                x = layer(x, training=training)
+            else:
+                x = layer(x)
+
+        x2 = self.shape_match_conv(inputs)
+        res_x = add([x2, x])
+        return [self.final_activation(res_x), x]
+
+    def compute_output_shape(self, input_shape):
+        return [self.res_output_shape, self.res_output_shape]
 
 
 def process_dilations(dilations):
@@ -61,7 +147,7 @@ def process_dilations(dilations):
         return new_dilations
 
 
-class TCN:
+class TCN(Layer):
     """Creates a TCN layer.
 
         Input shape:
@@ -77,9 +163,10 @@ class TCN:
             return_sequences: Boolean. Whether to return the last output in the output sequence, or the full sequence.
             activation: The activation used in the residual blocks o = Activation(x + F(x)).
             dropout_rate: Float between 0 and 1. Fraction of the input units to drop.
-            name: Name of the model. Useful when having multiple TCN.
             kernel_initializer: Initializer for the kernel weights matrix (Conv1D).
             use_batch_norm: Whether to use batch normalization in the residual layers or not.
+            kwargs: Any other arguments for configuring parent class Layer. For example "name=str", Name of the model.
+                    Use unique names when using multiple TCN.
 
         Returns:
             A TCN layer.
@@ -95,10 +182,10 @@ class TCN:
                  dropout_rate=0.0,
                  return_sequences=False,
                  activation='linear',
-                 name='tcn',
                  kernel_initializer='he_normal',
-                 use_batch_norm=False):
-        self.name = name
+                 use_batch_norm=False,
+                 **kwargs):
+
         self.return_sequences = return_sequences
         self.dropout_rate = dropout_rate
         self.use_skip_connections = use_skip_connections
@@ -121,29 +208,92 @@ class TCN:
             print('The alternative is to downgrade to 2.1.2 (pip install keras-tcn==2.1.2).')
             raise Exception()
 
-    def __call__(self, inputs, training=None):
-        x = inputs
-        # 1D FCN.
-        x = Conv1D(self.nb_filters, 1, padding=self.padding, kernel_initializer=self.kernel_initializer)(x)
-        skip_connections = []
+        # initialize parent class
+        super(TCN, self).__init__(**kwargs)
+
+    def build(self, input_shape):
+        self.main_conv1D = Conv1D(filters=self.nb_filters,
+                                  kernel_size=1,
+                                  padding=self.padding,
+                                  kernel_initializer=self.kernel_initializer)
+        self.main_conv1D.build(input_shape)
+
+        # member to hold current output shape of the layer for building purposes
+        self.build_output_shape = self.main_conv1D.compute_output_shape(input_shape)
+
+        # list to hold all the member ResidualBlocks
+        self.residual_blocks = list()
+        total_num_blocks = self.nb_stacks * len(self.dilations)
+        if not self.use_skip_connections:
+            total_num_blocks += 1  # cheap way to do a false case for below
+
         for s in range(self.nb_stacks):
             for d in self.dilations:
-                x, skip_out = residual_block(x,
-                                             training=training,
-                                             dilation_rate=d,
-                                             nb_filters=self.nb_filters,
-                                             kernel_size=self.kernel_size,
-                                             padding=self.padding,
-                                             activation=self.activation,
-                                             dropout_rate=self.dropout_rate,
-                                             kernel_initializer=self.kernel_initializer,
-                                             use_batch_norm=self.use_batch_norm)
-                skip_connections.append(skip_out)
-        if self.use_skip_connections:
-            x = keras.layers.add(skip_connections)
+                self.residual_blocks.append(ResidualBlock(dilation_rate=d,
+                                                          nb_filters=self.nb_filters,
+                                                          kernel_size=self.kernel_size,
+                                                          padding=self.padding,
+                                                          activation=self.activation,
+                                                          dropout_rate=self.dropout_rate,
+                                                          use_batch_norm=self.use_batch_norm,
+                                                          kernel_initializer=self.kernel_initializer,
+                                                          last_block = len(self.residual_blocks)+1 == total_num_blocks,
+                                                          name='residual_block_{}'.format(len(self.residual_blocks))))
+                # build newest residual block
+                self.residual_blocks[-1].build(self.build_output_shape)
+                self.build_output_shape = self.residual_blocks[-1].res_output_shape
+
+        # this is done to force keras to add the layers in the list to self._layers
+        for layer in self.residual_blocks:
+            self.__setattr__(layer.name, layer)
+
+        self.lambda_layer = Lambda(lambda tt: tt[:, -1, :])
+        self.lambda_ouput_shape = self.lambda_layer.compute_output_shape(self.build_output_shape)
+
+    def compute_output_shape(self, input_shape):
+        """
+        Overridden in case keras uses it somewhere... no idea. Just trying to avoid future errors.
+        """
+        if not self.built:
+            self.build(input_shape)
         if not self.return_sequences:
-            x = Lambda(lambda tt: tt[:, -1, :])(x)
+            return self.lambda_ouput_shape
+        else:
+            return self.build_output_shape
+
+    def call(self, inputs, training=None):
+        x = inputs
+        x = self.main_conv1D(x)
+        skip_connections = list()
+        for layer in self.residual_blocks:
+            x, skip_out = layer(x, training=training)
+            skip_connections.append(skip_out)
+
+        if self.use_skip_connections:
+            x = add(skip_connections)
+        if not self.return_sequences:
+            x = self.lambda_layer(x)
         return x
+
+    def get_config(self):
+        """
+        Returns the config of a the layer. This is used for saving and loading from a model
+        :return: python dictionary with specs to rebuild layer
+        """
+        config = super(TCN, self).get_config()
+        config['nb_filters'] = self.nb_filters
+        config['kernel_size'] = self.kernel_size
+        config['nb_stacks'] = self.nb_stacks
+        config['dilations'] = self.dilations
+        config['padding'] = self.padding
+        config['use_skip_connections'] = self.use_skip_connections
+        config['dropout_rate'] = self.dropout_rate
+        config['return_sequences'] = self.return_sequences
+        config['activation'] = self.activation
+        config['use_batch_norm'] = self.use_batch_norm
+        config['kernel_initializer'] = self.kernel_initializer
+
+        return config
 
 
 def compiled_tcn(num_feat,  # type: int
@@ -197,7 +347,7 @@ def compiled_tcn(num_feat,  # type: int
 
     x = TCN(nb_filters, kernel_size, nb_stacks, dilations, padding,
             use_skip_connections, dropout_rate, return_sequences,
-            activation, name, kernel_initializer, use_batch_norm)(input_layer)
+            activation, kernel_initializer, use_batch_norm, name=name)(input_layer)
 
     print('x.shape=', x.shape)
 
