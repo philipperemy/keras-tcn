@@ -112,3 +112,5 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+!/tasks/exchange_rate/exchange_rate.txt
