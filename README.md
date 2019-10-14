@@ -96,7 +96,7 @@ model.fit(x, y) # Keras model.
 
 ### Arguments
 
-`TCN(nb_filters=64, kernel_size=2, nb_stacks=1, dilations=[1, 2, 4, 8, 16, 32], padding='causal', use_skip_connections=True, dropout_rate=0.0, return_sequences=True, activation='linear', name='tcn', kernel_initializer='he_normal', use_batch_norm=False)`
+`TCN(nb_filters=64, kernel_size=2, nb_stacks=1, dilations=[1, 2, 4, 8, 16, 32], padding='causal', use_skip_connections=True, dropout_rate=0.0, return_sequences=True, activation='linear', kernel_initializer='he_normal', use_batch_norm=False, **kwargs)`
 
 - `nb_filters`: Integer. The number of filters to use in the convolutional layers. Would be similar to `units` for LSTM.
 - `kernel_size`: Integer. The size of the kernel to use in each convolutional layer.
@@ -107,9 +107,9 @@ model.fit(x, y) # Keras model.
 - `return_sequences`: Boolean. Whether to return the last output in the output sequence, or the full sequence.
 - `dropout_rate`: Float between 0 and 1. Fraction of the input units to drop.
 - `activation`: The activation used in the residual blocks o = activation(x + F(x)).
-- `name`: Name of the model. Useful when having multiple TCN.
 - `kernel_initializer`: Initializer for the kernel weights matrix (Conv1D).
 - `use_batch_norm`: Whether to use batch normalization in the residual layers or not.
+- `kwargs`: Any other arguments for configuring parent class Layer. For example "name=str", Name of the model. Use unique names when using multiple TCN.
 
 ### Input shape
 
