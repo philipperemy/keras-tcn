@@ -6,6 +6,7 @@ Based on: https://github.com/keras-team/keras/blob/master/examples/imdb_bidirect
 """
 import numpy as np
 from keras import Sequential
+from keras.callbacks import Callback
 from keras.datasets import imdb
 from keras.layers import Dense, Dropout, Embedding
 from keras.preprocessing import sequence
@@ -44,8 +45,17 @@ model.summary()
 # try using different optimizers and different optimizer configs
 model.compile('adam', 'binary_crossentropy', metrics=['accuracy'])
 
+
+class TestCallback(Callback):
+
+    def on_epoch_end(self, epoch, logs=None):
+        print(logs)
+        assert logs['val_accuracy'] > 0.78
+
+
 print('Train...')
 model.fit(x_train, y_train,
           batch_size=batch_size,
           epochs=1,
-          validation_data=[x_test, y_test])
+          validation_data=[x_test, y_test],
+          callbacks=[TestCallback()])
