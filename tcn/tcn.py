@@ -98,7 +98,7 @@ class ResidualBlock(Layer):
                                                    padding='same',
                                                    name=name,
                                                    kernel_initializer=self.kernel_initializer)
-      
+
             else:
                  self.shape_match_conv = Lambda(lambda x: x, name='identity')
 
@@ -303,6 +303,7 @@ def compiled_tcn(num_feat,  # type: int
                  dilations,  # type: List[int]
                  nb_stacks,  # type: int
                  max_len,  # type: int
+                 output_len=1, #type: int
                  padding='causal',  # type: str
                  use_skip_connections=True,  # type: bool
                  return_sequences=True,
@@ -381,7 +382,7 @@ def compiled_tcn(num_feat,  # type: int
         model.compile(get_opt(), loss='sparse_categorical_crossentropy', metrics=[accuracy])
     else:
         # regression
-        x = Dense(1)(x)
+        x = Dense(output_len)(x)
         x = Activation('linear')(x)
         output_layer = x
         model = Model(input_layer, output_layer)
