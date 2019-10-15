@@ -281,6 +281,14 @@ The idea here is to consider MNIST images as 1-D sequences and feed them to the 
 60000/60000 [==============================] - 111s 2ms/step - loss: 0.0093 - acc: 0.9968 - val_loss: 0.0585 - val_acc: 0.9895
 ```
 
+## Testing
+
+Testing is based on Tox.
+
+```
+pip install tox
+tox
+```
 
 ## References
 - https://github.com/locuslab/TCN/ (TCN for Pytorch)
@@ -290,3 +298,4 @@ for Sequence Modeling)
 
 ## Useful links
 - https://github.com/Baichenjia/Tensorflow-TCN (Tensorflow Eager implementation of TCNs)
+
