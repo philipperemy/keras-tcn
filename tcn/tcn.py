@@ -4,13 +4,13 @@ from tensorflow.keras import optimizers
 from tensorflow.keras.layers import Layer
 from tensorflow.keras.layers import Activation, Lambda, add
 from tensorflow.keras.layers import Conv1D, SpatialDropout1D
-from tensorflow.keras.layers import Convolution1D, Dense, BatchNormalization
+from tensorflow.keras.layers import Convolution1D, Dense, BatchNormalization, LayerNormalization
 from tensorflow.keras.layers import Input
 from tensorflow.keras import Model
 
 
 def residual_block(x, dilation_rate, nb_filters, kernel_size, padding, activation='relu', dropout_rate=0,
-                   use_batch_norm=False):
+                   use_batch_norm=False, use_layer_norm=False):
     # type: (Layer, int, int, int, str, str, float, bool) -> Tuple[Layer, Layer]
     """Defines the residual block for the WaveNet TCN
 
@@ -23,6 +23,7 @@ def residual_block(x, dilation_rate, nb_filters, kernel_size, padding, activatio
         activation: The final activation used in o = Activation(x + F(x))
         dropout_rate: Float between 0 and 1. Fraction of the input units to drop.
         use_batch_norm: Whether to use batch normalization in the residual layers or not.
+        use_layer_norm: Whether to use layer normalization in the residual layers or not.
     Returns:
         A tuple where the first element is the residual model layer, and the second
         is the skip connection.
@@ -35,6 +36,8 @@ def residual_block(x, dilation_rate, nb_filters, kernel_size, padding, activatio
                    padding=padding)(x)
         if use_batch_norm:
             x = BatchNormalization()(x)  # TODO should be WeightNorm here, but using batchNorm instead
+        elif use_layer_norm:
+            x = LayerNormalization()(x)
         x = Activation('relu')(x)
         x = SpatialDropout1D(rate=dropout_rate)(x)
 
@@ -75,7 +78,7 @@ class TCN:
             dropout_rate: Float between 0 and 1. Fraction of the input units to drop.
             name: Name of the model. Useful when having multiple TCN.
             use_batch_norm: Whether to use batch normalization in the residual layers or not.
-
+            use_layer_norm: Whether to use layer normalization in the residual layers or not.
         Returns:
             A TCN layer.
         """
@@ -91,7 +94,8 @@ class TCN:
                  return_sequences=False,
                  activation='linear',
                  name='tcn',
-                 use_batch_norm=False):
+                 use_batch_norm=False,
+                 use_layer_norm=False):
         self.name = name
         self.return_sequences = return_sequences
         self.dropout_rate = dropout_rate
@@ -103,6 +107,7 @@ class TCN:
         self.activation = activation
         self.padding = padding
         self.use_batch_norm = use_batch_norm
+        self.use_layer_norm = use_layer_norm
 
         if padding != 'causal' and padding != 'same':
             raise ValueError("Only 'causal' or 'same' padding are compatible for this layer.")
@@ -128,7 +133,8 @@ class TCN:
                                              padding=self.padding,
                                              activation=self.activation,
                                              dropout_rate=self.dropout_rate,
-                                             use_batch_norm=self.use_batch_norm)
+                                             use_batch_norm=self.use_batch_norm,
+                                             use_layer_norm=self.use_layer_norm)
                 skip_connections.append(skip_out)
         if self.use_skip_connections:
             x = add(skip_connections)
@@ -153,7 +159,8 @@ def compiled_tcn(num_feat,  # type: int
                  activation='linear',  # type:str,
                  opt='adam',
                  lr=0.002,
-                 use_batch_norm=False):
+                 use_batch_norm=False,
+                 use_layer_norm=False):
     # type: (...) -> keras.Model
     """Creates a compiled TCN model for a given task (i.e. regression or classification).
     Classification uses a sparse categorical loss. Please input class ids and not one-hot encodings.
@@ -176,6 +183,7 @@ def compiled_tcn(num_feat,  # type: int
         opt: Optimizer name.
         lr: Learning rate.
         use_batch_norm: Whether to use batch normalization in the residual layers or not.
+        use_layer_norm: Whether to use layer normalization in the residual layers or not.
     Returns:
         A compiled keras TCN.
     """
@@ -186,7 +194,7 @@ def compiled_tcn(num_feat,  # type: int
 
     x = TCN(nb_filters, kernel_size, nb_stacks, dilations, padding,
             use_skip_connections, dropout_rate, return_sequences,
-            activation, name, use_batch_norm)(input_layer)
+            activation, name, use_batch_norm, use_layer_norm)(input_layer)
 
     print('x.shape=', x.shape)
 
