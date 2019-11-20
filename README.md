@@ -45,7 +45,7 @@ pip install keras-tcn
 
 ## API
 
-The usual way is to import the TCN layer and use it inside a Keras model. I provide a snippet below to illustrate it on a regression task (cf. `tasks/` for other examples):
+The usual way is to import the TCN layer and use it inside a Keras model. An example is provided below for a regression task (cf. `tasks/` for other examples):
 
 ```python
 from keras.layers import Dense
@@ -85,7 +85,7 @@ o = TCN(return_sequences=True)(i)
 o = TCN(return_sequences=False)(o)
 ```
 
-I also provide a ready to use TCN model that can be imported and used this way (cf. `tasks/` for the full code):
+A ready-to-use TCN model can be used that way (cf. `tasks/` for the full code):
 
 ```python
 from tcn import compiled_tcn
@@ -96,7 +96,7 @@ model.fit(x, y) # Keras model.
 
 ### Arguments
 
-`TCN(nb_filters=64, kernel_size=2, nb_stacks=1, dilations=[1, 2, 4, 8, 16, 32], padding='causal', use_skip_connections=True, dropout_rate=0.0, return_sequences=True, name='tcn')`
+`TCN(nb_filters=64, kernel_size=2, nb_stacks=1, dilations=[1, 2, 4, 8, 16, 32], padding='causal', use_skip_connections=True, dropout_rate=0.0, return_sequences=True, activation='linear', kernel_initializer='he_normal', use_batch_norm=False, **kwargs)`
 
 - `nb_filters`: Integer. The number of filters to use in the convolutional layers. Would be similar to `units` for LSTM.
 - `kernel_size`: Integer. The size of the kernel to use in each convolutional layer.
@@ -106,7 +106,10 @@ model.fit(x, y) # Keras model.
 - `use_skip_connections`: Boolean. If we want to add skip connections from input to each residual block.
 - `return_sequences`: Boolean. Whether to return the last output in the output sequence, or the full sequence.
 - `dropout_rate`: Float between 0 and 1. Fraction of the input units to drop.
-- `name`: Name of the model. Useful when having multiple TCN.
+- `activation`: The activation used in the residual blocks o = activation(x + F(x)).
+- `kernel_initializer`: Initializer for the kernel weights matrix (Conv1D).
+- `use_batch_norm`: Whether to use batch normalization in the residual layers or not.
+- `kwargs`: Any other arguments for configuring parent class Layer. For example "name=str", Name of the model. Use unique names when using multiple TCN.
 
 ### Input shape
 
@@ -152,7 +155,7 @@ For a Many to Many regression, a cheap fix for now is to change the [number of u
   <b>ks = 2, dilations = [1, 2, 4, 8], 3 blocks</b><br><br>
 </p>
 
-Thanks a lot to [@alextheseal](https://github.com/alextheseal) for providing such visuals.
+Thanks to [@alextheseal](https://github.com/alextheseal) for providing such visuals.
 
 ### Non-causal TCN
 
@@ -196,6 +199,10 @@ python main.py # run copy memory task
 cd mnist_pixel/
 python main.py # run sequential mnist pixel task
 ```
+
+## Reproducible results
+
+Reproducible results are possible on (NVIDIA) GPUs using the [tensorflow-determinism](https://github.com/NVIDIA/tensorflow-determinism) library. It was tested with keras-tcn by @lingdoc and he got reproducible results.
 
 ## Tasks
 
@@ -278,6 +285,14 @@ The idea here is to consider MNIST images as 1-D sequences and feed them to the 
 60000/60000 [==============================] - 111s 2ms/step - loss: 0.0093 - acc: 0.9968 - val_loss: 0.0585 - val_acc: 0.9895
 ```
 
+## Testing
+
+Testing is based on Tox.
+
+```
+pip install tox
+tox
+```
 
 ## References
 - https://github.com/locuslab/TCN/ (TCN for Pytorch)
@@ -288,5 +303,3 @@ for Sequence Modeling)
 ## Useful links
 - https://github.com/Baichenjia/Tensorflow-TCN (Tensorflow Eager implementation of TCNs)
 
-### Repo views (since 2018/10/30)
-[![HitCount](http://hits.dwyl.io/philipperemy/keras-tcn.svg)](http://hits.dwyl.io/philipperemy/keras-tcn)
