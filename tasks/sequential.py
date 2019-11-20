@@ -5,11 +5,11 @@ Time per epoch on CPU (Core i7): ~64s.
 Based on: https://github.com/keras-team/keras/blob/master/examples/imdb_bidirectional_lstm.py
 """
 import numpy as np
-from keras import Sequential
-from keras.callbacks import Callback
-from keras.datasets import imdb
-from keras.layers import Dense, Dropout, Embedding
-from keras.preprocessing import sequence
+from tensorflow.keras import Sequential
+from tensorflow.keras.callbacks import Callback
+from tensorflow.keras.datasets import imdb
+from tensorflow.keras.layers import Dense, Dropout, Embedding
+from tensorflow.keras.preprocessing import sequence
 
 from tcn import TCN
 
@@ -50,7 +50,8 @@ class TestCallback(Callback):
 
     def on_epoch_end(self, epoch, logs=None):
         print(logs)
-        assert logs['val_accuracy'] > 0.78
+        acc_key = 'val_accuracy' if 'val_accuracy' in logs else 'val_acc'
+        assert logs[acc_key] > 0.78
 
 
 print('Train...')
