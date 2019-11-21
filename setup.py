@@ -13,6 +13,6 @@ setup(
     install_requires=[
         'numpy==1.16.2',
         'keras',
-        'gast==0.2.2'
+        'gast==0.3.2'
     ]
 )
