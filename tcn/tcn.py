@@ -5,8 +5,8 @@ from tensorflow.keras import layers
 from tensorflow.keras.layers import Activation, SpatialDropout1D, Lambda
 from tensorflow.keras.layers import Layer
 from tensorflow.keras.layers import Conv1D
-from tensorflow.layers.core import Dense
-from tensorflow.layers.normalization import BatchNormalization
+from tensorflow.keras.layers.core import Dense
+from tensorflow.keras.layers.normalization import BatchNormalization
 
 
 class ResidualBlock(Layer):
