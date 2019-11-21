@@ -1,6 +1,6 @@
 import numpy as np
 from keras.models import Sequential, model_from_json
-from keras.layers import Dense, Dropout, Embedding
+from keras.layers import Dense, Embedding
 from tcn import TCN
 
 # define input shape
