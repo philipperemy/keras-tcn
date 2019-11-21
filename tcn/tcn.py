@@ -1,13 +1,12 @@
 from typing import List
 
-import keras.backend as K
-import keras.layers
-from keras import optimizers
-from keras.layers import Layer
-from keras.layers import Activation, Lambda, add
-from keras.layers import Conv1D, SpatialDropout1D
-from keras.layers import Dense, BatchNormalization
-from keras.models import Input, Model
+from tensorflow.keras import backend as K, Model, Input, optimizers
+from tensorflow.keras import layers
+from tensorflow.keras.layers import Activation, SpatialDropout1D, Lambda
+from tensorflow.keras.layers import Layer
+from tensorflow.python.keras.layers import Conv1D
+from tensorflow.python.layers.core import Dense
+from tensorflow.python.layers.normalization import BatchNormalization
 
 
 class ResidualBlock(Layer):
@@ -58,7 +57,7 @@ class ResidualBlock(Layer):
 
         Args:
             layer: Appends layer to internal layer list and builds it based on the current output
-                   shape of ResidualBlock. Updates current output shape.
+                   shape of ResidualBlocK. Updates current output shape.
 
         """
         self.residual_layers.append(layer)
@@ -90,7 +89,7 @@ class ResidualBlock(Layer):
 
             if not self.last_block:
                 # 1x1 conv to match the shapes (channel dimension).
-                name = 'conv1D_{}'.format(k+1)
+                name = 'conv1D_{}'.format(k + 1)
                 with K.name_scope(name):
                     # make and build this layer separately because it directly uses input_shape
                     self.shape_match_conv = Conv1D(filters=self.nb_filters,
@@ -100,7 +99,7 @@ class ResidualBlock(Layer):
                                                    kernel_initializer=self.kernel_initializer)
 
             else:
-                 self.shape_match_conv = Lambda(lambda x: x, name='identity')
+                self.shape_match_conv = Lambda(lambda x: x, name='identity')
 
             self.shape_match_conv.build(input_shape)
             self.res_output_shape = self.shape_match_conv.compute_output_shape(input_shape)
@@ -128,7 +127,7 @@ class ResidualBlock(Layer):
                 x = layer(x)
 
         x2 = self.shape_match_conv(inputs)
-        res_x = add([x2, x])
+        res_x = layers.add([x2, x])
         return [self.final_activation(res_x), x]
 
     def compute_output_shape(self, input_shape):
@@ -159,7 +158,7 @@ class TCN(Layer):
             dilations: The list of the dilations. Example is: [1, 2, 4, 8, 16, 32, 64].
             nb_stacks : The number of stacks of residual blocks to use.
             padding: The padding to use in the convolutional layers, 'causal' or 'same'.
-            use_skip_connections: Boolean. If we want to add skip connections from input to each residual block.
+            use_skip_connections: Boolean. If we want to add skip connections from input to each residual blocK.
             return_sequences: Boolean. Whether to return the last output in the output sequence, or the full sequence.
             activation: The activation used in the residual blocks o = Activation(x + F(x)).
             dropout_rate: Float between 0 and 1. Fraction of the input units to drop.
@@ -237,7 +236,7 @@ class TCN(Layer):
                                                           dropout_rate=self.dropout_rate,
                                                           use_batch_norm=self.use_batch_norm,
                                                           kernel_initializer=self.kernel_initializer,
-                                                          last_block = len(self.residual_blocks)+1 == total_num_blocks,
+                                                          last_block=len(self.residual_blocks) + 1 == total_num_blocks,
                                                           name='residual_block_{}'.format(len(self.residual_blocks))))
                 # build newest residual block
                 self.residual_blocks[-1].build(self.build_output_shape)
@@ -270,7 +269,7 @@ class TCN(Layer):
             skip_connections.append(skip_out)
 
         if self.use_skip_connections:
-            x = add(skip_connections)
+            x = layers.add(skip_connections)
         if not self.return_sequences:
             x = self.lambda_layer(x)
         return x
@@ -303,7 +302,7 @@ def compiled_tcn(num_feat,  # type: int
                  dilations,  # type: List[int]
                  nb_stacks,  # type: int
                  max_len,  # type: int
-                 output_len=1, #type: int
+                 output_len=1,  # type: int
                  padding='causal',  # type: str
                  use_skip_connections=True,  # type: bool
                  return_sequences=True,
@@ -328,7 +327,7 @@ def compiled_tcn(num_feat,  # type: int
         nb_stacks : The number of stacks of residual blocks to use.
         max_len: The maximum sequence length, use None if the sequence length is dynamic.
         padding: The padding to use in the convolutional layers.
-        use_skip_connections: Boolean. If we want to add skip connections from input to each residual block.
+        use_skip_connections: Boolean. If we want to add skip connections from input to each residual blocK.
         return_sequences: Boolean. Whether to return the last output in the output sequence, or the full sequence.
         regression: Whether the output should be continuous or discrete.
         dropout_rate: Float between 0 and 1. Fraction of the input units to drop.
