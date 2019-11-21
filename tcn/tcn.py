@@ -310,7 +310,7 @@ def compiled_tcn(num_feat,  # type: int
                  opt='adam',
                  lr=0.002,
                  use_batch_norm=False):
-    # type: (...) -> tensorflow.keras.Model
+    # type: (...) -> Model
     """Creates a compiled TCN model for a given task (i.e. regression or classification).
     Classification uses a sparse categorical loss. Please input class ids and not one-hot encodings.
 

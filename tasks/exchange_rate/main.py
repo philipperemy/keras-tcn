@@ -4,7 +4,9 @@ from sklearn.metrics import mean_squared_error
 import numpy as np
 
 # dataset source: https://github.com/laiguokun/multivariate-time-series-data
-# exchange rate: the collection of the daily exchange rates of eight foreign countries including Australia, British, Canada, Switzerland, China, Japan, New Zealand and Singapore ranging from 1990 to 2016.
+# exchange rate: the collection of the daily exchange rates of eight foreign countries 
+# including Australia, British, Canada, Switzerland, China, Japan, New Zealand and
+# Singapore ranging from 1990 to 2016.
 # task: predict multi-column daily exchange rate from history
 
 folds, enc = get_xy_kfolds()
