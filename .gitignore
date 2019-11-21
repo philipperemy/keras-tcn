@@ -5,6 +5,7 @@ __pycache__/
 .idea/
 .DS_Store
 
+*.h5
 *.tsv
 *.tar.gz
 *out*

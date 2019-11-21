@@ -200,6 +200,10 @@ cd mnist_pixel/
 python main.py # run sequential mnist pixel task
 ```
 
+## Reproducible results
+
+Reproducible results are possible on (NVIDIA) GPUs using the [tensorflow-determinism](https://github.com/NVIDIA/tensorflow-determinism) library. It was tested with keras-tcn by @lingdoc and he got reproducible results.
+
 ## Tasks
 
 ### Adding Task
