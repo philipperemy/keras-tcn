@@ -4,9 +4,9 @@ from tensorflow.keras import backend as K, Model, Input, optimizers
 from tensorflow.keras import layers
 from tensorflow.keras.layers import Activation, SpatialDropout1D, Lambda
 from tensorflow.keras.layers import Layer
-from tensorflow.python.keras.layers import Conv1D
-from tensorflow.python.layers.core import Dense
-from tensorflow.python.layers.normalization import BatchNormalization
+from tensorflow.keras.layers import Conv1D
+from tensorflow.layers.core import Dense
+from tensorflow.layers.normalization import BatchNormalization
 
 
 class ResidualBlock(Layer):
