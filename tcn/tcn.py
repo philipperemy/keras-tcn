@@ -2,11 +2,7 @@ from typing import List
 
 from tensorflow.keras import backend as K, Model, Input, optimizers
 from tensorflow.keras import layers
-from tensorflow.keras.layers import Activation, SpatialDropout1D, Lambda
-from tensorflow.keras.layers import Layer
-from tensorflow.keras.layers import Conv1D
-from tensorflow.keras.layers.core import Dense
-from tensorflow.keras.layers.normalization import BatchNormalization
+from tensorflow.keras.layers import Activation, SpatialDropout1D, Lambda, Layer, Conv1D, Dense, BatchNormalization
 
 
 class ResidualBlock(Layer):
