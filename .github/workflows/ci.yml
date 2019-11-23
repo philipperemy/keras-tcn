@@ -1,4 +1,4 @@
-name: Python package
+name: Keras TCN CI
 
 on: [push]
 
