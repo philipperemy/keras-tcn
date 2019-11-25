@@ -2,8 +2,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from keras import Input, Model
-from keras.layers import Dense
+from tensorflow.keras import Input, Model
+from tensorflow.keras.layers import Dense
 
 from tcn import TCN
 

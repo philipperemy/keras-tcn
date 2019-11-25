@@ -1,7 +1,7 @@
 import numpy as np
 from keras.models import Sequential, model_from_json
-from keras.layers import Dense, Dropout, Embedding
-from tcn.tcn import TCN
+from keras.layers import Dense, Embedding
+from tcn import TCN
 
 # define input shape
 max_len = 100
