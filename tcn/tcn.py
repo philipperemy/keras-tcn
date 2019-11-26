@@ -294,6 +294,7 @@ class TCN(Layer):
         config['return_sequences'] = self.return_sequences
         config['activation'] = self.activation
         config['use_batch_norm'] = self.use_batch_norm
+        config['use_layer_norm'] = self.use_layer_norm
         config['kernel_initializer'] = self.kernel_initializer
 
         return config
