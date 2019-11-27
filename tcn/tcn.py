@@ -21,7 +21,7 @@ class ResidualBlock(Layer):
                  last_block=True,
                  **kwargs):
 
-        # type: (int, int, int, str, str, float, str, bool, bool, dict) -> None
+        # type: (int, int, int, str, str, float, str, bool, bool, bool, dict) -> None
         """Defines the residual block for the WaveNet TCN
 
         Args:
@@ -250,7 +250,9 @@ class TCN(Layer):
         for layer in self.residual_blocks:
             self.__setattr__(layer.name, layer)
 
-        self.lambda_layer = Lambda(lambda tt: tt[:, -1, :])
+        # Author: @karolbadowski.
+        output_slice_index = int(self.build_output_shape.as_list()[1] / 2) if self.padding == 'same' else -1
+        self.lambda_layer = Lambda(lambda tt: tt[:, output_slice_index, :])
         self.lambda_ouput_shape = self.lambda_layer.compute_output_shape(self.build_output_shape)
 
     def compute_output_shape(self, input_shape):
