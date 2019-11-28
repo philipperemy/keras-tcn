@@ -31,4 +31,4 @@ jobs:
     - name: Test with tox
       run: |
         pip install tox
-        tox --parallel all
+        tox
