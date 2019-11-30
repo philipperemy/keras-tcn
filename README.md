@@ -20,6 +20,7 @@ pip install keras-tcn
          * [Non-causal TCN](#non-causal-tcn)
       * [Installation (Python 3)](#installation-python-3)
       * [Run](#run)
+      * [Reproducible results](#reproducible-results)
       * [Tasks](#tasks)
          * [Adding Task](#adding-task)
             * [Explanation](#explanation)
@@ -30,7 +31,9 @@ pip install keras-tcn
          * [Sequential MNIST](#sequential-mnist)
             * [Explanation](#explanation-2)
             * [Implementation results](#implementation-results-1)
+      * [Testing](#testing)
       * [References](#references)
+      * [Useful links](#useful-links)
 
 ## Why Temporal Convolutional Network?
 
