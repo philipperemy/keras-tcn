@@ -33,7 +33,7 @@ pip install keras-tcn
             * [Implementation results](#implementation-results-1)
       * [Testing](#testing)
       * [References](#references)
-      * [Useful links](#useful-links)
+      * [Related](#related)
 
 ## Why Temporal Convolutional Network?
 
@@ -303,6 +303,6 @@ tox
 for Sequence Modeling)
 - https://arxiv.org/pdf/1609.03499.pdf (Original Wavenet paper)
 
-## Useful links
+## Related
 - https://github.com/Baichenjia/Tensorflow-TCN (Tensorflow Eager implementation of TCNs)
 
