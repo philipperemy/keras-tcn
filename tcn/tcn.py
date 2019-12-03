@@ -268,7 +268,15 @@ class TCN(Layer):
 
     def call(self, inputs, training=None):
         x = inputs
-        x = self.main_conv1D(x)
+        try:
+            x = self.main_conv1D(x)
+        except AttributeError as e:
+            print('The backend of keras-tcn>=2.9.2 changed from keras to tensorflow.keras.')
+            print('Either update your imports:\n- From "from keras.layers import <LayerName>" '
+                  '\n- To "from tensorflow.keras.layers import <LayerName>"')
+            print('Or downgrade to 2.8.3 by running "pip install keras-tcn==2.8.3"')
+            import sys
+            sys.exit(0)
         skip_connections = list()
         for layer in self.residual_blocks:
             x, skip_out = layer(x, training=training)
