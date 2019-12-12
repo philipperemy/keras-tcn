@@ -51,8 +51,8 @@ pip install keras-tcn
 The usual way is to import the TCN layer and use it inside a Keras model. An example is provided below for a regression task (cf. `tasks/` for other examples):
 
 ```python
-from keras.layers import Dense
-from keras.models import Input, Model
+from tensorflow.keras.layers import Dense
+from tensorflow.keras import Input, Model
 
 from tcn import TCN
 
