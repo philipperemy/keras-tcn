@@ -270,7 +270,7 @@ class TCN(Layer):
         x = inputs
         try:
             x = self.main_conv1D(x)
-        except AttributeError as e:
+        except AttributeError:
             print('The backend of keras-tcn>=2.9.2 changed from keras to tensorflow.keras.')
             print('Either update your imports:\n- From "from keras.layers import <LayerName>" '
                   '\n- To "from tensorflow.keras.layers import <LayerName>"')
