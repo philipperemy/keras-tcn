@@ -4,6 +4,7 @@ Output after 1 epochs on CPU: ~0.8611
 Time per epoch on CPU (Core i7): ~64s.
 Based on: https://github.com/keras-team/keras/blob/master/examples/imdb_bidirectional_lstm.py
 """
+import keract
 import numpy as np
 from tensorflow.keras import Sequential
 from tensorflow.keras.callbacks import Callback
@@ -32,18 +33,33 @@ print('x_test shape:', x_test.shape)
 y_train = np.array(y_train)
 y_test = np.array(y_test)
 
+tcn = TCN(nb_filters=64,
+          kernel_size=6,
+          dilations=[1, 2, 4, 8, 16, 32, 64])
 model = Sequential()
 model.add(Embedding(max_features, 128, input_shape=(maxlen,)))
-model.add(TCN(nb_filters=64,
-              kernel_size=6,
-              dilations=[1, 2, 4, 8, 16, 32, 64]))
+model.add(tcn)
 model.add(Dropout(0.5))
 model.add(Dense(1, activation='sigmoid'))
 
+nodes = tcn.skip_connections
+
+model.compile('adam', 'binary_crossentropy', metrics=['accuracy'])
+
+nodes = list(tcn.residual_blocks[0].layers_outputs)[-1], list(tcn.layers_outputs)[2]
+
+# define layers before a first evaluation.
+hello = list(tcn.layers_outputs)
+
+model.predict_on_batch(x_train[0:1])
+
+keract.get_activations(model, x_train[0:1], nodes_to_evaluate=nodes)
+keract.get_activations(model, x_train[0:1], nodes_to_evaluate=hello)
+
 model.summary()
 
+
 # try using different optimizers and different optimizer configs
-model.compile('adam', 'binary_crossentropy', metrics=['accuracy'])
 
 
 class TestCallback(Callback):
