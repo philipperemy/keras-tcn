@@ -6,6 +6,18 @@ from tensorflow.keras.layers import Activation, SpatialDropout1D, Lambda
 from tensorflow.keras.layers import Layer, Conv1D, Dense, BatchNormalization, LayerNormalization
 
 
+def is_power_of_two(num):
+    return num != 0 and ((num & (num - 1)) == 0)
+
+
+def adjust_dilations(dilations):
+    if all([is_power_of_two(i) for i in dilations]):
+        return dilations
+    else:
+        new_dilations = [2 ** i for i in dilations]
+        return new_dilations
+
+
 class ResidualBlock(Layer):
 
     def __init__(self,
@@ -143,17 +155,6 @@ class ResidualBlock(Layer):
         return [self.res_output_shape, self.res_output_shape]
 
 
-def adjust_dilations(dilations):
-    def is_power_of_two(num):
-        return num != 0 and ((num & (num - 1)) == 0)
-
-    if all([is_power_of_two(i) for i in dilations]):
-        return dilations
-    else:
-        new_dilations = [2 ** i for i in dilations]
-        return new_dilations
-
-
 class TCN(Layer):
     """Creates a TCN layer.
 
@@ -225,6 +226,8 @@ class TCN(Layer):
 
     @property
     def receptive_field(self):
+        assert_msg = 'The receptive field formula works only with power of two dilations.'
+        assert all([is_power_of_two(i) for i in self.dilations]), assert_msg
         return self.kernel_size * self.nb_stacks * self.dilations[-1]
 
     def build(self, input_shape):
