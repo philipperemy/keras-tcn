@@ -11,7 +11,7 @@ setup(
     packages=['tcn'],
     # manually install tensorflow or tensorflow-gpu
     install_requires=[
-        'numpy>=1.16.2',
+        'numpy>=1.18.1',
         'keras>=2.3.1',
         'gast==0.2.2'
     ]
