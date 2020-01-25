@@ -16,7 +16,7 @@ def data_generator(t, mem_length, b_size):
 
     x = np.array(np.concatenate((seq, zeros[:, :-1], marker), 1), dtype=int)
     y = np.array(np.concatenate((placeholders, zeros, seq), 1), dtype=int)
-    return np.expand_dims(x, axis=2), np.expand_dims(y, axis=2)
+    return np.expand_dims(x, axis=2).astype(np.float32), np.expand_dims(y, axis=2).astype(np.float32)
 
 
 if __name__ == '__main__':

@@ -48,7 +48,7 @@ def run_task():
 
     test_acc = model.evaluate(x=x_test, y=y_test)[1]  # accuracy.
     with open(f'copy_memory_{str(uuid4())[0:5]}.txt', 'w') as w:
-        w.write(str(test_acc))
+        w.write(str(test_acc) + '\n')
 
 
 if __name__ == '__main__':

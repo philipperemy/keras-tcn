@@ -44,7 +44,7 @@ def run_task():
 
     test_acc = model.evaluate(x=x_test, y=y_test)[0]  # loss.
     with open(f'adding_problem_{str(uuid4())[0:5]}.txt', 'w') as w:
-        w.write(str(test_acc))
+        w.write(str(test_acc) + '\n')
 
 
 if __name__ == '__main__':
