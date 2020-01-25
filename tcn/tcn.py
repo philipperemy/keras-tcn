@@ -1,3 +1,4 @@
+import inspect
 from typing import List
 
 from tensorflow.keras import backend as K, Model, Input, optimizers
@@ -139,9 +140,9 @@ class ResidualBlock(Layer):
         x = inputs
         self.layers_outputs = [x]
         for layer in self.layers:
-            x = layer(x, training=training)
+            training_flag = 'training' in dict(inspect.signature(layer.call).parameters)
+            x = layer(x, training=training) if training_flag else layer(x)
             self.layers_outputs.append(x)
-
         x2 = self.shape_match_conv(inputs)
         self.layers_outputs.append(x2)
         res_x = layers.add([x2, x])
