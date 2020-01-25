@@ -1,4 +1,5 @@
 keras>=2.x
 numpy>=1.16.2
 h5py
+keract==3.0.1
 gast==0.2.2
