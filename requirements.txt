@@ -1,5 +1,4 @@
 keras>=2.x
 numpy>=1.16.2
-tensorflow>=2.x
 h5py
 gast==0.2.2
