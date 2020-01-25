@@ -210,6 +210,10 @@ class TCN(Layer):
         self.skip_connections = []
         self.residual_blocks = []
         self.layers_outputs = []
+        self.main_conv1D = None
+        self.build_output_shape = None
+        self.lambda_layer = None
+        self.lambda_ouput_shape = None
 
         if padding != 'causal' and padding != 'same':
             raise ValueError("Only 'causal' or 'same' padding are compatible for this layer.")
