@@ -42,7 +42,7 @@ def run_task():
     model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=15,
               callbacks=[psv], batch_size=256)
 
-    test_acc = model.evaluate(x=x_test, y=y_test)[0]  # loss.
+    test_acc = model.evaluate(x=x_test, y=y_test, verbose=0)  # loss.
     with open(f'adding_problem_{str(uuid4())[0:5]}.txt', 'w') as w:
         w.write(str(test_acc) + '\n')
 
