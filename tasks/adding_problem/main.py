@@ -1,7 +1,9 @@
+from uuid import uuid4
+
 import keras
+from utils import data_generator
 
 from tcn import compiled_tcn
-from utils import data_generator
 
 x_train, y_train = data_generator(n=200000, seq_length=600)
 x_test, y_test = data_generator(n=40000, seq_length=600)
@@ -37,8 +39,12 @@ def run_task():
     # http://chappers.github.io/web%20micro%20log/2017/01/26/quick-models-in-keras/
     model.summary()
 
-    model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=500,
+    model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=15,
               callbacks=[psv], batch_size=256)
+
+    test_acc = model.evaluate(x=x_test, y=y_test, verbose=0)  # loss.
+    with open(f'adding_problem_{str(uuid4())[0:5]}.txt', 'w') as w:
+        w.write(str(test_acc) + '\n')
 
 
 if __name__ == '__main__':

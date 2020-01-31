@@ -1,9 +1,22 @@
+import inspect
 from typing import List
 
 from tensorflow.keras import backend as K, Model, Input, optimizers
 from tensorflow.keras import layers
 from tensorflow.keras.layers import Activation, SpatialDropout1D, Lambda
 from tensorflow.keras.layers import Layer, Conv1D, Dense, BatchNormalization, LayerNormalization
+
+
+def is_power_of_two(num):
+    return num != 0 and ((num & (num - 1)) == 0)
+
+
+def adjust_dilations(dilations):
+    if all([is_power_of_two(i) for i in dilations]):
+        return dilations
+    else:
+        new_dilations = [2 ** i for i in dilations]
+        return new_dilations
 
 
 class ResidualBlock(Layer):
@@ -49,6 +62,11 @@ class ResidualBlock(Layer):
         self.use_layer_norm = use_layer_norm
         self.kernel_initializer = kernel_initializer
         self.last_block = last_block
+        self.layers = []
+        self.layers_outputs = []
+        self.shape_match_conv = None
+        self.res_output_shape = None
+        self.final_activation = None
 
         super(ResidualBlock, self).__init__(**kwargs)
 
@@ -60,14 +78,14 @@ class ResidualBlock(Layer):
                    shape of ResidualBlocK. Updates current output shape.
 
         """
-        self.residual_layers.append(layer)
-        self.residual_layers[-1].build(self.res_output_shape)
-        self.res_output_shape = self.residual_layers[-1].compute_output_shape(self.res_output_shape)
+        self.layers.append(layer)
+        self.layers[-1].build(self.res_output_shape)
+        self.res_output_shape = self.layers[-1].compute_output_shape(self.res_output_shape)
 
     def build(self, input_shape):
 
         with K.name_scope(self.name):  # name scope used to make sure weights get unique names
-            self.residual_layers = list()
+            self.layers = []
             self.res_output_shape = input_shape
 
             for k in range(2):
@@ -108,43 +126,34 @@ class ResidualBlock(Layer):
             self.final_activation = Activation(self.activation)
             self.final_activation.build(self.res_output_shape)  # probably isn't necessary
 
-            # this is done to force keras to add the layers in the list to self._layers
-            for layer in self.residual_layers:
+            # this is done to force Keras to add the layers in the list to self._layers
+            for layer in self.layers:
                 self.__setattr__(layer.name, layer)
 
             super(ResidualBlock, self).build(input_shape)  # done to make sure self.built is set True
 
     def call(self, inputs, training=None):
         """
-
         Returns: A tuple where the first element is the residual model tensor, and the second
                  is the skip connection tensor.
         """
         x = inputs
-        for layer in self.residual_layers:
-            if isinstance(layer, SpatialDropout1D):
-                x = layer(x, training=training)
-            else:
-                x = layer(x)
-
+        self.layers_outputs = [x]
+        for layer in self.layers:
+            training_flag = 'training' in dict(inspect.signature(layer.call).parameters)
+            x = layer(x, training=training) if training_flag else layer(x)
+            self.layers_outputs.append(x)
         x2 = self.shape_match_conv(inputs)
+        self.layers_outputs.append(x2)
         res_x = layers.add([x2, x])
-        return [self.final_activation(res_x), x]
+        self.layers_outputs.append(res_x)
+
+        res_act_x = self.final_activation(res_x)
+        self.layers_outputs.append(res_act_x)
+        return [res_act_x, x]
 
     def compute_output_shape(self, input_shape):
         return [self.res_output_shape, self.res_output_shape]
-
-
-def process_dilations(dilations):
-    def is_power_of_two(num):
-        return num != 0 and ((num & (num - 1)) == 0)
-
-    if all([is_power_of_two(i) for i in dilations]):
-        return dilations
-
-    else:
-        new_dilations = [2 ** i for i in dilations]
-        return new_dilations
 
 
 class TCN(Layer):
@@ -199,6 +208,13 @@ class TCN(Layer):
         self.kernel_initializer = kernel_initializer
         self.use_batch_norm = use_batch_norm
         self.use_layer_norm = use_layer_norm
+        self.skip_connections = []
+        self.residual_blocks = []
+        self.layers_outputs = []
+        self.main_conv1D = None
+        self.build_output_shape = None
+        self.lambda_layer = None
+        self.lambda_ouput_shape = None
 
         if padding != 'causal' and padding != 'same':
             raise ValueError("Only 'causal' or 'same' padding are compatible for this layer.")
@@ -213,6 +229,12 @@ class TCN(Layer):
         # initialize parent class
         super(TCN, self).__init__(**kwargs)
 
+    @property
+    def receptive_field(self):
+        assert_msg = 'The receptive field formula works only with power of two dilations.'
+        assert all([is_power_of_two(i) for i in self.dilations]), assert_msg
+        return self.kernel_size * self.nb_stacks * self.dilations[-1]
+
     def build(self, input_shape):
         self.main_conv1D = Conv1D(filters=self.nb_filters,
                                   kernel_size=1,
@@ -224,7 +246,7 @@ class TCN(Layer):
         self.build_output_shape = self.main_conv1D.compute_output_shape(input_shape)
 
         # list to hold all the member ResidualBlocks
-        self.residual_blocks = list()
+        self.residual_blocks = []
         total_num_blocks = self.nb_stacks * len(self.dilations)
         if not self.use_skip_connections:
             total_num_blocks += 1  # cheap way to do a false case for below
@@ -268,24 +290,29 @@ class TCN(Layer):
 
     def call(self, inputs, training=None):
         x = inputs
+        self.layers_outputs = [x]
         try:
             x = self.main_conv1D(x)
+            self.layers_outputs.append(x)
         except AttributeError:
-            print('The backend of keras-tcn>=2.9.2 changed from keras to tensorflow.keras.')
+            print('The backend of keras-tcn>2.8.3 has changed from keras to tensorflow.keras.')
             print('Either update your imports:\n- From "from keras.layers import <LayerName>" '
                   '\n- To "from tensorflow.keras.layers import <LayerName>"')
             print('Or downgrade to 2.8.3 by running "pip install keras-tcn==2.8.3"')
             import sys
             sys.exit(0)
-        skip_connections = list()
+        self.skip_connections = []
         for layer in self.residual_blocks:
             x, skip_out = layer(x, training=training)
-            skip_connections.append(skip_out)
+            self.skip_connections.append(skip_out)
+            self.layers_outputs.append(x)
 
         if self.use_skip_connections:
-            x = layers.add(skip_connections)
+            x = layers.add(self.skip_connections)
+            self.layers_outputs.append(x)
         if not self.return_sequences:
             x = self.lambda_layer(x)
+            self.layers_outputs.append(x)
         return x
 
     def get_config(self):
@@ -306,7 +333,6 @@ class TCN(Layer):
         config['use_batch_norm'] = self.use_batch_norm
         config['use_layer_norm'] = self.use_layer_norm
         config['kernel_initializer'] = self.kernel_initializer
-
         return config
 
 
@@ -358,7 +384,7 @@ def compiled_tcn(num_feat,  # type: int
         A compiled keras TCN.
     """
 
-    dilations = process_dilations(dilations)
+    dilations = adjust_dilations(dilations)
 
     input_layer = Input(shape=(max_len, num_feat))
 
