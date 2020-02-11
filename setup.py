@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='keras-tcn',
-    version='2.9.3',
+    version='3.0.1',
     description='Keras TCN',
     author='Philippe Remy',
     license='MIT',
