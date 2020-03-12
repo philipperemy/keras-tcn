@@ -98,10 +98,11 @@ class ResidualBlock(Layer):
                                                         name=name,
                                                         kernel_initializer=self.kernel_initializer))
 
-                if self.use_batch_norm:
-                    self._add_and_activate_layer(BatchNormalization())
-                elif self.use_layer_norm:
-                    self._add_and_activate_layer(LayerNormalization())
+                with K.name_scope('norm_{}'.format(k)):
+                    if self.use_batch_norm:
+                        self._add_and_activate_layer(BatchNormalization())
+                    elif self.use_layer_norm:
+                        self._add_and_activate_layer(LayerNormalization())
 
                 self._add_and_activate_layer(Activation('relu'))
                 self._add_and_activate_layer(SpatialDropout1D(rate=self.dropout_rate))
