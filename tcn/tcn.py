@@ -434,3 +434,20 @@ def compiled_tcn(num_feat,  # type: int
     print('model.x = {}'.format(input_layer.shape))
     print('model.y = {}'.format(output_layer.shape))
     return model
+
+
+def tcn_full_summary(model):
+    layers = model._layers  # store existing layers
+    model._layers.clear()  # clear layers
+
+    for i in range(len(layers)):
+        if isinstance(layers[i], TCN):
+            [model._layers.append(lyr) for lyr in layers[i]._layers if not hasattr(lyr, '__iter__')]
+        else:
+            model._layers.append(layers[i])
+
+    model.summary()  # print summary
+
+    # restore original layers
+    model._layers.clear()
+    [model._layers.append(lyr) for lyr in layers]
