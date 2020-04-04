@@ -32,7 +32,7 @@ print('Inference after creation:', out1)
 loaded_json = open('model.json', 'r').read()
 reloaded_model = model_from_json(loaded_json, custom_objects={'TCN': TCN})
 
-tcn_full_summary(model)
+tcn_full_summary(model, expand_residual_blocks=False)
 
 # restore weights
 reloaded_model.load_weights('weights.h5')

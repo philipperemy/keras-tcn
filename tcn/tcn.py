@@ -436,13 +436,23 @@ def compiled_tcn(num_feat,  # type: int
     return model
 
 
-def tcn_full_summary(model):
-    layers = model._layers  # store existing layers
+def tcn_full_summary(model, expand_residual_blocks=True):
+    layers = model._layers.copy()  # store existing layers
     model._layers.clear()  # clear layers
 
     for i in range(len(layers)):
         if isinstance(layers[i], TCN):
-            [model._layers.append(lyr) for lyr in layers[i]._layers if not hasattr(lyr, '__iter__')]
+            for layer in layers[i]._layers:
+                if not isinstance(layer, ResidualBlock):
+                    if not hasattr(layer, '__iter__'):
+                        model._layers.append(layer)
+                else:
+                    if expand_residual_blocks:
+                        for lyr in layer._layers:
+                            if not hasattr(lyr, '__iter__'):
+                                model._layers.append(lyr)
+                    else:
+                        model._layers.append(layer)
         else:
             model._layers.append(layers[i])
 
