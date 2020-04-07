@@ -1,7 +1,7 @@
 import numpy as np
-from keras.models import Sequential, model_from_json
-from keras.layers import Dense, Embedding
-from tcn import TCN
+from tensorflow.keras.models import Sequential, model_from_json
+from tensorflow.keras.layers import Dense, Embedding
+from tcn import TCN, tcn_full_summary
 
 # define input shape
 max_len = 100
@@ -31,6 +31,8 @@ print('Inference after creation:', out1)
 # load model from file
 loaded_json = open('model.json', 'r').read()
 reloaded_model = model_from_json(loaded_json, custom_objects={'TCN': TCN})
+
+tcn_full_summary(model, expand_residual_blocks=False)
 
 # restore weights
 reloaded_model.load_weights('weights.h5')
