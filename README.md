@@ -54,7 +54,7 @@ The usual way is to import the TCN layer and use it inside a Keras model. An exa
 from tensorflow.keras.layers import Dense
 from tensorflow.keras import Input, Model
 
-from tcn import TCN
+from tcn import TCN, tcn_full_summary
 
 batch_size, timesteps, input_dim = None, 20, 1
 
@@ -76,6 +76,8 @@ o = Dense(1)(o)
 
 m = Model(inputs=[i], outputs=[o])
 m.compile(optimizer='adam', loss='mse')
+
+tcn_full_summary(m, expand_residual_blocks=False)
 
 x, y = get_x_y()
 m.fit(x, y, epochs=10, validation_split=0.2)
