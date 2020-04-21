@@ -186,10 +186,10 @@ class TCN(Layer):
                  nb_stacks=1,
                  dilations=(1, 2, 4, 8, 16, 32),
                  padding='causal',
-                 use_skip_connections=True,
+                 use_skip_connections=False,
                  dropout_rate=0.0,
                  return_sequences=False,
-                 activation='linear',
+                 activation='relu',
                  kernel_initializer='he_normal',
                  use_batch_norm=False,
                  use_layer_norm=False,
@@ -283,16 +283,6 @@ class TCN(Layer):
     def call(self, inputs, training=None):
         x = inputs
         self.layers_outputs = [x]
-        try:
-            x = self.main_conv1D(x)
-            self.layers_outputs.append(x)
-        except AttributeError:
-            print('The backend of keras-tcn>2.8.3 has changed from keras to tensorflow.keras.')
-            print('Either update your imports:\n- From "from keras.layers import <LayerName>" '
-                  '\n- To "from tensorflow.keras.layers import <LayerName>"')
-            print('Or downgrade to 2.8.3 by running "pip install keras-tcn==2.8.3"')
-            import sys
-            sys.exit(0)
         self.skip_connections = []
         for layer in self.residual_blocks:
             x, skip_out = layer(x, training=training)
@@ -338,13 +328,13 @@ def compiled_tcn(num_feat,  # type: int
                  max_len,  # type: int
                  output_len=1,  # type: int
                  padding='causal',  # type: str
-                 use_skip_connections=True,  # type: bool
+                 use_skip_connections=False,  # type: bool
                  return_sequences=True,
                  regression=False,  # type: bool
                  dropout_rate=0.05,  # type: float
                  name='tcn',  # type: str,
                  kernel_initializer='he_normal',  # type: str,
-                 activation='linear',  # type:str,
+                 activation='relu',  # type:str,
                  opt='adam',
                  lr=0.002,
                  use_batch_norm=False,
