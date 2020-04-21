@@ -31,7 +31,6 @@ class ResidualBlock(Layer):
                  kernel_initializer='he_normal',
                  use_batch_norm=False,
                  use_layer_norm=False,
-                 last_block=True,
                  **kwargs):
 
         # type: (int, int, int, str, str, float, str, bool, bool, bool, dict) -> None
@@ -61,7 +60,6 @@ class ResidualBlock(Layer):
         self.use_batch_norm = use_batch_norm
         self.use_layer_norm = use_layer_norm
         self.kernel_initializer = kernel_initializer
-        self.last_block = last_block
         self.layers = []
         self.layers_outputs = []
         self.shape_match_conv = None
@@ -107,9 +105,9 @@ class ResidualBlock(Layer):
                 self._add_and_activate_layer(Activation('relu'))
                 self._add_and_activate_layer(SpatialDropout1D(rate=self.dropout_rate))
 
-            if not self.last_block:
+            if self.nb_filters != input_shape:
                 # 1x1 conv to match the shapes (channel dimension).
-                name = 'conv1D_{}'.format(k + 1)
+                name = 'matching_conv1D'
                 with K.name_scope(name):
                     # make and build this layer separately because it directly uses input_shape
                     self.shape_match_conv = Conv1D(filters=self.nb_filters,
@@ -119,7 +117,7 @@ class ResidualBlock(Layer):
                                                    kernel_initializer=self.kernel_initializer)
 
             else:
-                self.shape_match_conv = Lambda(lambda x: x, name='identity')
+                self.shape_match_conv = Lambda(lambda x: x, name='matching_identity')
 
             self.shape_match_conv.build(input_shape)
             self.res_output_shape = self.shape_match_conv.compute_output_shape(input_shape)
@@ -263,7 +261,6 @@ class TCN(Layer):
                                                           use_batch_norm=self.use_batch_norm,
                                                           use_layer_norm=self.use_layer_norm,
                                                           kernel_initializer=self.kernel_initializer,
-                                                          last_block=len(self.residual_blocks) + 1 == total_num_blocks,
                                                           name='residual_block_{}'.format(len(self.residual_blocks))))
                 # build newest residual block
                 self.residual_blocks[-1].build(self.build_output_shape)
@@ -311,6 +308,7 @@ class TCN(Layer):
         if self.use_skip_connections:
             x = layers.add(self.skip_connections)
             self.layers_outputs.append(x)
+
         if not self.return_sequences:
             x = self.lambda_layer(x)
             self.layers_outputs.append(x)
