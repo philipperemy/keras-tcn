@@ -210,7 +210,6 @@ class TCN(Layer):
         self.skip_connections = []
         self.residual_blocks = []
         self.layers_outputs = []
-        self.main_conv1D = None
         self.build_output_shape = None
         self.lambda_layer = None
         self.lambda_ouput_shape = None
@@ -235,14 +234,9 @@ class TCN(Layer):
         return self.kernel_size * self.nb_stacks * self.dilations[-1]
 
     def build(self, input_shape):
-        self.main_conv1D = Conv1D(filters=self.nb_filters,
-                                  kernel_size=1,
-                                  padding=self.padding,
-                                  kernel_initializer=self.kernel_initializer)
-        self.main_conv1D.build(input_shape)
 
         # member to hold current output shape of the layer for building purposes
-        self.build_output_shape = self.main_conv1D.compute_output_shape(input_shape)
+        self.build_output_shape = input_shape
 
         # list to hold all the member ResidualBlocks
         self.residual_blocks = []
