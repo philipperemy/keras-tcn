@@ -105,7 +105,7 @@ class ResidualBlock(Layer):
                 self._add_and_activate_layer(Activation('relu'))
                 self._add_and_activate_layer(SpatialDropout1D(rate=self.dropout_rate))
 
-            if self.nb_filters != input_shape:
+            if self.nb_filters != input_shape[-1]:
                 # 1x1 conv to match the shapes (channel dimension).
                 name = 'matching_conv1D'
                 with K.name_scope(name):
@@ -119,6 +119,7 @@ class ResidualBlock(Layer):
             else:
                 self.shape_match_conv = Lambda(lambda x: x, name='matching_identity')
 
+
             self.shape_match_conv.build(input_shape)
             self.res_output_shape = self.shape_match_conv.compute_output_shape(input_shape)
 
@@ -128,6 +129,8 @@ class ResidualBlock(Layer):
             # this is done to force Keras to add the layers in the list to self._layers
             for layer in self.layers:
                 self.__setattr__(layer.name, layer)
+            self.__setattr__(self.shape_match_conv.name, self.shape_match_conv)
+            self.__setattr__(self.final_activation.name, self.final_activation)
 
             super(ResidualBlock, self).build(input_shape)  # done to make sure self.built is set True
 
