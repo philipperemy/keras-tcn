@@ -117,11 +117,12 @@ class ResidualBlock(Layer):
                                                    kernel_initializer=self.kernel_initializer)
 
             else:
-                self.shape_match_conv = Lambda(lambda x: x, name='matching_identity')
+                name = 'matching_identity'
+                self.shape_match_conv = Lambda(lambda x: x, name=name)
 
-
-            self.shape_match_conv.build(input_shape)
-            self.res_output_shape = self.shape_match_conv.compute_output_shape(input_shape)
+            with K.name_scope(name):
+                self.shape_match_conv.build(input_shape)
+                self.res_output_shape = self.shape_match_conv.compute_output_shape(input_shape)
 
             self.final_activation = Activation(self.activation)
             self.final_activation.build(self.res_output_shape)  # probably isn't necessary
