@@ -1,10 +1,8 @@
-from uuid import uuid4
-
-import numpy as np
 import keras
-from utils import data_generator
+import numpy as np
 
 from tcn import compiled_tcn
+from utils import data_generator
 
 x_train, y_train = data_generator(n=200000, seq_length=600)
 x_test, y_test = data_generator(n=40000, seq_length=600)
@@ -39,7 +37,7 @@ def run_task():
     # http://chappers.github.io/web%20micro%20log/2017/01/26/quick-models-in-keras/
     model.summary()
 
-    model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=15, 
+    model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=15,
               batch_size=256, callbacks=[psv])
 
 
