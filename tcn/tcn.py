@@ -7,11 +7,11 @@ from tensorflow.keras.layers import Activation, SpatialDropout1D, Lambda
 from tensorflow.keras.layers import Layer, Conv1D, Dense, BatchNormalization, LayerNormalization
 
 
-def is_power_of_two(num):
+def is_power_of_two(num: int):
     return num != 0 and ((num & (num - 1)) == 0)
 
 
-def adjust_dilations(dilations):
+def adjust_dilations(dilations: list):
     if all([is_power_of_two(i) for i in dilations]):
         return dilations
     else:
@@ -22,18 +22,16 @@ def adjust_dilations(dilations):
 class ResidualBlock(Layer):
 
     def __init__(self,
-                 dilation_rate,
-                 nb_filters,
-                 kernel_size,
-                 padding,
-                 activation='relu',
-                 dropout_rate=0,
-                 kernel_initializer='he_normal',
-                 use_batch_norm=False,
-                 use_layer_norm=False,
+                 dilation_rate: int,
+                 nb_filters: int,
+                 kernel_size: int,
+                 padding: str,
+                 activation: str = 'relu',
+                 dropout_rate: float = 0,
+                 kernel_initializer: str = 'he_normal',
+                 use_batch_norm: bool = False,
+                 use_layer_norm: bool = False,
                  **kwargs):
-
-        # type: (int, int, int, str, str, float, str, bool, bool, bool, dict) -> None
         """Defines the residual block for the WaveNet TCN
 
         Args:
@@ -166,7 +164,7 @@ class TCN(Layer):
             A tensor of shape (batch_size, timesteps, input_dim).
 
         Args:
-            nb_filters: The number of filters to use in the convolutional layers.
+            nb_filters: The number of filters to use in the convolutional layers. Can be a list.
             kernel_size: The size of the kernel to use in each convolutional layer.
             dilations: The list of the dilations. Example is: [1, 2, 4, 8, 16, 32, 64].
             nb_stacks : The number of stacks of residual blocks to use.
@@ -218,15 +216,11 @@ class TCN(Layer):
         self.lambda_layer = None
         self.lambda_ouput_shape = None
 
+        if isinstance(self.nb_filters, list):
+            assert len(self.nb_filters) == len(self.dilations)
+
         if padding != 'causal' and padding != 'same':
             raise ValueError("Only 'causal' or 'same' padding are compatible for this layer.")
-
-        if not isinstance(nb_filters, int):
-            print('An interface change occurred after the version 2.1.2.')
-            print('Before: tcn.TCN(x, return_sequences=False, ...)')
-            print('Now should be: tcn.TCN(return_sequences=False, ...)(x)')
-            print('The alternative is to downgrade to 2.1.2 (pip install keras-tcn==2.1.2).')
-            raise Exception()
 
         # initialize parent class
         super(TCN, self).__init__(**kwargs)
@@ -249,9 +243,10 @@ class TCN(Layer):
             total_num_blocks += 1  # cheap way to do a false case for below
 
         for s in range(self.nb_stacks):
-            for d in self.dilations:
+            for i, d in enumerate(self.dilations):
+                res_block_filters = self.nb_filters[i] if isinstance(self.nb_filters, list) else self.nb_filters
                 self.residual_blocks.append(ResidualBlock(dilation_rate=d,
-                                                          nb_filters=self.nb_filters,
+                                                          nb_filters=res_block_filters,
                                                           kernel_size=self.kernel_size,
                                                           padding=self.padding,
                                                           activation=self.activation,
