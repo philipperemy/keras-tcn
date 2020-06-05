@@ -1,6 +1,7 @@
 import numpy as np
-from keras.layers import Dense
-from keras.models import Input, Model
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.models import Model
+from tensorflow.keras import Input
 
 from tcn import TCN
 
@@ -47,4 +48,4 @@ m.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
 size = 1000
 gen = get_x_y(max_time_steps=MAX_TIME_STEP)
-m.fit_generator(gen, epochs=3, steps_per_epoch=size, max_queue_size=1)
+m.fit_generator(gen, epochs=1, steps_per_epoch=size, max_queue_size=1)
