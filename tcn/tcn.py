@@ -285,17 +285,22 @@ class TCN(Layer):
             self.build(input_shape)
         if not self.return_sequences:
             batch_size = self.build_output_shape[0]
+            batch_size = batch_size.value if hasattr(batch_size, 'value') else batch_size
             nb_filters = self.build_output_shape[-1]
             return [batch_size, nb_filters]
         else:
-            return self.build_output_shape
+            # Compatibility tensorflow 1.x
+            return [v.value if hasattr(v, 'value') else v for v in self.build_output_shape]
 
     def call(self, inputs, training=None):
         x = inputs
         self.layers_outputs = [x]
         self.skip_connections = []
         for layer in self.residual_blocks:
-            x, skip_out = layer(x, training=training)
+            try:
+                x, skip_out = layer(x, training=training)
+            except TypeError:  # compatibility with tensorflow 1.x
+                x, skip_out = layer(K.cast(x, 'float32'), training=training)
             self.skip_connections.append(skip_out)
             self.layers_outputs.append(x)
 
