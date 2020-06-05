@@ -263,8 +263,13 @@ class TCN(Layer):
         for layer in self.residual_blocks:
             self.__setattr__(layer.name, layer)
 
-        # Author: @karolbadowski.
-        output_slice_index = int(self.build_output_shape.as_list()[1] / 2) if self.padding == 'same' else -1
+        if self.padding == 'same':
+            time = self.build_output_shape.as_list()[1]
+            if time is None:
+                raise Exception('Time dimension cannot be None if padding="same" (non causal case).')
+            output_slice_index = int(self.build_output_shape.as_list()[1] / 2)
+        else:
+            output_slice_index = -1  # causal case.
         self.lambda_layer = Lambda(lambda tt: tt[:, output_slice_index, :])
         self.lambda_ouput_shape = self.lambda_layer.compute_output_shape(self.build_output_shape)
 
