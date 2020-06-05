@@ -11,3 +11,7 @@ o = Dense(1)(o)
 m = Model(inputs=[i], outputs=[o])
 m.compile(optimizer='adam', loss='mse')
 pred = m(np.random.rand(1, 5, 300))
+
+# tcnn = TCN(nb_filters=30, return_sequences=False, padding='same')
+# tcnn.build((None, None, 300))
+# print(tcnn.call(Input(batch_shape=(None, 30, 300))))

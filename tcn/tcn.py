@@ -213,8 +213,9 @@ class TCN(Layer):
         self.residual_blocks = []
         self.layers_outputs = []
         self.build_output_shape = None
-        self.lambda_layer = None
-        self.lambda_ouput_shape = None
+        self.slicer_layer = None  # in case return_sequence=False
+        self.output_slice_index = None  # in case return_sequence=False
+        self.padding_same_and_time_dim_unknown = False  # edge case if padding='same' and time_dim = None
 
         if isinstance(self.nb_filters, list):
             assert len(self.nb_filters) == len(self.dilations)
@@ -263,15 +264,18 @@ class TCN(Layer):
         for layer in self.residual_blocks:
             self.__setattr__(layer.name, layer)
 
+        self.output_slice_index = None
         if self.padding == 'same':
             time = self.build_output_shape.as_list()[1]
-            if time is None:
-                raise Exception('Time dimension cannot be None if padding="same" (non causal case).')
-            output_slice_index = int(self.build_output_shape.as_list()[1] / 2)
+            if time is not None:  # if time dimension is defined. e.g. shape = (bs, 500, input_dim).
+                self.output_slice_index = int(self.build_output_shape.as_list()[1] / 2)
+            else:
+                # It will known at call time. c.f. self.call.
+                self.padding_same_and_time_dim_unknown = True
+
         else:
-            output_slice_index = -1  # causal case.
-        self.lambda_layer = Lambda(lambda tt: tt[:, output_slice_index, :])
-        self.lambda_ouput_shape = self.lambda_layer.compute_output_shape(self.build_output_shape)
+            self.output_slice_index = -1  # causal case.
+        self.slicer_layer = Lambda(lambda tt: tt[:, self.output_slice_index, :])
 
     def compute_output_shape(self, input_shape):
         """
@@ -280,7 +284,7 @@ class TCN(Layer):
         if not self.built:
             self.build(input_shape)
         if not self.return_sequences:
-            return self.lambda_ouput_shape
+            return self.lambda_layer.compute_output_shape(self.build_output_shape)
         else:
             return self.build_output_shape
 
@@ -298,7 +302,10 @@ class TCN(Layer):
             self.layers_outputs.append(x)
 
         if not self.return_sequences:
-            x = self.lambda_layer(x)
+            # case: time dimension is unknown. e.g. (bs, None, input_dim).
+            if self.padding_same_and_time_dim_unknown:
+                self.output_slice_index = K.shape(self.layers_outputs[-1])[1] // 2
+            x = self.slicer_layer(x)
             self.layers_outputs.append(x)
         return x
 
