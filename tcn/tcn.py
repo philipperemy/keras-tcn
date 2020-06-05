@@ -284,7 +284,9 @@ class TCN(Layer):
         if not self.built:
             self.build(input_shape)
         if not self.return_sequences:
-            return self.lambda_layer.compute_output_shape(self.build_output_shape)
+            batch_size = self.build_output_shape[0]
+            nb_filters = self.build_output_shape[-1]
+            return [batch_size, nb_filters]
         else:
             return self.build_output_shape
 
