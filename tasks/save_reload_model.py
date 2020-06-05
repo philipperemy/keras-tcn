@@ -1,6 +1,7 @@
 import numpy as np
-from tensorflow.keras.models import Sequential, model_from_json
 from tensorflow.keras.layers import Dense, Dropout, Embedding
+from tensorflow.keras.models import Sequential, model_from_json
+
 from tcn.tcn import TCN
 
 # define input shape
@@ -40,3 +41,5 @@ reloaded_model.load_weights(r'weights.h5')
 out2 = reloaded_model.predict(inputs)[0, 0]
 print('*' * 80)
 print('Inference after loading:', out2)
+
+assert abs(out1 - out2) < 1e-6
