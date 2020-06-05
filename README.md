@@ -1,5 +1,7 @@
 # Keras TCN
 
+*Compatible with all the major/latest Tensorflow versions (from 1.14 to 2.2+).*
+
 
 [![Downloads](https://pepy.tech/badge/keras-tcn)](https://pepy.tech/project/keras-tcn)
 [![Downloads](https://pepy.tech/badge/keras-tcn/month)](https://pepy.tech/project/keras-tcn)
