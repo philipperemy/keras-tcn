@@ -436,7 +436,7 @@ def compiled_tcn(num_feat,  # type: int
     return model
 
 
-def tcn_full_summary(model, expand_residual_blocks=True):
+def tcn_full_summary(model: Model, expand_residual_blocks=True):
     layers = model._layers.copy()  # store existing layers
     model._layers.clear()  # clear layers
 
