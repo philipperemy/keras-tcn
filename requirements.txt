@@ -1,4 +1,4 @@
-keras==2.3.1
+keras==2.4.2
 numpy>=1.18.1
 h5py
 keract==4.0.0
