@@ -7,6 +7,7 @@ from tensorflow.keras.layers import Activation, SpatialDropout1D, Lambda
 from tensorflow.keras.layers import Layer, Conv1D, Dense, BatchNormalization, LayerNormalization
 
 
+
 def is_power_of_two(num: int):
     return num != 0 and ((num & (num - 1)) == 0)
 
@@ -27,13 +28,14 @@ class ResidualBlock(Layer):
                  kernel_size: int,
                  padding: str,
                  activation: str = 'relu',
+                 activation_layer : tensorflow.keras.layers = None,  # advanced activation expected
                  dropout_rate: float = 0,
                  kernel_initializer: str = 'he_normal',
                  use_batch_norm: bool = False,
                  use_layer_norm: bool = False,
+                 use_weight_norm: bool = False,
                  **kwargs):
         """Defines the residual block for the WaveNet TCN
-
         Args:
             x: The previous layer in the model
             training: boolean indicating whether the layer should behave in training mode or in inference mode
@@ -54,9 +56,11 @@ class ResidualBlock(Layer):
         self.kernel_size = kernel_size
         self.padding = padding
         self.activation = activation
+        self.activation_layer = activation_layer
         self.dropout_rate = dropout_rate
         self.use_batch_norm = use_batch_norm
         self.use_layer_norm = use_layer_norm
+        self.use_weight_norm  = use_weight_norm
         self.kernel_initializer = kernel_initializer
         self.layers = []
         self.layers_outputs = []
@@ -68,11 +72,9 @@ class ResidualBlock(Layer):
 
     def _add_and_activate_layer(self, layer):
         """Helper function for building layer
-
         Args:
             layer: Appends layer to internal layer list and builds it based on the current output
                    shape of ResidualBlocK. Updates current output shape.
-
         """
         self.layers.append(layer)
         self.layers[-1].build(self.res_output_shape)
@@ -87,12 +89,15 @@ class ResidualBlock(Layer):
             for k in range(2):
                 name = 'conv1D_{}'.format(k)
                 with K.name_scope(name):  # name scope used to make sure weights get unique names
-                    self._add_and_activate_layer(Conv1D(filters=self.nb_filters,
+                    conv_layer = Conv1D(filters=self.nb_filters,
                                                         kernel_size=self.kernel_size,
                                                         dilation_rate=self.dilation_rate,
                                                         padding=self.padding,
                                                         name=name,
-                                                        kernel_initializer=self.kernel_initializer))
+                                                        kernel_initializer=self.kernel_initializer)
+                    if self.use_weight_norm:
+                        conv_layer = WeightNormalization(conv_layer)
+                    self._add_and_activate_layer(conv_layer)
 
                 with K.name_scope('norm_{}'.format(k)):
                     if self.use_batch_norm:
@@ -100,7 +105,9 @@ class ResidualBlock(Layer):
                     elif self.use_layer_norm:
                         self._add_and_activate_layer(LayerNormalization())
 
-                self._add_and_activate_layer(Activation('relu'))
+                self._add_and_activate_layer(Activation(self.activation))
+                if self.activation_layer is not None:
+                    self._add_and_activate_layer(self.activation_layer)
                 self._add_and_activate_layer(SpatialDropout1D(rate=self.dropout_rate))
 
             if self.nb_filters != input_shape[-1]:
@@ -121,6 +128,10 @@ class ResidualBlock(Layer):
             with K.name_scope(name):
                 self.shape_match_conv.build(input_shape)
                 self.res_output_shape = self.shape_match_conv.compute_output_shape(input_shape)
+
+            self._add_and_activate_layer(Activation(self.activation))
+            if self.activation_layer is not None:
+                self._add_and_activate_layer(self.activation_layer)
 
             self.final_activation = Activation(self.activation)
             self.final_activation.build(self.res_output_shape)  # probably isn't necessary
@@ -159,10 +170,8 @@ class ResidualBlock(Layer):
 
 class TCN(Layer):
     """Creates a TCN layer.
-
         Input shape:
             A tensor of shape (batch_size, timesteps, input_dim).
-
         Args:
             nb_filters: The number of filters to use in the convolutional layers. Can be a list.
             kernel_size: The size of the kernel to use in each convolutional layer.
@@ -177,7 +186,6 @@ class TCN(Layer):
             use_batch_norm: Whether to use batch normalization in the residual layers or not.
             kwargs: Any other arguments for configuring parent class Layer. For example "name=str", Name of the model.
                     Use unique names when using multiple TCN.
-
         Returns:
             A TCN layer.
         """
@@ -192,9 +200,11 @@ class TCN(Layer):
                  dropout_rate=0.0,
                  return_sequences=False,
                  activation='relu',
+                 activation_layer = None,
                  kernel_initializer='he_normal',
                  use_batch_norm=False,
                  use_layer_norm=False,
+                 use_weight_norm = False,
                  **kwargs):
 
         self.return_sequences = return_sequences
@@ -205,10 +215,12 @@ class TCN(Layer):
         self.kernel_size = kernel_size
         self.nb_filters = nb_filters
         self.activation = activation
+        self.activation_layer = activation_layer
         self.padding = padding
         self.kernel_initializer = kernel_initializer
         self.use_batch_norm = use_batch_norm
         self.use_layer_norm = use_layer_norm
+        self.use_weight_norm = use_weight_norm
         self.skip_connections = []
         self.residual_blocks = []
         self.layers_outputs = []
@@ -333,6 +345,7 @@ class TCN(Layer):
         config['activation'] = self.activation
         config['use_batch_norm'] = self.use_batch_norm
         config['use_layer_norm'] = self.use_layer_norm
+        config['use_weight_norm'] = self.use_weight_norm
         config['kernel_initializer'] = self.kernel_initializer
         return config
 
@@ -360,7 +373,6 @@ def compiled_tcn(num_feat,  # type: int
     # type: (...) -> Model
     """Creates a compiled TCN model for a given task (i.e. regression or classification).
     Classification uses a sparse categorical loss. Please input class ids and not one-hot encodings.
-
     Args:
         num_feat: The number of features of your input, i.e. the last dimension of: (batch_size, timesteps, input_dim).
         num_classes: The size of the final dense layer, how many classes we are predicting.
