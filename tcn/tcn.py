@@ -5,7 +5,7 @@ from tensorflow.keras import backend as K, Model, Input, optimizers
 from tensorflow.keras import layers
 from tensorflow.keras.layers import Activation, SpatialDropout1D, Lambda
 from tensorflow.keras.layers import Layer, Conv1D, Dense, BatchNormalization, LayerNormalization
-
+from tensorflow_addons.layers import WeightNormalization
 
 
 def is_power_of_two(num: int):
