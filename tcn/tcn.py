@@ -28,7 +28,7 @@ class ResidualBlock(Layer):
                  kernel_size: int,
                  padding: str,
                  activation: str = 'relu',
-                 activation_layer : tensorflow.keras.layers = None,  # advanced activation expected
+                 activation_layer = None,  # advanced activation expected
                  dropout_rate: float = 0,
                  kernel_initializer: str = 'he_normal',
                  use_batch_norm: bool = False,
