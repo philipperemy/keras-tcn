@@ -28,7 +28,7 @@ class ResidualBlock(Layer):
                  kernel_size: int,
                  padding: str,
                  activation: str = 'relu',
-                 activation_layer = None,  # advanced activation expected
+                 activation_layer=None,  # advanced activation expected
                  dropout_rate: float = 0,
                  kernel_initializer: str = 'he_normal',
                  use_batch_norm: bool = False,
@@ -60,7 +60,7 @@ class ResidualBlock(Layer):
         self.dropout_rate = dropout_rate
         self.use_batch_norm = use_batch_norm
         self.use_layer_norm = use_layer_norm
-        self.use_weight_norm  = use_weight_norm
+        self.use_weight_norm = use_weight_norm
         self.kernel_initializer = kernel_initializer
         self.layers = []
         self.layers_outputs = []
@@ -90,11 +90,11 @@ class ResidualBlock(Layer):
                 name = 'conv1D_{}'.format(k)
                 with K.name_scope(name):  # name scope used to make sure weights get unique names
                     conv_layer = Conv1D(filters=self.nb_filters,
-                                                        kernel_size=self.kernel_size,
-                                                        dilation_rate=self.dilation_rate,
-                                                        padding=self.padding,
-                                                        name=name,
-                                                        kernel_initializer=self.kernel_initializer)
+                                        kernel_size=self.kernel_size,
+                                        dilation_rate=self.dilation_rate,
+                                        padding=self.padding,
+                                        name=name,
+                                        kernel_initializer=self.kernel_initializer)
                     if self.use_weight_norm:
                         conv_layer = WeightNormalization(conv_layer)
                     self._add_and_activate_layer(conv_layer)
@@ -200,11 +200,11 @@ class TCN(Layer):
                  dropout_rate=0.0,
                  return_sequences=False,
                  activation='relu',
-                 activation_layer = None,
+                 activation_layer=None,
                  kernel_initializer='he_normal',
                  use_batch_norm=False,
                  use_layer_norm=False,
-                 use_weight_norm = False,
+                 use_weight_norm=False,
                  **kwargs):
 
         self.return_sequences = return_sequences
