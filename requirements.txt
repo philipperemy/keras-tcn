@@ -3,3 +3,4 @@ numpy>=1.18.1
 h5py
 keract==4.0.0
 gast==0.2.2
+tensorflow-addons>=0.10.0
