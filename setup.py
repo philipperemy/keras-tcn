@@ -12,6 +12,6 @@ setup(
     # manually install tensorflow or tensorflow-gpu
     install_requires=[
         'numpy>=1.18.1',
-        'keras==2.4.2',
+        'keras==2.4.3',
     ]
 )
