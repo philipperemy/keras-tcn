@@ -10,6 +10,6 @@ setup(
     long_description=open('README.md').read(),
     packages=['tcn'],
     install_requires=[
-        'numpy', 'tensorflow', 'h5py'
+        'numpy', 'tensorflow', 'h5py<3.0.0'
     ]
 )
