@@ -313,3 +313,16 @@ for Sequence Modeling)
 ## Related
 - https://github.com/Baichenjia/Tensorflow-TCN (Tensorflow Eager implementation of TCNs)
 
+## Citation
+
+```
+@misc{KerasTCN,
+  author = {Philippe Remy},
+  title = {Temporal Convolutional Networks for Keras},
+  year = {2020},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/philipperemy/keras-tcn}},
+}
+```
+
