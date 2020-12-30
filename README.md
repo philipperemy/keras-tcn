@@ -10,9 +10,7 @@
 pip install keras-tcn
 ```
 
-https://arxiv.org/abs/1803.01271
-
-*Keras Temporal Convolutional Network*
+*Keras Temporal Convolutional Network*. [[paper](https://arxiv.org/abs/1803.01271)]
 
    * [Keras TCN](#keras-tcn)
       * [Why Temporal Convolutional Network?](#why-temporal-convolutional-network)
