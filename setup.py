@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='keras-tcn',
-    version='3.1.1',
+    version='3.1.2',
     description='Keras TCN',
     author='Philippe Remy',
     license='MIT',
@@ -10,6 +10,6 @@ setup(
     long_description=open('README.md').read(),
     packages=['tcn'],
     install_requires=[
-        'numpy', 'tensorflow', 'h5py<3.0.0'
+        'numpy', 'tensorflow'
     ]
 )
