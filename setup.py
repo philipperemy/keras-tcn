@@ -10,6 +10,6 @@ setup(
     long_description=open('README.md').read(),
     packages=['tcn'],
     install_requires=[
-        'numpy', 'tensorflow'
+        'numpy', 'tensorflow', 'tensorflow_addons'
     ]
 )
