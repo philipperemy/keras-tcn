@@ -2,7 +2,7 @@ import numpy as np
 from tensorflow.keras.callbacks import Callback
 from utils import data_generator
 
-from tcn import compiled_tcn
+from tcn import compiled_tcn, tcn_full_summary
 
 x_train, y_train = data_generator(n=200000, seq_length=600)
 x_test, y_test = data_generator(n=40000, seq_length=600)
@@ -26,11 +26,12 @@ def run_task():
         nb_stacks=1,
         max_len=x_train.shape[1],
         use_skip_connections=False,
+        use_weight_norm=True,
         regression=True,
         dropout_rate=0
     )
 
-    model.summary()
+    tcn_full_summary(model)
     model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=15,
               batch_size=256, callbacks=[PrintSomeValues()])
 
