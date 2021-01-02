@@ -3,6 +3,7 @@ import unittest
 import numpy as np
 from tensorflow.keras import Input
 from tensorflow.keras import Model
+from tensorflow.keras.models import Sequential
 
 from tcn import TCN
 
@@ -98,6 +99,27 @@ class TCNCallTest(unittest.TestCase):
     def test_non_causal_time_dim_unknown_return_no_sequences(self):
         r = predict_with_tcn(time_steps=None, padding='same', return_sequences=False)
         self.assertListEqual([list(b.shape) for b in r], [[1, NB_FILTERS], [1, NB_FILTERS], [1, NB_FILTERS]])
+
+    def test_norms(self):
+        Sequential(layers=[TCN(input_shape=(20, 2), use_weight_norm=True)]).compile(optimizer='adam', loss='mse')
+        Sequential(layers=[TCN(input_shape=(20, 2), use_weight_norm=False)]).compile(optimizer='adam', loss='mse')
+        Sequential(layers=[TCN(input_shape=(20, 2), use_layer_norm=True)]).compile(optimizer='adam', loss='mse')
+        Sequential(layers=[TCN(input_shape=(20, 2), use_layer_norm=False)]).compile(optimizer='adam', loss='mse')
+        Sequential(layers=[TCN(input_shape=(20, 2), use_batch_norm=True)]).compile(optimizer='adam', loss='mse')
+        Sequential(layers=[TCN(input_shape=(20, 2), use_batch_norm=False)]).compile(optimizer='adam', loss='mse')
+        try:
+            Sequential(layers=[TCN(input_shape=(20, 2), use_batch_norm=True, use_weight_norm=True)]).compile(
+                optimizer='adam', loss='mse')
+            raise AssertionError('test failed.')
+        except ValueError:
+            pass
+        try:
+            Sequential(layers=[TCN(input_shape=(20, 2), use_batch_norm=True,
+                                   use_weight_norm=True, use_layer_norm=True)]).compile(
+                optimizer='adam', loss='mse')
+            raise AssertionError('test failed.')
+        except ValueError:
+            pass
 
 
 if __name__ == '__main__':

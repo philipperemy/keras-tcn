@@ -87,22 +87,28 @@ class ResidualBlock(Layer):
             for k in range(2):
                 name = 'conv1D_{}'.format(k)
                 with K.name_scope(name):  # name scope used to make sure weights get unique names
-                    self._build_layer(
-                        Conv1D(filters=self.nb_filters,
-                               kernel_size=self.kernel_size,
-                               dilation_rate=self.dilation_rate,
-                               padding=self.padding,
-                               name=name,
-                               kernel_initializer=self.kernel_initializer)
+                    conv = Conv1D(
+                        filters=self.nb_filters,
+                        kernel_size=self.kernel_size,
+                        dilation_rate=self.dilation_rate,
+                        padding=self.padding,
+                        name=name,
+                        kernel_initializer=self.kernel_initializer
                     )
+                    if self.use_weight_norm:
+                        from tensorflow_addons.layers import WeightNormalization
+                        # wrap it. WeightNormalization API is different than BatchNormalization or LayerNormalization.
+                        with K.name_scope('norm_{}'.format(k)):
+                            conv = WeightNormalization(conv)
+                    self._build_layer(conv)
+
                 with K.name_scope('norm_{}'.format(k)):
                     if self.use_batch_norm:
                         self._build_layer(BatchNormalization())
                     elif self.use_layer_norm:
                         self._build_layer(LayerNormalization())
                     elif self.use_weight_norm:
-                        from tensorflow_addons.layers import WeightNormalization
-                        self._build_layer(WeightNormalization(self.layers[-1]))
+                        pass  # done above.
 
                 self._build_layer(Activation(self.activation))
                 self._build_layer(SpatialDropout1D(rate=self.dropout_rate))
@@ -222,6 +228,9 @@ class TCN(Layer):
         self.slicer_layer = None  # in case return_sequence=False
         self.output_slice_index = None  # in case return_sequence=False
         self.padding_same_and_time_dim_unknown = False  # edge case if padding='same' and time_dim = None
+
+        if self.use_batch_norm + self.use_layer_norm + self.use_weight_norm > 1:
+            raise ValueError('Only one normalization can be specified at once.')
 
         if isinstance(self.nb_filters, list):
             assert len(self.nb_filters) == len(self.dilations)
