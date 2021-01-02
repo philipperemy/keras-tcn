@@ -1,7 +1,7 @@
 from uuid import uuid4
 
-import keras
 import numpy as np
+from tensorflow.keras.callbacks import Callback
 
 from tcn import compiled_tcn
 from utils import data_generator
@@ -10,7 +10,7 @@ x_train, y_train = data_generator(601, 10, 30000)
 x_test, y_test = data_generator(601, 10, 6000)
 
 
-class PrintSomeValues(keras.callbacks.Callback):
+class PrintSomeValues(Callback):
 
     def on_epoch_begin(self, epoch, logs={}):
         print('y_true')
@@ -30,6 +30,7 @@ def run_task():
                          use_skip_connections=True,
                          opt='rmsprop',
                          lr=5e-4,
+                         use_weight_norm=True,
                          return_sequences=True)
 
     print(f'x_train.shape = {x_train.shape}')
