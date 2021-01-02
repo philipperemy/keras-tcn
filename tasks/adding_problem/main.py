@@ -1,14 +1,14 @@
-import keras
 import numpy as np
+from tensorflow.keras.callbacks import Callback
+from utils import data_generator
 
 from tcn import compiled_tcn
-from utils import data_generator
 
 x_train, y_train = data_generator(n=200000, seq_length=600)
 x_test, y_test = data_generator(n=40000, seq_length=600)
 
 
-class PrintSomeValues(keras.callbacks.Callback):
+class PrintSomeValues(Callback):
 
     def on_epoch_begin(self, epoch, logs={}):
         print('y_true, y_pred')
