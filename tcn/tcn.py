@@ -5,7 +5,6 @@ from tensorflow.keras import backend as K, Model, Input, optimizers
 from tensorflow.keras import layers
 from tensorflow.keras.layers import Activation, SpatialDropout1D, Lambda
 from tensorflow.keras.layers import Layer, Conv1D, Dense, BatchNormalization, LayerNormalization
-from tensorflow_addons.layers import WeightNormalization
 
 
 def is_power_of_two(num: int):
@@ -102,6 +101,7 @@ class ResidualBlock(Layer):
                     elif self.use_layer_norm:
                         self._build_layer(LayerNormalization())
                     elif self.use_weight_norm:
+                        from tensorflow_addons.layers import WeightNormalization
                         self._build_layer(WeightNormalization(self.layers[-1]))
 
                 self._build_layer(Activation(self.activation))
