@@ -140,15 +140,22 @@ For a Many to Many regression, a cheap fix for now is to change the [number of u
 
 ### Receptive field
 
-- Receptive field = **nb_stacks_of_residuals_blocks * kernel_size * last_dilation**.
-- If a TCN has only one stack of residual blocks with a kernel size of 2 and dilations [1, 2, 4, 8], its receptive field is 2 * 1 * 8 = 16. The image below illustrates it:
+The receptive field can be calculated using the following formula:
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/12395799/106308730-6d4c5180-6261-11eb-82e9-a12a1958058d.png">
+</p>
+
+where *N<sub>s</sub>* is the number of stacks, *N<sub>b</sub>* is the number of residual blocks per stack, **d** is a vector containing the dilations of each residual block in one stack, and **k** is a vector containing the lengths of the filters of each residual block in one stack.
+
+- If a TCN has only one stack of residual blocks with a kernel size of 2 and dilations [1, 2, 4, 8], its receptive field is 1 + 1 * (1 * 1 + 2 * 1 + 4 * 1 + 8 * 1) = 16. The image below illustrates it:
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/40159126/41830054-10e56fda-7871-11e8-8591-4fa46680c17f.png">
   <b>ks = 2, dilations = [1, 2, 4, 8], 1 block</b><br><br>
 </p>
 
-- If the TCN has now 2 stacks of residual blocks, wou would get the situation below, that is, an increase in the receptive field to 32:
+- If the TCN has now 2 stacks of residual blocks, you would get the situation below, that is, an increase in the receptive field up to 1 + 2 * (1 * 1 + 2 * 1 + 4 * 1 + 8 * 1) = 31:
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/40159126/41830618-a8f82a8a-7874-11e8-9d4f-2ebb70a31465.jpg">
