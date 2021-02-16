@@ -67,8 +67,8 @@ def get_x_y(size=1000):
     pos_indices = np.random.choice(size, size=int(size // 2), replace=False)
     x_train = np.zeros(shape=(size, timesteps, 1))
     y_train = np.zeros(shape=(size, 1))
-    x_train[pos_indices, 0] = 1.0
-    y_train[pos_indices, 0] = 1.0
+    x_train[pos_indices, 0] = 1.0 # we introduce the target in the first timestep of the sequence.
+    y_train[pos_indices, 0] = 1.0 # the task is to see if the TCN can go back in time to find it.
     return x_train, y_train
 
 
