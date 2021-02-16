@@ -89,13 +89,6 @@ x, y = get_x_y()
 m.fit(x, y, epochs=10, validation_split=0.2)
 ```
 
-In the example above, TCNs can also be stacked together, like this:
-
-```python
-o = TCN(return_sequences=True)(i)
-o = TCN(return_sequences=False)(o)
-```
-
 A ready-to-use TCN model can be used that way (cf. `tasks/` for the full code):
 
 ```python
@@ -109,7 +102,7 @@ model.fit(x, y) # Keras model.
 
 `TCN(nb_filters=64, kernel_size=2, nb_stacks=1, dilations=[1, 2, 4, 8, 16, 32], padding='causal', use_skip_connections=False, dropout_rate=0.0, return_sequences=True, activation='relu', kernel_initializer='he_normal', use_batch_norm=False, **kwargs)`
 
-- `nb_filters`: Integer. The number of filters to use in the convolutional layers. Would be similar to `units` for LSTM.
+- `nb_filters`: Integer. The number of filters to use in the convolutional layers. Would be similar to `units` for LSTM. Can be a list.
 - `kernel_size`: Integer. The size of the kernel to use in each convolutional layer.
 - `dilations`: List. A dilation list. Example is: [1, 2, 4, 8, 16, 32, 64].
 - `nb_stacks`: Integer. The number of stacks of residual blocks to use.
@@ -120,6 +113,8 @@ model.fit(x, y) # Keras model.
 - `activation`: The activation used in the residual blocks o = activation(x + F(x)).
 - `kernel_initializer`: Initializer for the kernel weights matrix (Conv1D).
 - `use_batch_norm`: Whether to use batch normalization in the residual layers or not.
+- `use_layer_norm`: Whether to use layer normalization in the residual layers or not.
+- `use_weight_norm`: Whether to use layer normalization in the residual layers or not.
 - `kwargs`: Any other arguments for configuring parent class Layer. For example "name=str", Name of the model. Use unique names when using multiple TCN.
 
 ### Input shape
