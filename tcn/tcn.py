@@ -243,9 +243,7 @@ class TCN(Layer):
 
     @property
     def receptive_field(self):
-        assert_msg = 'The receptive field formula works only with power of two dilations.'
-        assert all([is_power_of_two(i) for i in self.dilations]), assert_msg
-        return self.kernel_size * self.nb_stacks * self.dilations[-1]
+        return 1 + self.nb_stacks * sum([d * self.kernel_size for d in self.dilations])
 
     def build(self, input_shape):
 
