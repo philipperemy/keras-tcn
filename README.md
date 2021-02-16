@@ -54,30 +54,33 @@ pip install keras-tcn
 The usual way is to import the TCN layer and use it inside a Keras model. An example is provided below for a regression task (cf. `tasks/` for other examples):
 
 ```python
-from tensorflow.keras.layers import Dense
-from tensorflow.keras import Input, Model
-
 from tcn import TCN, tcn_full_summary
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.models import Sequential
 
-batch_size, timesteps, input_dim = None, 20, 1
+# if time_steps > tcn_layer.receptive_field, then we should not
+# be able to solve this task.
+batch_size, time_steps, input_dim = None, 20, 1
 
 
 def get_x_y(size=1000):
     import numpy as np
     pos_indices = np.random.choice(size, size=int(size // 2), replace=False)
-    x_train = np.zeros(shape=(size, timesteps, 1))
+    x_train = np.zeros(shape=(size, time_steps, 1))
     y_train = np.zeros(shape=(size, 1))
-    x_train[pos_indices, 0] = 1.0 # we introduce the target in the first timestep of the sequence.
-    y_train[pos_indices, 0] = 1.0 # the task is to see if the TCN can go back in time to find it.
+    x_train[pos_indices, 0] = 1.0  # we introduce the target in the first timestep of the sequence.
+    y_train[pos_indices, 0] = 1.0  # the task is to see if the TCN can go back in time to find it.
     return x_train, y_train
 
 
-i = Input(batch_shape=(batch_size, timesteps, input_dim))
+tcn_layer = TCN(input_shape=(time_steps, input_dim))
+print('Receptive field size =', tcn_layer.receptive_field)
 
-o = TCN()(i)  # The TCN layers are here.
-o = Dense(1)(o)
+m = Sequential([
+    tcn_layer,
+    Dense(1)
+])
 
-m = Model(inputs=[i], outputs=[o])
 m.compile(optimizer='adam', loss='mse')
 
 tcn_full_summary(m, expand_residual_blocks=False)
