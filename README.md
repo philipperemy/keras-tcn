@@ -114,7 +114,7 @@ model.fit(x, y) # Keras model.
 - `kernel_initializer`: Initializer for the kernel weights matrix (Conv1D).
 - `use_batch_norm`: Whether to use batch normalization in the residual layers or not.
 - `use_layer_norm`: Whether to use layer normalization in the residual layers or not.
-- `use_weight_norm`: Whether to use layer normalization in the residual layers or not.
+- `use_weight_norm`: Whether to use weight normalization in the residual layers or not.
 - `kwargs`: Any other arguments for configuring parent class Layer. For example "name=str", Name of the model. Use unique names when using multiple TCN.
 
 ### Input shape
