@@ -1,5 +1,7 @@
 # Keras TCN
 
+*Keras Temporal Convolutional Network*. [[paper](https://arxiv.org/abs/1803.01271)]
+
 *Compatible with all the major/latest Tensorflow versions (from 1.14 to 2.4.0+).*
 
 
@@ -10,7 +12,11 @@
 pip install keras-tcn
 ```
 
-*Keras Temporal Convolutional Network*. [[paper](https://arxiv.org/abs/1803.01271)]
+You can also install it without the dependencies, assuming you already have tensorflow and numpy installed:
+```
+pip install keras-tcn --no-dependencies
+```
+
 
    * [Keras TCN](#keras-tcn)
       * [Why Temporal Convolutional Network?](#why-temporal-convolutional-network)
