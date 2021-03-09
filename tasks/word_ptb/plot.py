@@ -18,7 +18,7 @@ def keras_output_to_data_frame(filename) -> pd.DataFrame:
         lines = r.read().strip().split('\n')
     for line in lines:
         if 'ETA' not in line and 'loss' in line:
-            matches = re.findall('[a-z_]+: \d+.\d+', line)
+            matches = re.findall('[a-z_]+: [0-9]+.[0-9]+', line)
             headers = [m.split(':')[0] + '_' + suffix for m in matches]
             data.append([float(m.split(':')[1]) for m in matches])
     return pd.DataFrame(data, columns=headers)
