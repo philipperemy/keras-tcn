@@ -106,11 +106,28 @@ model.fit(x, y) # Keras model.
 
 ### Arguments
 
-`TCN(nb_filters=64, kernel_size=2, nb_stacks=1, dilations=[1, 2, 4, 8, 16, 32], padding='causal', use_skip_connections=False, dropout_rate=0.0, return_sequences=True, activation='relu', kernel_initializer='he_normal', use_batch_norm=False, **kwargs)`
+```python
+TCN(
+    nb_filters=64,
+    kernel_size=3,
+    nb_stacks=1,
+    dilations=(1, 2, 4, 8, 16, 32),
+    padding='causal',
+    use_skip_connections=True,
+    dropout_rate=0.0,
+    return_sequences=False,
+    activation='relu',
+    kernel_initializer='he_normal',
+    use_batch_norm=False,
+    use_layer_norm=True,
+    use_weight_norm=False,
+    **kwargs
+)
+```
 
 - `nb_filters`: Integer. The number of filters to use in the convolutional layers. Would be similar to `units` for LSTM. Can be a list.
 - `kernel_size`: Integer. The size of the kernel to use in each convolutional layer.
-- `dilations`: List. A dilation list. Example is: [1, 2, 4, 8, 16, 32, 64].
+- `dilations`: List/Tuple. A dilation list. Example is: [1, 2, 4, 8, 16, 32, 64].
 - `nb_stacks`: Integer. The number of stacks of residual blocks to use.
 - `padding`: String. The padding to use in the convolutions. 'causal' for a causal network (as in the original implementation) and 'same' for a non-causal network.
 - `use_skip_connections`: Boolean. If we want to add skip connections from input to each residual block.
@@ -121,7 +138,7 @@ model.fit(x, y) # Keras model.
 - `use_batch_norm`: Whether to use batch normalization in the residual layers or not.
 - `use_layer_norm`: Whether to use layer normalization in the residual layers or not.
 - `use_weight_norm`: Whether to use weight normalization in the residual layers or not.
-- `kwargs`: Any other arguments for configuring parent class Layer. For example "name=str", Name of the model. Use unique names when using multiple TCN.
+- `kwargs`: Any other set of arguments for configuring the parent class Layer. For example "name=str", Name of the model. Use unique names when using multiple TCN.
 
 ### Input shape
 
