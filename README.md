@@ -7,7 +7,7 @@
 ![Keras TCN CI](https://github.com/philipperemy/keras-tcn/workflows/Keras%20TCN%20CI/badge.svg?branch=master)
 ```bash
 pip install keras-tcn
-pip install keras-tcn --no-dependencies  # without the dependencies if you already have TF and numpy installed.
+pip install keras-tcn --no-dependencies  # without the dependencies if you already have TF/Numpy.
 ```
 
 ## Why Temporal Convolutional Network instead of LSTM/GRU?
