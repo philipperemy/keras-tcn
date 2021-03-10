@@ -31,7 +31,7 @@ pip install keras-tcn --no-dependencies  # without the dependencies if you alrea
          * [Output shape](#output-shape)
          * [Receptive field](#receptive-field)
          * [Non-causal TCN](#non-causal-tcn)
-      * [Installation](#installation)
+      * [Installation from the sources](#installation-from-the-sources)
       * [Run](#run)
       * [Reproducible results](#reproducible-results)
       * [Tasks](#tasks)
@@ -191,7 +191,7 @@ However, it is not anymore suitable for real-time applications.
 
 To use a non-causal TCN, specify `padding='valid'` or `padding='same'` when initializing the TCN layers.
 
-## Installation
+## Installation from the sources
 
 ```bash
 git clone git@github.com:philipperemy/keras-tcn.git && cd keras-tcn
