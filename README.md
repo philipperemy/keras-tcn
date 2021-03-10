@@ -22,6 +22,7 @@ pip install keras-tcn --no-dependencies  # without the dependencies if you alrea
 </p>
 
 
+## Index
 
    * [Keras TCN](#keras-tcn)
       * [API](#api)
