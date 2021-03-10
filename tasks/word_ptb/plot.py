@@ -25,9 +25,12 @@ def keras_output_to_data_frame(filename) -> pd.DataFrame:
 
 
 def main():
-    m1 = keras_output_to_data_frame(sys.argv[1])
-    m2 = keras_output_to_data_frame(sys.argv[2])
-    m = pd.concat([m1, m2], axis=1)
+    dfs = []
+    for i, argument in enumerate(sys.argv):
+        if i == 0:
+            continue
+        dfs.append(keras_output_to_data_frame(argument))
+    m = pd.concat(dfs, axis=1)
     accuracy_columns = [c for c in list(m.columns) if 'acc' in c]
     loss_columns = [c for c in list(m.columns) if 'loss' in c]
     _, axs = plt.subplots(ncols=2, figsize=(12, 7), dpi=150)
