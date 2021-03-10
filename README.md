@@ -151,14 +151,6 @@ TCN(
 - if `return_sequences=True`: 3D tensor with shape `(batch_size, timesteps, nb_filters)`.
 - if `return_sequences=False`: 2D tensor with shape `(batch_size, nb_filters)`.
 
-### Supported task types
-
-- Regression (Many to one) e.g. adding problem
-- Classification (Many to many) e.g. copy memory task
-- Classification (Many to one) e.g. sequential mnist task
-
-For a Many to Many regression, a cheap fix for now is to change the [number of units of the final Dense layer](https://github.com/philipperemy/keras-tcn/blob/8151b4a87f906fd856fd1c113c48392d542d0994/tcn/tcn.py#L90).
-
 ### Receptive field
 
 The receptive field can be calculated using the following formula:
