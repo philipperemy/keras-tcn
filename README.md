@@ -10,12 +10,20 @@
 ![Keras TCN CI](https://github.com/philipperemy/keras-tcn/workflows/Keras%20TCN%20CI/badge.svg?branch=master)
 ```bash
 pip install keras-tcn
+pip install keras-tcn --no-dependencies  # without the dependencies if you already have TF and numpy installed.
 ```
 
-You can also install it without the dependencies, assuming you already have tensorflow and numpy installed:
-```
-pip install keras-tcn --no-dependencies
-```
+## Why Temporal Convolutional Network?
+
+- TCNs exhibit longer memory than recurrent architectures with the same capacity.
+- Constantly performs better than LSTM/GRU architectures on a vast range of tasks (Seq. MNIST, Adding Problem, Copy Memory, Word-level PTB...).
+- Parallelism, flexible receptive field size, stable gradients, low memory requirements for training, variable length inputs...
+
+<p align="center">
+  <img src="misc/Dilated_Conv.png">
+  <b>Visualization of a stack of dilated causal convolutional layers (Wavenet, 2016)</b><br><br>
+</p>
+
 
 
    * [Keras TCN](#keras-tcn)
@@ -44,16 +52,6 @@ pip install keras-tcn --no-dependencies
       * [References](#references)
       * [Related](#related)
 
-## Why Temporal Convolutional Network?
-
-- TCNs exhibit longer memory than recurrent architectures with the same capacity.
-- Constantly performs better than LSTM/GRU architectures on a vast range of tasks (Seq. MNIST, Adding Problem, Copy Memory, Word-level PTB...).
-- Parallelism, flexible receptive field size, stable gradients, low memory requirements for training, variable length inputs...
-
-<p align="center">
-  <img src="misc/Dilated_Conv.png">
-  <b>Visualization of a stack of dilated causal convolutional layers (Wavenet, 2016)</b><br><br>
-</p>
 
 ## API
 
