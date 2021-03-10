@@ -86,6 +86,7 @@ def main():
             Dense(size_vocab, activation='softmax')
         ])
     else:
+        # noinspection PyArgumentEqualDefault
         tcn = TCN(
             nb_filters=70,
             kernel_size=3,
