@@ -177,7 +177,6 @@ where *N<sub>s</sub>* is the number of stacks, *N<sub>b</sub>* is the number of 
   <b>ks = 2, dilations = [1, 2, 4, 8], 3 blocks</b><br><br>
 </p>
 
-Thanks to [@alextheseal](https://github.com/alextheseal) for providing such visuals.
 
 ### Non-causal TCN
 
@@ -191,8 +190,6 @@ However, it is not anymore suitable for real-time applications.
 </p>
 
 To use a non-causal TCN, specify `padding='valid'` or `padding='same'` when initializing the TCN layers.
-
-Special thanks to: [@qlemaire22](https://github.com/qlemaire22)
 
 ## Installation
 
@@ -338,3 +335,7 @@ for Sequence Modeling)
   howpublished = {\url{https://github.com/philipperemy/keras-tcn}},
 }
 ```
+
+Special thanks to:
+- @alextheseal
+- @qlemaire22
