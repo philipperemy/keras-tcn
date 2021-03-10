@@ -206,7 +206,7 @@ class TCN(Layer):
                  activation='relu',
                  kernel_initializer='he_normal',
                  use_batch_norm=False,
-                 use_layer_norm=True,
+                 use_layer_norm=False,
                  use_weight_norm=False,
                  **kwargs):
 
