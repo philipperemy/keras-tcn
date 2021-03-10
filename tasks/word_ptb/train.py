@@ -87,9 +87,9 @@ def main():
         ])
     else:
         tcn = TCN(
-            nb_filters=64,
+            nb_filters=70,
             kernel_size=3,
-            dilations=(1, 2, 4, 8, 16, 32),
+            dilations=(1, 2, 4, 8, 16),
             use_skip_connections=True,
             use_layer_norm=True
         )
