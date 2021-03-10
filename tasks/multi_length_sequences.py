@@ -1,7 +1,6 @@
 import numpy as np
+from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Dense
-from tensorflow.keras.models import Model
-from tensorflow.keras import Input
 
 from tcn import TCN
 
@@ -34,18 +33,17 @@ def get_x_y(max_time_steps):
         else:
             x_train = np.array([np.zeros(shape=(time_steps, 1))])
             y_train = [0]
-        print('\nInput: sequence of length {}\n'.format(time_steps))
+        if k % 100 == 0:
+            print(f'({k}) Input: sequence of length {time_steps}.')
         yield x_train, np.expand_dims(y_train, axis=-1)
 
 
-i = Input(batch_shape=(1, None, 1))
+m = Sequential([
+    TCN(input_shape=(None, 1)),
+    Dense(1, activation='sigmoid')
+])
 
-o = TCN(return_sequences=False)(i)  # regression problem here.
-o = Dense(1, activation='sigmoid')(o)
-
-m = Model(inputs=[i], outputs=[o])
 m.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
-size = 1000
 gen = get_x_y(max_time_steps=MAX_TIME_STEP)
-m.fit_generator(gen, epochs=1, steps_per_epoch=size, max_queue_size=1)
+m.fit(gen, epochs=1, steps_per_epoch=1000, max_queue_size=1, verbose=2)
