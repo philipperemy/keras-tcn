@@ -208,22 +208,19 @@ To use a non-causal TCN, specify `padding='valid'` or `padding='same'` when init
 
 Special thanks to: [@qlemaire22](https://github.com/qlemaire22)
 
-## Installation (Python 3)
+## Installation
 
 ```bash
-git clone git@github.com:philipperemy/keras-tcn.git
-cd keras-tcn
-virtualenv -p python3.6 venv
+git clone git@github.com:philipperemy/keras-tcn.git && cd keras-tcn
+virtualenv -p python3 venv
 source venv/bin/activate
-pip install -r requirements.txt # change to tensorflow if you dont have a gpu.
-pip install . --upgrade # install it as a package.
+pip install -r requirements.txt
+pip install .
 ```
-
-Note: Only compatible with Python 3 at the moment. Should be almost compatible with python 2.
 
 ## Run
 
-Once `keras-tcn` is installed as a package, you can take a glimpse of what's possible to do with TCNs. Some tasks examples are  available in the repository for this purpose:
+Once `keras-tcn` is installed as a package, you can take a glimpse of what is possible to do with TCNs. Some tasks examples are available in the repository for this purpose:
 
 ```bash
 cd adding_problem/
@@ -355,4 +352,3 @@ for Sequence Modeling)
   howpublished = {\url{https://github.com/philipperemy/keras-tcn}},
 }
 ```
-
