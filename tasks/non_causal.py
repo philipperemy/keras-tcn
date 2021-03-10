@@ -1,17 +1,15 @@
 import numpy as np
-from tensorflow.keras import Input
-from tensorflow.keras import Model
+from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Dense
 
 from tcn import TCN
 
-i = Input(batch_shape=(None, 5, 300))
-o = TCN(nb_filters=30, return_sequences=False, padding='same')(i)  # The TCN layers are here.
-o = Dense(1)(o)
-m = Model(inputs=[i], outputs=[o])
-m.compile(optimizer='adam', loss='mse')
-pred = m(np.random.rand(1, 5, 300))
+# Look at the README.md to know what is a non-causal case.
 
-# tcnn = TCN(nb_filters=30, return_sequences=False, padding='same')
-# tcnn.build((None, None, 300))
-# print(tcnn.call(Input(batch_shape=(None, 30, 300))))
+model = Sequential([
+    TCN(nb_filters=30, padding='same', input_shape=(5, 300)),
+    Dense(1)
+])
+model.compile(optimizer='adam', loss='mse')
+pred = model.predict(np.random.rand(1, 5, 300))
+print(pred.shape)

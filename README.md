@@ -2,32 +2,36 @@
 
 *Keras Temporal Convolutional Network*. [[paper](https://arxiv.org/abs/1803.01271)]
 
-*Compatible with all the major/latest Tensorflow versions (from 1.14 to 2.4.0+).*
-
-
 [![Downloads](https://pepy.tech/badge/keras-tcn)](https://pepy.tech/project/keras-tcn)
 [![Downloads](https://pepy.tech/badge/keras-tcn/month)](https://pepy.tech/project/keras-tcn)
 ![Keras TCN CI](https://github.com/philipperemy/keras-tcn/workflows/Keras%20TCN%20CI/badge.svg?branch=master)
 ```bash
 pip install keras-tcn
+pip install keras-tcn --no-dependencies  # without the dependencies if you already have TF/Numpy.
 ```
 
-You can also install it without the dependencies, assuming you already have tensorflow and numpy installed:
-```
-pip install keras-tcn --no-dependencies
-```
+## Why Temporal Convolutional Network instead of LSTM/GRU?
 
+- TCNs exhibit longer memory than recurrent architectures with the same capacity.
+- Constantly performs better than LSTM/GRU architectures on a vast range of tasks (Seq. MNIST, Adding Problem, Copy Memory, Word-level PTB...).
+- Parallelism, flexible receptive field size, stable gradients, low memory requirements for training, variable length inputs...
+
+<p align="center">
+  <img src="misc/Dilated_Conv.png">
+  <b>Visualization of a stack of dilated causal convolutional layers (Wavenet, 2016)</b><br><br>
+</p>
+
+
+## Index
 
    * [Keras TCN](#keras-tcn)
-      * [Why Temporal Convolutional Network?](#why-temporal-convolutional-network)
       * [API](#api)
          * [Arguments](#arguments)
          * [Input shape](#input-shape)
          * [Output shape](#output-shape)
-         * [Supported task types](#supported-task-types)
          * [Receptive field](#receptive-field)
          * [Non-causal TCN](#non-causal-tcn)
-      * [Installation (Python 3)](#installation-python-3)
+      * [Installation from the sources](#installation-from-the-sources)
       * [Run](#run)
       * [Reproducible results](#reproducible-results)
       * [Tasks](#tasks)
@@ -44,20 +48,10 @@ pip install keras-tcn --no-dependencies
       * [References](#references)
       * [Related](#related)
 
-## Why Temporal Convolutional Network?
-
-- TCNs exhibit longer memory than recurrent architectures with the same capacity.
-- Constantly performs better than LSTM/GRU architectures on a vast range of tasks (Seq. MNIST, Adding Problem, Copy Memory, Word-level PTB...).
-- Parallelism, flexible receptive field size, stable gradients, low memory requirements for training, variable length inputs...
-
-<p align="center">
-  <img src="misc/Dilated_Conv.png">
-  <b>Visualization of a stack of dilated causal convolutional layers (Wavenet, 2016)</b><br><br>
-</p>
 
 ## API
 
-The usual way is to import the TCN layer and use it inside a Keras model. An example is provided below for a regression task (cf. `tasks/` for other examples):
+The usual way is to import the TCN layer and use it inside a Keras model. An example is provided below for a regression task (cf. [tasks](tasks) for other examples):
 
 ```python
 from tcn import TCN, tcn_full_summary
@@ -106,11 +100,28 @@ model.fit(x, y) # Keras model.
 
 ### Arguments
 
-`TCN(nb_filters=64, kernel_size=2, nb_stacks=1, dilations=[1, 2, 4, 8, 16, 32], padding='causal', use_skip_connections=False, dropout_rate=0.0, return_sequences=True, activation='relu', kernel_initializer='he_normal', use_batch_norm=False, **kwargs)`
+```python
+TCN(
+    nb_filters=64,
+    kernel_size=3,
+    nb_stacks=1,
+    dilations=(1, 2, 4, 8, 16, 32),
+    padding='causal',
+    use_skip_connections=True,
+    dropout_rate=0.0,
+    return_sequences=False,
+    activation='relu',
+    kernel_initializer='he_normal',
+    use_batch_norm=False,
+    use_layer_norm=True,
+    use_weight_norm=False,
+    **kwargs
+)
+```
 
 - `nb_filters`: Integer. The number of filters to use in the convolutional layers. Would be similar to `units` for LSTM. Can be a list.
 - `kernel_size`: Integer. The size of the kernel to use in each convolutional layer.
-- `dilations`: List. A dilation list. Example is: [1, 2, 4, 8, 16, 32, 64].
+- `dilations`: List/Tuple. A dilation list. Example is: [1, 2, 4, 8, 16, 32, 64].
 - `nb_stacks`: Integer. The number of stacks of residual blocks to use.
 - `padding`: String. The padding to use in the convolutions. 'causal' for a causal network (as in the original implementation) and 'same' for a non-causal network.
 - `use_skip_connections`: Boolean. If we want to add skip connections from input to each residual block.
@@ -121,7 +132,7 @@ model.fit(x, y) # Keras model.
 - `use_batch_norm`: Whether to use batch normalization in the residual layers or not.
 - `use_layer_norm`: Whether to use layer normalization in the residual layers or not.
 - `use_weight_norm`: Whether to use weight normalization in the residual layers or not.
-- `kwargs`: Any other arguments for configuring parent class Layer. For example "name=str", Name of the model. Use unique names when using multiple TCN.
+- `kwargs`: Any other set of arguments for configuring the parent class Layer. For example "name=str", Name of the model. Use unique names when using multiple TCN.
 
 ### Input shape
 
@@ -133,14 +144,6 @@ model.fit(x, y) # Keras model.
 
 - if `return_sequences=True`: 3D tensor with shape `(batch_size, timesteps, nb_filters)`.
 - if `return_sequences=False`: 2D tensor with shape `(batch_size, nb_filters)`.
-
-### Supported task types
-
-- Regression (Many to one) e.g. adding problem
-- Classification (Many to many) e.g. copy memory task
-- Classification (Many to one) e.g. sequential mnist task
-
-For a Many to Many regression, a cheap fix for now is to change the [number of units of the final Dense layer](https://github.com/philipperemy/keras-tcn/blob/8151b4a87f906fd856fd1c113c48392d542d0994/tcn/tcn.py#L90).
 
 ### Receptive field
 
@@ -174,7 +177,6 @@ where *N<sub>s</sub>* is the number of stacks, *N<sub>b</sub>* is the number of 
   <b>ks = 2, dilations = [1, 2, 4, 8], 3 blocks</b><br><br>
 </p>
 
-Thanks to [@alextheseal](https://github.com/alextheseal) for providing such visuals.
 
 ### Non-causal TCN
 
@@ -189,24 +191,19 @@ However, it is not anymore suitable for real-time applications.
 
 To use a non-causal TCN, specify `padding='valid'` or `padding='same'` when initializing the TCN layers.
 
-Special thanks to: [@qlemaire22](https://github.com/qlemaire22)
-
-## Installation (Python 3)
+## Installation from the sources
 
 ```bash
-git clone git@github.com:philipperemy/keras-tcn.git
-cd keras-tcn
-virtualenv -p python3.6 venv
+git clone git@github.com:philipperemy/keras-tcn.git && cd keras-tcn
+virtualenv -p python3 venv
 source venv/bin/activate
-pip install -r requirements.txt # change to tensorflow if you dont have a gpu.
-pip install . --upgrade # install it as a package.
+pip install -r requirements.txt
+pip install .
 ```
-
-Note: Only compatible with Python 3 at the moment. Should be almost compatible with python 2.
 
 ## Run
 
-Once `keras-tcn` is installed as a package, you can take a glimpse of what's possible to do with TCNs. Some tasks examples are  available in the repository for this purpose:
+Once `keras-tcn` is installed as a package, you can take a glimpse of what is possible to do with TCNs. Some tasks examples are available in the repository for this purpose:
 
 ```bash
 cd adding_problem/
@@ -319,9 +316,9 @@ tox
 
 ## References
 - https://github.com/locuslab/TCN/ (TCN for Pytorch)
-- https://arxiv.org/pdf/1803.01271.pdf (An Empirical Evaluation of Generic Convolutional and Recurrent Networks
+- https://arxiv.org/pdf/1803.01271 (An Empirical Evaluation of Generic Convolutional and Recurrent Networks
 for Sequence Modeling)
-- https://arxiv.org/pdf/1609.03499.pdf (Original Wavenet paper)
+- https://arxiv.org/pdf/1609.03499 (Original Wavenet paper)
 
 ## Related
 - https://github.com/Baichenjia/Tensorflow-TCN (Tensorflow Eager implementation of TCNs)
@@ -339,3 +336,6 @@ for Sequence Modeling)
 }
 ```
 
+Special thanks to:
+- @alextheseal
+- @qlemaire22

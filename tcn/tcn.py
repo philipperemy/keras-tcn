@@ -196,11 +196,11 @@ class TCN(Layer):
 
     def __init__(self,
                  nb_filters=64,
-                 kernel_size=2,
+                 kernel_size=3,
                  nb_stacks=1,
                  dilations=(1, 2, 4, 8, 16, 32),
                  padding='causal',
-                 use_skip_connections=False,
+                 use_skip_connections=True,
                  dropout_rate=0.0,
                  return_sequences=False,
                  activation='relu',
