@@ -2,9 +2,6 @@
 
 *Keras Temporal Convolutional Network*. [[paper](https://arxiv.org/abs/1803.01271)]
 
-*Compatible with all the major/latest Tensorflow versions (from 1.14 to 2.4.0+).*
-
-
 [![Downloads](https://pepy.tech/badge/keras-tcn)](https://pepy.tech/project/keras-tcn)
 [![Downloads](https://pepy.tech/badge/keras-tcn/month)](https://pepy.tech/project/keras-tcn)
 ![Keras TCN CI](https://github.com/philipperemy/keras-tcn/workflows/Keras%20TCN%20CI/badge.svg?branch=master)
@@ -13,7 +10,7 @@ pip install keras-tcn
 pip install keras-tcn --no-dependencies  # without the dependencies if you already have TF and numpy installed.
 ```
 
-## Why Temporal Convolutional Network?
+## Why Temporal Convolutional Network instead of LSTM/GRU?
 
 - TCNs exhibit longer memory than recurrent architectures with the same capacity.
 - Constantly performs better than LSTM/GRU architectures on a vast range of tasks (Seq. MNIST, Adding Problem, Copy Memory, Word-level PTB...).
@@ -27,15 +24,13 @@ pip install keras-tcn --no-dependencies  # without the dependencies if you alrea
 
 
    * [Keras TCN](#keras-tcn)
-      * [Why Temporal Convolutional Network?](#why-temporal-convolutional-network)
       * [API](#api)
          * [Arguments](#arguments)
          * [Input shape](#input-shape)
          * [Output shape](#output-shape)
-         * [Supported task types](#supported-task-types)
          * [Receptive field](#receptive-field)
          * [Non-causal TCN](#non-causal-tcn)
-      * [Installation (Python 3)](#installation-python-3)
+      * [Installation](#installation)
       * [Run](#run)
       * [Reproducible results](#reproducible-results)
       * [Tasks](#tasks)
