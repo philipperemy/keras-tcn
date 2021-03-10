@@ -51,7 +51,7 @@ pip install keras-tcn --no-dependencies  # without the dependencies if you alrea
 
 ## API
 
-The usual way is to import the TCN layer and use it inside a Keras model. An example is provided below for a regression task (cf. `tasks/` for other examples):
+The usual way is to import the TCN layer and use it inside a Keras model. An example is provided below for a regression task (cf. [tasks](tasks) for other examples):
 
 ```python
 from tcn import TCN, tcn_full_summary
