@@ -2,7 +2,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from tensorflow.keras import Input, Model
+from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Dense
 
 from tcn import TCN
@@ -32,14 +32,12 @@ y = np.array(y)
 print(x.shape)
 print(y.shape)
 
-i = Input(shape=(lookback_window, 1))
-m = TCN()(i)
-m = Dense(1, activation='linear')(m)
-
-model = Model(inputs=[i], outputs=[m])
+model = Sequential([
+    TCN(input_shape=(lookback_window, 1)),
+    Dense(1, activation='linear')
+])
 
 model.summary()
-
 model.compile('adam', 'mae')
 
 print('Train...')

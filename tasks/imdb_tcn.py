@@ -5,9 +5,9 @@ Time per epoch on CPU (Core i7): ~64s.
 Based on: https://github.com/keras-team/keras/blob/master/examples/imdb_bidirectional_lstm.py
 """
 import numpy as np
-from tensorflow.keras import Model, Input
+from tensorflow.keras import Sequential
 from tensorflow.keras.datasets import imdb
-from tensorflow.keras.layers import Dense, Dropout, Embedding
+from tensorflow.keras.layers import Dense, Embedding
 from tensorflow.keras.preprocessing import sequence
 
 from tcn import TCN
@@ -31,23 +31,20 @@ print('x_test shape:', x_test.shape)
 y_train = np.array(y_train)
 y_test = np.array(y_test)
 
-i = Input(shape=(maxlen,))
-x = Embedding(max_features, 128)(i)
-x = TCN(nb_filters=64,
-        kernel_size=6,
-        dilations=[1, 2, 4, 8, 16, 32, 64])(x)
-x = Dropout(0.5)(x)
-x = Dense(1, activation='sigmoid')(x)
+model = Sequential([
+    Embedding(max_features, 128, input_shape=(maxlen,)),
+    TCN(kernel_size=6, dilations=[1, 2, 4, 8, 16]),
+    Dense(1, activation='sigmoid')
+])
 
-model = Model(inputs=[i], outputs=[x])
+print(f'TCN receptive field: {model.layers[1].receptive_field}.')
 
 model.summary()
-
-# try using different optimizers and different optimizer configs
 model.compile('adam', 'binary_crossentropy', metrics=['accuracy'])
 
 print('Train...')
-model.fit(x_train, y_train,
-          batch_size=batch_size,
-          epochs=1,
-          validation_data=[x_test, y_test])
+model.fit(
+    x_train, y_train,
+    batch_size=batch_size,
+    validation_data=[x_test, y_test]
+)

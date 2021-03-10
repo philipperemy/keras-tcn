@@ -34,15 +34,16 @@ y_test = np.array(y_test)
 
 model = Sequential()
 model.add(Embedding(max_features, 128, input_shape=(maxlen,)))
-model.add(TCN(nb_filters=64,
-              kernel_size=6,
-              dilations=[1, 2, 4, 8, 16, 32, 64]))
+model.add(TCN(
+    nb_filters=64,
+    kernel_size=6,
+    dilations=[1, 2, 4, 8, 16, 32, 64]
+))
 model.add(Dropout(0.5))
 model.add(Dense(1, activation='sigmoid'))
 
 model.summary()
 
-# try using different optimizers and different optimizer configs
 model.compile('adam', 'binary_crossentropy', metrics=['accuracy'])
 
 
@@ -55,8 +56,9 @@ class TestCallback(Callback):
 
 
 print('Train...')
-model.fit(x_train, y_train,
-          batch_size=batch_size,
-          epochs=1,
-          validation_data=(x_test, y_test),
-          callbacks=[TestCallback()])
+model.fit(
+    x_train, y_train,
+    batch_size=batch_size,
+    validation_data=(x_test, y_test),
+    callbacks=[TestCallback()]
+)
