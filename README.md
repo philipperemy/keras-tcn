@@ -336,9 +336,9 @@ tox
 
 ## References
 - https://github.com/locuslab/TCN/ (TCN for Pytorch)
-- https://arxiv.org/pdf/1803.01271.pdf (An Empirical Evaluation of Generic Convolutional and Recurrent Networks
+- https://arxiv.org/pdf/1803.01271 (An Empirical Evaluation of Generic Convolutional and Recurrent Networks
 for Sequence Modeling)
-- https://arxiv.org/pdf/1609.03499.pdf (Original Wavenet paper)
+- https://arxiv.org/pdf/1609.03499 (Original Wavenet paper)
 
 ## Related
 - https://github.com/Baichenjia/Tensorflow-TCN (Tensorflow Eager implementation of TCNs)
