@@ -82,14 +82,23 @@ def main():
         model = Sequential(layers=[
             Embedding(size_vocab, args.emb_size),
             Dropout(rate=0.2),
-            LSTM(128, recurrent_dropout=0.2),
+            LSTM(128),
             Dense(size_vocab, activation='softmax')
         ])
     else:
+        # noinspection PyArgumentEqualDefault
+        tcn = TCN(
+            nb_filters=70,
+            kernel_size=3,
+            dilations=(1, 2, 4, 8, 16),
+            use_skip_connections=True,
+            use_layer_norm=True
+        )
+        print(f'TCN.receptive_field: {tcn.receptive_field}.')
         model = Sequential(layers=[
             Embedding(size_vocab, args.emb_size),
             Dropout(rate=0.2),
-            TCN(),
+            tcn,
             Dense(size_vocab, activation='softmax')
         ])
 
