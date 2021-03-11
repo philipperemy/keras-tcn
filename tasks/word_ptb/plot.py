@@ -26,6 +26,7 @@ def keras_output_to_data_frame(filename) -> pd.DataFrame:
 
 def main():
     dfs = []
+    colors = ['darkviolet', 'violet', 'deepskyblue', 'skyblue']
     for i, argument in enumerate(sys.argv):
         if i == 0:
             continue
@@ -34,10 +35,10 @@ def main():
     accuracy_columns = [c for c in list(m.columns) if 'acc' in c]
     loss_columns = [c for c in list(m.columns) if 'loss' in c]
     _, axs = plt.subplots(ncols=2, figsize=(12, 7), dpi=150)
-    m.plot(y=accuracy_columns, title='Accuracy', legend=True, xlabel='epoch',
+    m.plot(y=accuracy_columns, title='Accuracy', legend=True, xlabel='epoch', color=colors,
            ylabel='accuracy', sort_columns=True, grid=True, ax=axs[0])
-    plt.figure(1, figsize=(7, 7))
-    m.plot(y=loss_columns, title='Loss', legend=True,
+    plt.figure(1, figsize=(2, 5))
+    m.plot(y=loss_columns, title='Loss', legend=True, color=colors,
            xlabel='epoch', ylabel='loss', sort_columns=True, grid=True, ax=axs[1])
     plt.savefig('result.png')
     plt.close()
