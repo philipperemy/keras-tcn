@@ -224,7 +224,7 @@ Reproducible results are possible on (NVIDIA) GPUs using the [tensorflow-determi
 
 ### Word PTB
 
-Language modeling remains one of the primary applications of recurrent networks. In this example, we show that TCN can beat LSTM without too much tuning.
+Language modeling remains one of the primary applications of recurrent networks. In this example, we show that TCN can beat LSTM without too much tuning. More here: [WordPTB](tasks/word_ptb/README.md).
 
 <p align="center">
   <img src="tasks/word_ptb/result.png" width="800"><br>
