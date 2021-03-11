@@ -222,6 +222,15 @@ Reproducible results are possible on (NVIDIA) GPUs using the [tensorflow-determi
 
 ## Tasks
 
+### Word PTB
+
+Language modeling remains one of the primary applications of recurrent networks. In this example, we show that TCN can beat LSTM without too much tuning.
+
+<p align="center">
+  <img src="tasks/word_ptb/result.png" width="600">
+  <i>TCN vs LSTM (comparable number of weights)</i><br><br>
+</p>
+
 ### Adding Task
 
 The task consists of feeding a large array of decimal numbers to the network, along with a boolean array of the same length. The objective is to sum the two decimals where the boolean array contain the two 1s.
