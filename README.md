@@ -13,8 +13,8 @@ pip install keras-tcn --no-dependencies  # without the dependencies if you alrea
 ## Why Temporal Convolutional Network instead of LSTM/GRU?
 
 - TCNs exhibit longer memory than recurrent architectures with the same capacity.
-- Constantly performs better than LSTM/GRU architectures on a vast range of tasks (Seq. MNIST, Adding Problem, Copy Memory, Word-level PTB...).
-- Parallelism, flexible receptive field size, stable gradients, low memory requirements for training, variable length inputs...
+- Performs better than LSTM/GRU on a vast range of tasks (Seq. MNIST, Adding Problem, Copy Memory, Word-level PTB...).
+- Parallelism (convolutional layers), flexible receptive field size (possible to specify how far the model can see), stable gradients (backpropagation through time, vanishing gradients)...
 
 <p align="center">
   <img src="misc/Dilated_Conv.png">
