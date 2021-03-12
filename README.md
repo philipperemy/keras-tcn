@@ -90,7 +90,7 @@ x, y = get_x_y()
 m.fit(x, y, epochs=10, validation_split=0.2)
 ```
 
-A ready-to-use TCN model can be used that way (cf. `tasks/` for the full code):
+A ready-to-use TCN model can be used that way (cf. [tasks](tasks) for some examples):
 
 ```python
 from tcn import compiled_tcn
