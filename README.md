@@ -74,6 +74,7 @@ def get_x_y(size=1000):
 
 
 tcn_layer = TCN(input_shape=(time_steps, input_dim))
+# The receptive field tells you how far the model can see in terms of timesteps.
 print('Receptive field size =', tcn_layer.receptive_field)
 
 m = Sequential([
