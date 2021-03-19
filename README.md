@@ -161,7 +161,7 @@ Here are some of my notes regarding my experience using TCN:
 - `use_skip_connections`: Skip connections connects layers, similarly to DenseNet. It helps the gradients flow. Unless you experience a drop in performance, you should always activate it.
 - `return_sequences`: Same as the one present in the LSTM layer. Refer to the Keras doc for this parameter.
 - `dropout_rate`: Similar to `recurrent_dropout` for the LSTM layer. I usually don't use it much. Or set it to a low value like `0.05`.
-- `activation`: Leave it to default. I have never changed.
+- `activation`: Leave it to default. I have never changed it.
 - `kernel_initializer`: If the training of the TCN gets stuck, it might be worth changing this parameter. For example: `glorot_uniform`.
 
 - `use_batch_norm`, `use_weight_norm`, `use_weight_norm`: Use normalization if your network is big enough and the task contains enough data. I usually prefer using `use_layer_norm`, but you can try them all and see which one works the best.
