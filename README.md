@@ -101,6 +101,8 @@ model.fit(x, y) # Keras model.
 
 ### Arguments
 
+
+
 ```python
 TCN(
     nb_filters=64,
@@ -114,7 +116,7 @@ TCN(
     activation='relu',
     kernel_initializer='he_normal',
     use_batch_norm=False,
-    use_layer_norm=True,
+    use_layer_norm=False,
     use_weight_norm=False,
     **kwargs
 )
@@ -178,6 +180,23 @@ where *N<sub>s</sub>* is the number of stacks, *N<sub>b</sub>* is the number of 
   <b>ks = 2, dilations = [1, 2, 4, 8], 3 blocks</b><br><br>
 </p>
 
+
+### How do I choose the correct set of parameters to configure my TCN layer?
+
+Here are some of my notes regarding my experience using TCN:
+
+- `nb_filters`: Present in any ConvNet architecture. It is linked to the predictive power of the model and affects the size of your network. The more, the better unless you start to overfit. It's similar to the number of units in an LSTM/GRU architecture too.
+- `kernel_size`: Controls the spatial area/volume considered in the convolutional ops. Good values are usually between 2 and 8. If you think your sequence heavily depends on t-1 and t-2, but less on the rest, then choose a kernel size of 2/3. For NLP tasks, we prefer bigger kernel sizes. A large kernel size will make your network much bigger.
+- `dilations`: It controls how deep your TCN layer is. Usually, consider a list with multiple of two. You can guess how many dilations you need by matching the receptive field (of the TCN) with the sequences' lengths.
+- `nb_stacks`: Not very useful unless your sequences are very long (like waveforms with hundreds of thousands of time steps).
+- `padding`: I have only used `causal` since a TCN stands for Temporal Convolutional Networks. Causal prevents information leakage.
+- `use_skip_connections`: Skip connections connects layers, similarly to DenseNet. It helps the gradients flow. Unless you experience a drop in performance, you should always activate it.
+- `return_sequences`: Same as the one present in the LSTM layer. Refer to the Keras doc for this parameter.
+- `dropout_rate`: Similar to `recurrent_dropout` for the LSTM layer. I usually don't use it much. Or set it to a low value like `0.05`.
+- `activation`: Leave it to default. I have never changed.
+- `kernel_initializer`: If the training of the TCN gets stuck, it might be worth changing this parameter. For example: `glorot_uniform`.
+
+- `use_batch_norm`, `use_weight_norm`, `use_weight_norm`: Use normalization if your network is big enough and the task contains enough data. I usually prefer using `use_layer_norm`, but you can try them all and see which one works the best.
 
 ### Non-causal TCN
 
