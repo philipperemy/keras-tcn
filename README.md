@@ -172,7 +172,7 @@ Here are some of my notes regarding my experience using TCN:
 The receptive field can be calculated using the following formula:
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/12395799/106308730-6d4c5180-6261-11eb-82e9-a12a1958058d.png">
+  <img src="https://user-images.githubusercontent.com/4516927/112719508-a55bd200-8f3c-11eb-83c0-88c6171a07d7.png">
 </p>
 
 where *N<sub>s</sub>* is the number of stacks, *N<sub>b</sub>* is the number of residual blocks per stack, **d** is a vector containing the dilations of each residual block in one stack, and **k** is a vector containing the lengths of the filters of each residual block in one stack.

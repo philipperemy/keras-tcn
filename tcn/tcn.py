@@ -245,7 +245,7 @@ class TCN(Layer):
 
     @property
     def receptive_field(self):
-        return 1 + self.nb_stacks * sum([d * self.kernel_size for d in self.dilations])
+        return 1 + 2 * (self.kernel_size - 1) * self.nb_stacks * sum(self.dilations)
 
     def build(self, input_shape):
 

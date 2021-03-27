@@ -121,6 +121,30 @@ class TCNCallTest(unittest.TestCase):
         except ValueError:
             pass
 
+    def test_receptive_field(self):
+        self.assertEqual(37, TCN(kernel_size=3, dilations=(1, 3, 5), nb_stacks=1).receptive_field)
+        self.assertEqual(379, TCN(kernel_size=4, dilations=(1, 2, 4, 8, 16, 32), nb_stacks=1).receptive_field)
+        self.assertEqual(253, TCN(kernel_size=3, dilations=(1, 2, 4, 8, 16, 32), nb_stacks=1).receptive_field)
+        self.assertEqual(125, TCN(kernel_size=3, dilations=(1, 2, 4, 8, 16), nb_stacks=1).receptive_field)
+        self.assertEqual(61, TCN(kernel_size=3, dilations=(1, 2, 4, 8), nb_stacks=1).receptive_field)
+        self.assertEqual(29, TCN(kernel_size=3, dilations=(1, 2, 4), nb_stacks=1).receptive_field)
+        self.assertEqual(57, TCN(kernel_size=3, dilations=(1, 2, 4), nb_stacks=2).receptive_field)
+        self.assertEqual(121, TCN(kernel_size=3, dilations=(1, 2, 4, 8), nb_stacks=2).receptive_field)
+        self.assertEqual(91, TCN(kernel_size=4, dilations=(1, 2, 4, 8), nb_stacks=1).receptive_field)
+        self.assertEqual(25, TCN(kernel_size=5, dilations=(1, 2), nb_stacks=1).receptive_field)
+        self.assertEqual(31, TCN(kernel_size=6, dilations=(1, 2), nb_stacks=1).receptive_field)
+        # 1+(3-1)*1*(1+3+5)*2 = 37
+        # 1+(4-1)*1*(1+2+4+8+16+32)*2 = 379
+        # 1+(3-1)*1*(1+2+4+8+16+32)*2 = 253
+        # 1+(3-1)*1*(1+2+4+8+16)*2 = 125
+        # 1+(3-1)*1*(1+2+4+8)*2 = 61
+        # 1+(3-1)*1*(1+2+4)*2 = 29
+        # 1+(3-1)*2*(1+2+4)*2 = 57
+        # 1+(3-1)*2*(1+2+4+8)*2 = 121
+        # 1+(4-1)*1*(1+2+4+8)*2 = 91
+        # 1+(5-1)*1*(1+2)*2 = 25
+        # 1+(6-1)*1*(1+2)*2 = 31
+
 
 if __name__ == '__main__':
     unittest.main()
