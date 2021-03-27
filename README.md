@@ -177,7 +177,7 @@ This formula is the one that works with the TensorFlow/Keras implementation. The
 
 where *N<sub>s</sub>* is the number of stacks, *N<sub>b</sub>* is the number of residual blocks per stack, **d** is a vector containing the dilations of each residual block in each stack, and **K** is the kernel size.
 
-In theory, the 2 is not justified. We are still not sure why in practice we need to add this 2 in the formula. It would be appreciated if someone could point out why. It is a probably a parameterization/notation problem. 
+In theory, the 2 is not justified. We are still not sure why in practice we need to add this 2 in the formula. It would be appreciated if someone could point out why. It is a probably a parameterization/notation problem. There is a beginning of answer [here](https://stackoverflow.com/questions/63073760/using-dilated-convolution-in-keras).
 
 - If a TCN has only one stack of residual blocks with a kernel size of 2 and dilations [1, 2, 4, 8], its receptive field is 16. The image below illustrates it:
 
