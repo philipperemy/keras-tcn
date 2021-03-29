@@ -169,22 +169,24 @@ Here are some of my notes regarding my experience using TCN:
 
 ### Receptive field
 
-The receptive field can be calculated using the following formula:
+This formula is the one that works with the TensorFlow/Keras implementation. The receptive field can be calculated using the following formula:
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/4516927/112719508-a55bd200-8f3c-11eb-83c0-88c6171a07d7.png">
 </p>
 
-where *N<sub>s</sub>* is the number of stacks, *N<sub>b</sub>* is the number of residual blocks per stack, **d** is a vector containing the dilations of each residual block in one stack, and **k** is a vector containing the lengths of the filters of each residual block in one stack.
+where *N<sub>s</sub>* is the number of stacks, *N<sub>b</sub>* is the number of residual blocks per stack, **d** is a vector containing the dilations of each residual block in each stack, and **K** is the kernel size.
 
-- If a TCN has only one stack of residual blocks with a kernel size of 2 and dilations [1, 2, 4, 8], its receptive field is 1 + 1 * (1 * 1 + 2 * 1 + 4 * 1 + 8 * 1) = 16. The image below illustrates it:
+In theory, the 2 is not justified. We are still not sure why in practice we need to add this 2 in the formula. It would be appreciated if someone could point out why. It is a probably a parameterization/notation problem. There is a beginning of answer [here](https://stackoverflow.com/questions/63073760/using-dilated-convolution-in-keras).
+
+- If a TCN has only one stack of residual blocks with a kernel size of 2 and dilations [1, 2, 4, 8], its receptive field is 16. The image below illustrates it:
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/40159126/41830054-10e56fda-7871-11e8-8591-4fa46680c17f.png">
   <b>ks = 2, dilations = [1, 2, 4, 8], 1 block</b><br><br>
 </p>
 
-- If the TCN has now 2 stacks of residual blocks, you would get the situation below, that is, an increase in the receptive field up to 1 + 2 * (1 * 1 + 2 * 1 + 4 * 1 + 8 * 1) = 31:
+- If the TCN has now 2 stacks of residual blocks, you would get the situation below, that is, an increase in the receptive field up to 31:
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/40159126/41830618-a8f82a8a-7874-11e8-9d4f-2ebb70a31465.jpg">
@@ -269,15 +271,7 @@ The task consists of feeding a large array of decimal numbers to the network, al
 ```
 782/782 [==============================] - 154s 197ms/step - loss: 0.8437 - val_loss: 0.1883
 782/782 [==============================] - 154s 196ms/step - loss: 0.0702 - val_loss: 0.0111
-782/782 [==============================] - 153s 195ms/step - loss: 0.0053 - val_loss: 0.0038
-782/782 [==============================] - 154s 196ms/step - loss: 0.0035 - val_loss: 0.0027
-782/782 [==============================] - 153s 196ms/step - loss: 0.0030 - val_loss: 0.0065
-782/782 [==============================] - 151s 193ms/step - loss: 0.0027 - val_loss: 0.0018
-782/782 [==============================] - 152s 194ms/step - loss: 0.0025 - val_loss: 0.0036
-782/782 [==============================] - 153s 196ms/step - loss: 0.0024 - val_loss: 0.0018
-782/782 [==============================] - 152s 194ms/step - loss: 0.0023 - val_loss: 0.0016
-782/782 [==============================] - 152s 194ms/step - loss: 0.0014 - val_loss: 3.7456e-04
-782/782 [==============================] - 153s 196ms/step - loss: 9.4740e-04 - val_loss: 7.0205e-04
+[...]
 782/782 [==============================] - 152s 194ms/step - loss: 6.9630e-04 - val_loss: 3.7180e-04
 ```
 
@@ -301,11 +295,7 @@ The idea is to copy the content of the vector x to the end of the large array. T
 
 ```
 118/118 [==============================] - 17s 143ms/step - loss: 1.1732 - accuracy: 0.6725 - val_loss: 0.1119 - val_accuracy: 0.9796
-118/118 [==============================] - 15s 125ms/step - loss: 0.0645 - accuracy: 0.9831 - val_loss: 0.0402 - val_accuracy: 0.9853
-118/118 [==============================] - 15s 125ms/step - loss: 0.0393 - accuracy: 0.9856 - val_loss: 0.0372 - val_accuracy: 0.9857
-118/118 [==============================] - 15s 125ms/step - loss: 0.0361 - accuracy: 0.9858 - val_loss: 0.0344 - val_accuracy: 0.9860
-118/118 [==============================] - 15s 125ms/step - loss: 0.0345 - accuracy: 0.9860 - val_loss: 0.0335 - val_accuracy: 0.9864
-118/118 [==============================] - 15s 125ms/step - loss: 0.0325 - accuracy: 0.9867 - val_loss: 0.0268 - val_accuracy: 0.9886
+[...]
 118/118 [==============================] - 15s 125ms/step - loss: 0.0268 - accuracy: 0.9885 - val_loss: 0.0206 - val_accuracy: 0.9908
 118/118 [==============================] - 15s 125ms/step - loss: 0.0228 - accuracy: 0.9900 - val_loss: 0.0169 - val_accuracy: 0.9933
 ```
@@ -326,12 +316,7 @@ The idea here is to consider MNIST images as 1-D sequences and feed them to the 
 ```
 1875/1875 [==============================] - 46s 25ms/step - loss: 0.0949 - accuracy: 0.9706 - val_loss: 0.0763 - val_accuracy: 0.9756
 1875/1875 [==============================] - 46s 25ms/step - loss: 0.0831 - accuracy: 0.9743 - val_loss: 0.0656 - val_accuracy: 0.9807
-1875/1875 [==============================] - 46s 25ms/step - loss: 0.0752 - accuracy: 0.9763 - val_loss: 0.0604 - val_accuracy: 0.9802
-1875/1875 [==============================] - 46s 25ms/step - loss: 0.0685 - accuracy: 0.9785 - val_loss: 0.0588 - val_accuracy: 0.9813
-1875/1875 [==============================] - 46s 25ms/step - loss: 0.0624 - accuracy: 0.9801 - val_loss: 0.0545 - val_accuracy: 0.9822
-1875/1875 [==============================] - 46s 25ms/step - loss: 0.0603 - accuracy: 0.9812 - val_loss: 0.0478 - val_accuracy: 0.9835
-1875/1875 [==============================] - 46s 25ms/step - loss: 0.0566 - accuracy: 0.9821 - val_loss: 0.0546 - val_accuracy: 0.9826
-1875/1875 [==============================] - 46s 25ms/step - loss: 0.0503 - accuracy: 0.9843 - val_loss: 0.0441 - val_accuracy: 0.9853
+[...]
 1875/1875 [==============================] - 46s 25ms/step - loss: 0.0486 - accuracy: 0.9840 - val_loss: 0.0572 - val_accuracy: 0.9832
 1875/1875 [==============================] - 46s 25ms/step - loss: 0.0453 - accuracy: 0.9858 - val_loss: 0.0424 - val_accuracy: 0.9862
 ```
