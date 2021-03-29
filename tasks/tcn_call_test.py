@@ -123,7 +123,6 @@ class TCNCallTest(unittest.TestCase):
 
     def test_receptive_field(self):
         self.assertEqual(37, TCN(kernel_size=3, dilations=(1, 3, 5), nb_stacks=1).receptive_field)
-        self.assertEqual(16, TCN(kernel_size=2, dilations=(1, 2, 4, 8), nb_stacks=1).receptive_field)
         self.assertEqual(379, TCN(kernel_size=4, dilations=(1, 2, 4, 8, 16, 32), nb_stacks=1).receptive_field)
         self.assertEqual(253, TCN(kernel_size=3, dilations=(1, 2, 4, 8, 16, 32), nb_stacks=1).receptive_field)
         self.assertEqual(125, TCN(kernel_size=3, dilations=(1, 2, 4, 8, 16), nb_stacks=1).receptive_field)
