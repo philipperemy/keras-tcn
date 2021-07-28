@@ -456,27 +456,33 @@ def compiled_tcn(num_feat,  # type: int
 
 
 def tcn_full_summary(model: Model, expand_residual_blocks=True):
-    layers = model._layers.copy()  # store existing layers
-    model._layers.clear()  # clear layers
+    import tensorflow as tf
+    # 2.6.0-rc1, 2.5.0...
+    versions = [int(v) for v in tf.__version__.split('-')[0].split('.')]
+    if versions[0] <= 2 and versions[1] < 5:
+        layers = model._layers.copy()  # store existing layers
+        model._layers.clear()  # clear layers
 
-    for i in range(len(layers)):
-        if isinstance(layers[i], TCN):
-            for layer in layers[i]._layers:
-                if not isinstance(layer, ResidualBlock):
-                    if not hasattr(layer, '__iter__'):
-                        model._layers.append(layer)
-                else:
-                    if expand_residual_blocks:
-                        for lyr in layer._layers:
-                            if not hasattr(lyr, '__iter__'):
-                                model._layers.append(lyr)
+        for i in range(len(layers)):
+            if isinstance(layers[i], TCN):
+                for layer in layers[i]._layers:
+                    if not isinstance(layer, ResidualBlock):
+                        if not hasattr(layer, '__iter__'):
+                            model._layers.append(layer)
                     else:
-                        model._layers.append(layer)
-        else:
-            model._layers.append(layers[i])
+                        if expand_residual_blocks:
+                            for lyr in layer._layers:
+                                if not hasattr(lyr, '__iter__'):
+                                    model._layers.append(lyr)
+                        else:
+                            model._layers.append(layer)
+            else:
+                model._layers.append(layers[i])
 
-    model.summary()  # print summary
+        model.summary()  # print summary
 
-    # restore original layers
-    model._layers.clear()
-    [model._layers.append(lyr) for lyr in layers]
+        # restore original layers
+        model._layers.clear()
+        [model._layers.append(lyr) for lyr in layers]
+    else:
+        print('WARNING: tcn_full_summary: Compatible with tensorflow 2.5.0 or below.')
