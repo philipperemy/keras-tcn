@@ -457,7 +457,8 @@ def compiled_tcn(num_feat,  # type: int
 
 def tcn_full_summary(model: Model, expand_residual_blocks=True):
     import tensorflow as tf
-    versions = [int(v) for v in tf.__version__.split('.')]
+    # 2.6.0-rc1, 2.5.0...
+    versions = [int(v) for v in tf.__version__.split('-')[0].split('.')]
     if versions[0] <= 2 and versions[1] < 5:
         layers = model._layers.copy()  # store existing layers
         model._layers.clear()  # clear layers
