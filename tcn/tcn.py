@@ -2,8 +2,11 @@ import inspect
 from typing import List
 
 from tensorflow.keras import backend as K, Model, Input, optimizers
+# pylint: disable=E0611
 from tensorflow.keras import layers
+# pylint: disable=E0611
 from tensorflow.keras.layers import Activation, SpatialDropout1D, Lambda
+# pylint: disable=E0611
 from tensorflow.keras.layers import Layer, Conv1D, Dense, BatchNormalization, LayerNormalization
 
 
@@ -292,6 +295,7 @@ class TCN(Layer):
         else:
             self.output_slice_index = -1  # causal case.
         self.slicer_layer = Lambda(lambda tt: tt[:, self.output_slice_index, :])
+        self.slicer_layer.build(self.build_output_shape.as_list())
 
     def compute_output_shape(self, input_shape):
         """
