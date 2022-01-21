@@ -2,8 +2,11 @@ import inspect
 from typing import List
 
 from tensorflow.keras import backend as K, Model, Input, optimizers
+# pylint: disable=E0611
 from tensorflow.keras import layers
+# pylint: disable=E0611
 from tensorflow.keras.layers import Activation, SpatialDropout1D, Lambda
+# pylint: disable=E0611
 from tensorflow.keras.layers import Layer, Conv1D, Dense, BatchNormalization, LayerNormalization
 
 
@@ -61,7 +64,6 @@ class ResidualBlock(Layer):
         self.use_weight_norm = use_weight_norm
         self.kernel_initializer = kernel_initializer
         self.layers = []
-        self.layers_outputs = []
         self.shape_match_conv = None
         self.res_output_shape = None
         self.final_activation = None
@@ -84,7 +86,7 @@ class ResidualBlock(Layer):
             self.layers = []
             self.res_output_shape = input_shape
 
-            for k in range(2):
+            for k in range(2):  # dilated conv block.
                 name = 'conv1D_{}'.format(k)
                 with K.name_scope(name):  # name scope used to make sure weights get unique names
                     conv = Conv1D(
@@ -110,19 +112,23 @@ class ResidualBlock(Layer):
                     elif self.use_weight_norm:
                         pass  # done above.
 
-                self._build_layer(Activation(self.activation))
-                self._build_layer(SpatialDropout1D(rate=self.dropout_rate))
+                with K.name_scope('act_and_dropout_{}'.format(k)):
+                    self._build_layer(Activation(self.activation, name='Act_Conv1D_{}'.format(k)))
+                    self._build_layer(SpatialDropout1D(rate=self.dropout_rate, name='SDropout_{}'.format(k)))
 
             if self.nb_filters != input_shape[-1]:
                 # 1x1 conv to match the shapes (channel dimension).
                 name = 'matching_conv1D'
                 with K.name_scope(name):
-                    # make and build this layer separately because it directly uses input_shape
-                    self.shape_match_conv = Conv1D(filters=self.nb_filters,
-                                                   kernel_size=1,
-                                                   padding='same',
-                                                   name=name,
-                                                   kernel_initializer=self.kernel_initializer)
+                    # make and build this layer separately because it directly uses input_shape.
+                    # 1x1 conv.
+                    self.shape_match_conv = Conv1D(
+                        filters=self.nb_filters,
+                        kernel_size=1,
+                        padding='same',
+                        name=name,
+                        kernel_initializer=self.kernel_initializer
+                    )
             else:
                 name = 'matching_identity'
                 self.shape_match_conv = Lambda(lambda x: x, name=name)
@@ -131,8 +137,8 @@ class ResidualBlock(Layer):
                 self.shape_match_conv.build(input_shape)
                 self.res_output_shape = self.shape_match_conv.compute_output_shape(input_shape)
 
-            self._build_layer(Activation(self.activation))
-            self.final_activation = Activation(self.activation)
+            self._build_layer(Activation(self.activation, name='Act_Conv_Blocks'))
+            self.final_activation = Activation(self.activation, name='Act_Res_Block')
             self.final_activation.build(self.res_output_shape)  # probably isn't necessary
 
             # this is done to force Keras to add the layers in the list to self._layers
@@ -143,25 +149,31 @@ class ResidualBlock(Layer):
 
             super(ResidualBlock, self).build(input_shape)  # done to make sure self.built is set True
 
-    def call(self, inputs, training=None):
+    def call(self, inputs, training=None, **kwargs):
         """
         Returns: A tuple where the first element is the residual model tensor, and the second
                  is the skip connection tensor.
         """
-        x = inputs
-        self.layers_outputs = [x]
+        # https://arxiv.org/pdf/1803.01271.pdf  page 4, Figure 1 (b).
+        # x1: Dilated Conv -> Norm -> Dropout (x2).
+        # x2: Residual (1x1 matching conv - optional).
+        # Output: x1 + x2.
+        # x1 -> connected to skip connections.
+        # x1 + x2 -> connected to the next block.
+        #       input
+        #     x1      x2
+        #   conv1D    1x1 Conv1D (optional)
+        #    ...
+        #   conv1D
+        #    ...
+        #       x1 + x2
+        x1 = inputs
         for layer in self.layers:
             training_flag = 'training' in dict(inspect.signature(layer.call).parameters)
-            x = layer(x, training=training) if training_flag else layer(x)
-            self.layers_outputs.append(x)
+            x1 = layer(x1, training=training) if training_flag else layer(x1)
         x2 = self.shape_match_conv(inputs)
-        self.layers_outputs.append(x2)
-        res_x = layers.add([x2, x])
-        self.layers_outputs.append(res_x)
-
-        res_act_x = self.final_activation(res_x)
-        self.layers_outputs.append(res_act_x)
-        return [res_act_x, x]
+        x1_x2 = self.final_activation(layers.add([x2, x1], name='Add_Res'))
+        return [x1_x2, x1]
 
     def compute_output_shape(self, input_shape):
         return [self.res_output_shape, self.res_output_shape]
@@ -291,7 +303,8 @@ class TCN(Layer):
 
         else:
             self.output_slice_index = -1  # causal case.
-        self.slicer_layer = Lambda(lambda tt: tt[:, self.output_slice_index, :])
+        self.slicer_layer = Lambda(lambda tt: tt[:, self.output_slice_index, :], name='Slice_Output')
+        self.slicer_layer.build(self.build_output_shape.as_list())
 
     def compute_output_shape(self, input_shape):
         """
@@ -308,20 +321,20 @@ class TCN(Layer):
             # Compatibility tensorflow 1.x
             return [v.value if hasattr(v, 'value') else v for v in self.build_output_shape]
 
-    def call(self, inputs, training=None):
+    def call(self, inputs, training=None, **kwargs):
         x = inputs
         self.layers_outputs = [x]
         self.skip_connections = []
-        for layer in self.residual_blocks:
+        for res_block in self.residual_blocks:
             try:
-                x, skip_out = layer(x, training=training)
+                x, skip_out = res_block(x, training=training)
             except TypeError:  # compatibility with tensorflow 1.x
-                x, skip_out = layer(K.cast(x, 'float32'), training=training)
+                x, skip_out = res_block(K.cast(x, 'float32'), training=training)
             self.skip_connections.append(skip_out)
             self.layers_outputs.append(x)
 
         if self.use_skip_connections:
-            x = layers.add(self.skip_connections)
+            x = layers.add(self.skip_connections, name='Add_Skip_Connections')
             self.layers_outputs.append(x)
 
         if not self.return_sequences:
@@ -486,3 +499,4 @@ def tcn_full_summary(model: Model, expand_residual_blocks=True):
         [model._layers.append(lyr) for lyr in layers]
     else:
         print('WARNING: tcn_full_summary: Compatible with tensorflow 2.5.0 or below.')
+        print('Use tensorboard instead. Example in keras-tcn/tasks/tcn_tensorboard.py.')
