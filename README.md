@@ -175,11 +175,12 @@ The receptive field is defined as: the maximum number of steps back in time from
 <p align="center">
   <img width="400" src="https://user-images.githubusercontent.com/4516927/112719508-a55bd200-8f3c-11eb-83c0-88c6171a07d7.png">
 </p>
-where N<sub>stack</sub> is the number of stacks, N<sub>b</sub> is the number of residual blocks per stack, d is a vector containing the dilations of each residual block in each stack, and K is the kernel size. The 2 is there because there are two Conv1d layers in a single ResidualBlock.
+
+where N<sub>stack</sub> is the number of stacks, N<sub>b</sub> is the number of residual blocks per stack, d is a vector containing the dilations of each residual block in each stack, and K is the kernel size. The 2 is there because there are two `Conv1d` layers in a single `ResidualBlock`.
 
 #### Examples
 
-NOTE: Unlike the TCN, example figures only include a single Conv1d per layer, so the formula becomes R<sub>field</sub> = 1 + (K-1)⋅N<sub>stack</sub>⋅Σi di (without the factor 2).
+*NOTE*: Unlike the TCN, example figures only include a single `Conv1d` per layer, so the formula becomes R<sub>field</sub> = 1 + (K-1)⋅N<sub>stack</sub>⋅Σi di (without the factor 2).
 
 - If a dilated conv net has only one stack of residual blocks with a kernel size of `2` and dilations `[1, 2, 4, 8]`, its receptive field is `16`. The image below illustrates it:
 
