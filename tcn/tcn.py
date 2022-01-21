@@ -112,7 +112,7 @@ class ResidualBlock(Layer):
                     elif self.use_weight_norm:
                         pass  # done above.
 
-                with K.name_scope(name):
+                with K.name_scope('act_and_dropout_{}'.format(k)):
                     self._build_layer(Activation(self.activation, name='Act_Conv1D_{}'.format(k)))
                     self._build_layer(SpatialDropout1D(rate=0.5, name='SDropout_{}'.format(k)))
 
