@@ -2,7 +2,7 @@
 
 *Keras Temporal Convolutional Network*. [[paper](https://arxiv.org/abs/1803.01271)]
 
-Tested with Tensorflow 2.3, 2.4, 2.5, 2.6, 2.7 and 2.8rc0 (Dec 22, 2021).
+Tested with Tensorflow 2.3, 2.4, 2.5 and 2.6.
 
 [![Downloads](https://pepy.tech/badge/keras-tcn)](https://pepy.tech/project/keras-tcn)
 [![Downloads](https://pepy.tech/badge/keras-tcn/month)](https://pepy.tech/project/keras-tcn)
@@ -171,24 +171,24 @@ Here are some of my notes regarding my experience using TCN:
 
 ### Receptive field
 
-This formula is the one that works with the TensorFlow/Keras implementation. The receptive field can be calculated using the following formula:
-
+The receptive field is defined as: the maximum number of steps back in time from current sample at time T, that a filter from (block, layer, stack, TCN) can hit (effective history) + 1. The receptive field of the TCN can be calculated using the formula:
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/4516927/112719508-a55bd200-8f3c-11eb-83c0-88c6171a07d7.png">
+  <img width="400" src="https://user-images.githubusercontent.com/4516927/112719508-a55bd200-8f3c-11eb-83c0-88c6171a07d7.png">
 </p>
+where N<sub>stack</sub> is the number of stacks, N<sub>b</sub> is the number of residual blocks per stack, d is a vector containing the dilations of each residual block in each stack, and K is the kernel size. The 2 is there because there are two Conv1d layers in a single ResidualBlock.
 
-where *N<sub>s</sub>* is the number of stacks, *N<sub>b</sub>* is the number of residual blocks per stack, **d** is a vector containing the dilations of each residual block in each stack, and **K** is the kernel size.
+#### Examples
 
-In theory, the 2 is not justified. We are still not sure why in practice we need to add this 2 in the formula. It would be appreciated if someone could point out why. It is a probably a parameterization/notation problem. There is a beginning of answer [here](https://stackoverflow.com/questions/63073760/using-dilated-convolution-in-keras).
+NOTE: Unlike the TCN, example figures only include a single Conv1d per layer, so the formula becomes R<sub>field</sub> = 1 + (K-1)⋅N<sub>stack</sub>⋅Σi di (without the factor 2).
 
-- If a TCN has only one stack of residual blocks with a kernel size of 2 and dilations [1, 2, 4, 8], its receptive field is 16. The image below illustrates it:
+- If a dilated conv net has only one stack of residual blocks with a kernel size of `2` and dilations `[1, 2, 4, 8]`, its receptive field is `16`. The image below illustrates it:
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/40159126/41830054-10e56fda-7871-11e8-8591-4fa46680c17f.png">
   <b>ks = 2, dilations = [1, 2, 4, 8], 1 block</b><br><br>
 </p>
 
-- If the TCN has now 2 stacks of residual blocks, you would get the situation below, that is, an increase in the receptive field up to 31:
+- If a dilated conv net has 2 stacks of residual blocks, you would have the situation below, that is, an increase in the receptive field up to 31:
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/40159126/41830618-a8f82a8a-7874-11e8-9d4f-2ebb70a31465.jpg">
