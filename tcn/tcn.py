@@ -170,7 +170,7 @@ class ResidualBlock(Layer):
         x1 = inputs
         for layer in self.layers:
             training_flag = 'training' in dict(inspect.signature(layer.call).parameters)
-            x1 = layer(x1, training=True) if training_flag else layer(x1)
+            x1 = layer(x1, training=training) if training_flag else layer(x1)
         x2 = self.shape_match_conv(inputs)
         x1_x2 = self.final_activation(layers.add([x2, x1], name='Add_Res'))
         return [x1_x2, x1]
