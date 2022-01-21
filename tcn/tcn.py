@@ -114,7 +114,7 @@ class ResidualBlock(Layer):
 
                 with K.name_scope('act_and_dropout_{}'.format(k)):
                     self._build_layer(Activation(self.activation, name='Act_Conv1D_{}'.format(k)))
-                    self._build_layer(SpatialDropout1D(rate=0.5, name='SDropout_{}'.format(k)))
+                    self._build_layer(SpatialDropout1D(rate=self.dropout_rate, name='SDropout_{}'.format(k)))
 
             if self.nb_filters != input_shape[-1]:
                 # 1x1 conv to match the shapes (channel dimension).
