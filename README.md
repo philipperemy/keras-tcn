@@ -157,7 +157,7 @@ Here are some of my notes regarding my experience using TCN:
 
 - `nb_filters`: Present in any ConvNet architecture. It is linked to the predictive power of the model and affects the size of your network. The more, the better unless you start to overfit. It's similar to the number of units in an LSTM/GRU architecture too.
 - `kernel_size`: Controls the spatial area/volume considered in the convolutional ops. Good values are usually between 2 and 8. If you think your sequence heavily depends on t-1 and t-2, but less on the rest, then choose a kernel size of 2/3. For NLP tasks, we prefer bigger kernel sizes. A large kernel size will make your network much bigger.
-- `dilations`: It controls how deep your TCN layer is. Usually, consider a list with multiple of two. You can guess how many dilations you need by matching the receptive field (of the TCN) with the sequences' lengths.
+- `dilations`: It controls how deep your TCN layer is. Usually, consider a list with multiple of two. You can guess how many dilations you need by matching the receptive field (of the TCN) with the length of features in your sequence. For example, if your input sequence is periodic, you might want to have multiples of that period as dilations.
 - `nb_stacks`: Not very useful unless your sequences are very long (like waveforms with hundreds of thousands of time steps).
 - `padding`: I have only used `causal` since a TCN stands for Temporal Convolutional Networks. Causal prevents information leakage.
 - `use_skip_connections`: Skip connections connects layers, similarly to DenseNet. It helps the gradients flow. Unless you experience a drop in performance, you should always activate it.
@@ -177,6 +177,8 @@ The receptive field is defined as: the maximum number of steps back in time from
 </p>
 
 where N<sub>stack</sub> is the number of stacks, N<sub>b</sub> is the number of residual blocks per stack, d is a vector containing the dilations of each residual block in each stack, and K is the kernel size. The 2 is there because there are two `Conv1d` layers in a single `ResidualBlock`.
+
+Ideally you want your receptive field to be bigger than the largest length of input sequence, if you pass a sequence longer than your receptive field into the model, any extra values (further back in the sequence) will be replaced with zeros.
 
 #### Examples
 
