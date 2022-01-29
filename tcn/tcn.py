@@ -248,6 +248,9 @@ class TCN(Layer):
 
         if isinstance(self.nb_filters, list):
             assert len(self.nb_filters) == len(self.dilations)
+            if len(set(self.nb_filters)) > 1 and self.use_skip_connections:
+                raise ValueError('Skip connections are not compatible '
+                                 'with a list of filters, unless they are all equal.')
 
         if padding != 'causal' and padding != 'same':
             raise ValueError("Only 'causal' or 'same' padding are compatible for this layer.")
