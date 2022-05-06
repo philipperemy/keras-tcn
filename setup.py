@@ -1,7 +1,7 @@
+import os
 import platform
 
 from setuptools import setup
-import os
 
 tensorflow = 'tensorflow'
 if platform.system() == 'Darwin' and platform.processor() == 'arm':
@@ -14,7 +14,7 @@ install_requires = ['numpy', tensorflow, 'tensorflow_addons']
 
 setup(
     name='keras-tcn',
-    version='3.4.2',
+    version='3.4.3',
     description='Keras TCN',
     author='Philippe Remy',
     license='MIT',
