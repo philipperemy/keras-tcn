@@ -12,6 +12,8 @@ pip install keras-tcn
 pip install keras-tcn --no-dependencies  # without the dependencies if you already have TF/Numpy.
 ```
 
+For MacOS M1 users: `pip install --no-binary keras-tcn keras-tcn`. The `--no-binary` option will force pip to download the sources (tar.gz) and re-compile it locally. Also make sure `grpcio` and `h5py` are installed correctly. There are some tutorials on how to do that online.
+
 ## Why Temporal Convolutional Network instead of LSTM/GRU?
 
 - TCNs exhibit longer memory than recurrent architectures with the same capacity.
