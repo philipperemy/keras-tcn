@@ -1,12 +1,13 @@
 import inspect
 from typing import List
 
+# pylint: disable=E0611,E0401
 from tensorflow.keras import backend as K, Model, Input, optimizers
-# pylint: disable=E0611
+# pylint: disable=E0611,E0401
 from tensorflow.keras import layers
-# pylint: disable=E0611
+# pylint: disable=E0611,E0401
 from tensorflow.keras.layers import Activation, SpatialDropout1D, Lambda
-# pylint: disable=E0611
+# pylint: disable=E0611,E0401
 from tensorflow.keras.layers import Layer, Conv1D, Dense, BatchNormalization, LayerNormalization
 
 
