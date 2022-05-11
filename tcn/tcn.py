@@ -362,7 +362,7 @@ class TCN(Layer):
         config['use_skip_connections'] = self.use_skip_connections
         config['dropout_rate'] = self.dropout_rate
         config['return_sequences'] = self.return_sequences
-        config['activation'] = self.activation
+        config['activation'] = self.activation_name
         config['use_batch_norm'] = self.use_batch_norm
         config['use_layer_norm'] = self.use_layer_norm
         config['use_weight_norm'] = self.use_weight_norm
