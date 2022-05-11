@@ -22,5 +22,4 @@ tf.keras.utils.plot_model(
     rankdir='TB',
     dpi=200,
     layer_range=None,
-    show_layer_activations=True,
 )
