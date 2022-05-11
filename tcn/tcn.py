@@ -229,7 +229,7 @@ class TCN(Layer):
         self.nb_stacks = nb_stacks
         self.kernel_size = kernel_size
         self.nb_filters = nb_filters
-        self.activation = activation
+        self.activation_name = activation
         self.padding = padding
         self.kernel_initializer = kernel_initializer
         self.use_batch_norm = use_batch_norm
@@ -280,7 +280,7 @@ class TCN(Layer):
                                                           nb_filters=res_block_filters,
                                                           kernel_size=self.kernel_size,
                                                           padding=self.padding,
-                                                          activation=self.activation,
+                                                          activation=self.activation_name,
                                                           dropout_rate=self.dropout_rate,
                                                           use_batch_norm=self.use_batch_norm,
                                                           use_layer_norm=self.use_layer_norm,
