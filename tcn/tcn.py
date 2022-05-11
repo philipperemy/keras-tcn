@@ -1,12 +1,13 @@
 import inspect
 from typing import List
 
+# pylint: disable=E0611,E0401
 from tensorflow.keras import backend as K, Model, Input, optimizers
-# pylint: disable=E0611
+# pylint: disable=E0611,E0401
 from tensorflow.keras import layers
-# pylint: disable=E0611
+# pylint: disable=E0611,E0401
 from tensorflow.keras.layers import Activation, SpatialDropout1D, Lambda
-# pylint: disable=E0611
+# pylint: disable=E0611,E0401
 from tensorflow.keras.layers import Layer, Conv1D, Dense, BatchNormalization, LayerNormalization
 
 
@@ -229,7 +230,7 @@ class TCN(Layer):
         self.nb_stacks = nb_stacks
         self.kernel_size = kernel_size
         self.nb_filters = nb_filters
-        self.activation = activation
+        self.activation_name = activation
         self.padding = padding
         self.kernel_initializer = kernel_initializer
         self.use_batch_norm = use_batch_norm
@@ -280,7 +281,7 @@ class TCN(Layer):
                                                           nb_filters=res_block_filters,
                                                           kernel_size=self.kernel_size,
                                                           padding=self.padding,
-                                                          activation=self.activation,
+                                                          activation=self.activation_name,
                                                           dropout_rate=self.dropout_rate,
                                                           use_batch_norm=self.use_batch_norm,
                                                           use_layer_norm=self.use_layer_norm,
@@ -362,7 +363,7 @@ class TCN(Layer):
         config['use_skip_connections'] = self.use_skip_connections
         config['dropout_rate'] = self.dropout_rate
         config['return_sequences'] = self.return_sequences
-        config['activation'] = self.activation
+        config['activation'] = self.activation_name
         config['use_batch_norm'] = self.use_batch_norm
         config['use_layer_norm'] = self.use_layer_norm
         config['use_weight_norm'] = self.use_weight_norm
