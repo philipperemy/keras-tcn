@@ -359,6 +359,8 @@ for Sequence Modeling)
 }
 ```
 
-Special thanks to:
-- @alextheseal
-- @qlemaire22
+## Contributors
+
+<a href="https://github.com/philipperemy/keras-tcn/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=philipperemy/keras-tcn" />
+</a>
