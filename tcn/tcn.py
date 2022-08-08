@@ -1,6 +1,7 @@
 import inspect
 from typing import List
 
+import tensorflow as tf
 # pylint: disable=E0611,E0401
 from tensorflow.keras import backend as K, Model, Input, optimizers
 # pylint: disable=E0611,E0401
@@ -221,6 +222,8 @@ class TCN(Layer):
                  use_batch_norm=False,
                  use_layer_norm=False,
                  use_weight_norm=False,
+                 go_backwards=False,
+                 return_state=False,
                  **kwargs):
 
         self.return_sequences = return_sequences
@@ -236,6 +239,8 @@ class TCN(Layer):
         self.use_batch_norm = use_batch_norm
         self.use_layer_norm = use_layer_norm
         self.use_weight_norm = use_weight_norm
+        self.go_backwards = go_backwards
+        self.return_state = return_state
         self.skip_connections = []
         self.residual_blocks = []
         self.layers_outputs = []
@@ -327,6 +332,11 @@ class TCN(Layer):
 
     def call(self, inputs, training=None, **kwargs):
         x = inputs
+
+        if self.go_backwards:
+            # reverse x in the time axis
+            x = tf.reverse(x, axis=[1])
+
         self.layers_outputs = [x]
         self.skip_connections = []
         for res_block in self.residual_blocks:
@@ -368,6 +378,8 @@ class TCN(Layer):
         config['use_layer_norm'] = self.use_layer_norm
         config['use_weight_norm'] = self.use_weight_norm
         config['kernel_initializer'] = self.kernel_initializer
+        config['go_backwards'] = self.go_backwards
+        config['return_state'] = self.return_state
         return config
 
 
