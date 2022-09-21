@@ -348,7 +348,11 @@ class TCN(Layer):
             self.layers_outputs.append(x)
 
         if self.use_skip_connections:
-            x = layers.add(self.skip_connections, name='Add_Skip_Connections')
+            if len(self.skip_connections) > 1:
+                # Keras: A merge layer should be called on a list of at least 2 inputs. Got 1 input.
+                x = layers.add(self.skip_connections, name='Add_Skip_Connections')
+            else:
+                x = self.skip_connections[0]
             self.layers_outputs.append(x)
 
         if not self.return_sequences:
