@@ -2,7 +2,7 @@
 
 *Keras Temporal Convolutional Network*. [[paper](https://arxiv.org/abs/1803.01271)]
 
-Tested with Tensorflow 2.6, 2.7, 2.8 and 2.9.0rc2 (May 4, 2022).
+Tested with Tensorflow 2.6, 2.7, 2.8, 2.9 and 2.10 (Sep 2022).
 
 [![Downloads](https://pepy.tech/badge/keras-tcn)](https://pepy.tech/project/keras-tcn)
 [![Downloads](https://pepy.tech/badge/keras-tcn/month)](https://pepy.tech/project/keras-tcn)
