@@ -122,6 +122,8 @@ TCN(
     use_batch_norm=False,
     use_layer_norm=False,
     use_weight_norm=False,
+    go_backwards=False,
+    return_state=False,
     **kwargs
 )
 ```
@@ -139,6 +141,8 @@ TCN(
 - `use_batch_norm`: Whether to use batch normalization in the residual layers or not.
 - `use_layer_norm`: Whether to use layer normalization in the residual layers or not.
 - `use_weight_norm`: Whether to use weight normalization in the residual layers or not.
+- `go_backwards`: Boolean (default False). If True, process the input sequence backwards and return the reversed sequence.
+- `return_state`: Boolean. Whether to return the last state in addition to the output. Default: False.
 - `kwargs`: Any other set of arguments for configuring the parent class Layer. For example "name=str", Name of the model. Use unique names when using multiple TCN.
 
 ### Input shape

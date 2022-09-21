@@ -185,7 +185,7 @@ class TCN(Layer):
     """Creates a TCN layer.
 
         Input shape:
-            A tensor of shape (batch_size, timesteps, input_dim).
+            A 3D tensor with shape (batch_size, timesteps, input_dim).
 
         Args:
             nb_filters: The number of filters to use in the convolutional layers. Can be a list.
@@ -201,9 +201,11 @@ class TCN(Layer):
             use_batch_norm: Whether to use batch normalization in the residual layers or not.
             use_layer_norm: Whether to use layer normalization in the residual layers or not.
             use_weight_norm: Whether to use weight normalization in the residual layers or not.
+            go_backwards: Boolean (default False). If True, process the input sequence backwards and
+            return the reversed sequence.
+            return_state: Boolean. Whether to return the last state in addition to the output. Default: False.
             kwargs: Any other arguments for configuring parent class Layer. For example "name=str", Name of the model.
                     Use unique names when using multiple TCN.
-
         Returns:
             A TCN layer.
         """
