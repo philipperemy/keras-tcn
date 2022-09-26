@@ -25,34 +25,6 @@ For MacOS M1 users: `pip install --no-binary keras-tcn keras-tcn`. The `--no-bin
   <b>Visualization of a stack of dilated causal convolutional layers (Wavenet, 2016)</b><br><br>
 </p>
 
-
-## Index
-
-   * [Keras TCN](#keras-tcn)
-      * [API](#api)
-         * [Arguments](#arguments)
-         * [Input shape](#input-shape)
-         * [Output shape](#output-shape)
-         * [Receptive field](#receptive-field)
-         * [Non-causal TCN](#non-causal-tcn)
-      * [Installation from the sources](#installation-from-the-sources)
-      * [Run](#run)
-      * [Reproducible results](#reproducible-results)
-      * [Tasks](#tasks)
-         * [Adding Task](#adding-task)
-            * [Explanation](#explanation)
-            * [Implementation results](#implementation-results)
-         * [Copy Memory Task](#copy-memory-task)
-            * [Explanation](#explanation-1)
-            * [Implementation results (first epochs)](#implementation-results-first-epochs)
-         * [Sequential MNIST](#sequential-mnist)
-            * [Explanation](#explanation-2)
-            * [Implementation results](#implementation-results-1)
-      * [Testing](#testing)
-      * [References](#references)
-      * [Related](#related)
-
-
 ## API
 
 The usual way is to import the TCN layer and use it inside a Keras model. An example is provided below for a regression task (cf. [tasks](tasks) for other examples):
