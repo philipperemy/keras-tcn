@@ -12,72 +12,22 @@ pip install keras-tcn
 pip install keras-tcn --no-dependencies  # without the dependencies if you already have TF/Numpy.
 ```
 
-For MacOS M1 users: `pip install --no-binary keras-tcn keras-tcn`. The `--no-binary` option will force pip to download the sources (tar.gz) and re-compile it locally. Also make sure `grpcio` and `h5py` are installed correctly. There are some tutorials on how to do that online.
+For MacOS M1 users: `pip install --no-binary keras-tcn keras-tcn`. The `--no-binary` option will force pip to download the sources (tar.gz) and re-compile them locally. Also make sure that `grpcio` and `h5py` are installed correctly. There are some tutorials on how to do that online.
 
-## Why Temporal Convolutional Network instead of LSTM/GRU?
+## Why TCN (Temporal Convolutional Network) instead of LSTM/GRU?
 
 - TCNs exhibit longer memory than recurrent architectures with the same capacity.
-- Performs better than LSTM/GRU on a vast range of tasks (Seq. MNIST, Adding Problem, Copy Memory, Word-level PTB...).
-- Parallelism (convolutional layers), flexible receptive field size (possible to specify how far the model can see), stable gradients (backpropagation through time, vanishing gradients)...
+- Performs better than LSTM/GRU on long time series (Seq. MNIST, Adding Problem, Copy Memory, Word-level PTB...).
+- Parallelism (convolutional layers), flexible receptive field size (how far the model can see), stable gradients (compared to backpropagation through time, vanishing gradients)...
 
 <p align="center">
   <img src="misc/Dilated_Conv.png">
   <b>Visualization of a stack of dilated causal convolutional layers (Wavenet, 2016)</b><br><br>
 </p>
 
-## API
+## TCN Layer
 
-The usual way is to import the TCN layer and use it inside a Keras model. An example is provided below for a regression task (cf. [tasks](tasks) for other examples):
-
-```python
-from tcn import TCN, tcn_full_summary
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.models import Sequential
-
-# if time_steps > tcn_layer.receptive_field, then we should not
-# be able to solve this task.
-batch_size, time_steps, input_dim = None, 20, 1
-
-
-def get_x_y(size=1000):
-    import numpy as np
-    pos_indices = np.random.choice(size, size=int(size // 2), replace=False)
-    x_train = np.zeros(shape=(size, time_steps, 1))
-    y_train = np.zeros(shape=(size, 1))
-    x_train[pos_indices, 0] = 1.0  # we introduce the target in the first timestep of the sequence.
-    y_train[pos_indices, 0] = 1.0  # the task is to see if the TCN can go back in time to find it.
-    return x_train, y_train
-
-
-tcn_layer = TCN(input_shape=(time_steps, input_dim))
-# The receptive field tells you how far the model can see in terms of timesteps.
-print('Receptive field size =', tcn_layer.receptive_field)
-
-m = Sequential([
-    tcn_layer,
-    Dense(1)
-])
-
-m.compile(optimizer='adam', loss='mse')
-
-tcn_full_summary(m, expand_residual_blocks=False)
-
-x, y = get_x_y()
-m.fit(x, y, epochs=10, validation_split=0.2)
-```
-
-A ready-to-use TCN model can be used that way (cf. [tasks](tasks) for some examples):
-
-```python
-from tcn import compiled_tcn
-
-model = compiled_tcn(...)
-model.fit(x, y) # Keras model.
-```
-
-### Arguments
-
-
+### TCN Class
 
 ```python
 TCN(
@@ -100,6 +50,8 @@ TCN(
 )
 ```
 
+### Arguments
+
 - `nb_filters`: Integer. The number of filters to use in the convolutional layers. Would be similar to `units` for LSTM. Can be a list.
 - `kernel_size`: Integer. The size of the kernel to use in each convolutional layer.
 - `dilations`: List/Tuple. A dilation list. Example is: [1, 2, 4, 8, 16, 32, 64].
@@ -121,7 +73,7 @@ TCN(
 
 3D tensor with shape `(batch_size, timesteps, input_dim)`.
 
-`timesteps` can be None. This can be useful if each sequence is of a different length: [Multiple Length Sequence Example](tasks/multi_length_sequences.py).
+`timesteps` can be `None`. This can be useful if each sequence is of a different length: [Multiple Length Sequence Example](tasks/multi_length_sequences.py).
 
 ### Output shape
 
@@ -198,16 +150,6 @@ However, it is not anymore suitable for real-time applications.
 
 To use a non-causal TCN, specify `padding='valid'` or `padding='same'` when initializing the TCN layers.
 
-## Installation from the sources
-
-```bash
-git clone git@github.com:philipperemy/keras-tcn.git && cd keras-tcn
-virtualenv -p python3 venv
-source venv/bin/activate
-pip install -r requirements.txt
-pip install .
-```
-
 ## Run
 
 Once `keras-tcn` is installed as a package, you can take a glimpse of what is possible to do with TCNs. Some tasks examples are available in the repository for this purpose:
@@ -223,15 +165,13 @@ cd mnist_pixel/
 python main.py # run sequential mnist pixel task
 ```
 
-## Reproducible results
-
-Reproducible results are possible on (NVIDIA) GPUs using the [tensorflow-determinism](https://github.com/NVIDIA/tensorflow-determinism) library. It was tested with keras-tcn by @lingdoc and he got reproducible results.
+Reproducible results are possible on (NVIDIA) GPUs using the [tensorflow-determinism](https://github.com/NVIDIA/tensorflow-determinism) library. It was tested with keras-tcn by @lingdoc.
 
 ## Tasks
 
 ### Word PTB
 
-Language modeling remains one of the primary applications of recurrent networks. In this example, we show that TCN can beat LSTM without too much tuning. More here: [WordPTB](tasks/word_ptb/README.md).
+Language modeling remains one of the primary applications of recurrent networks. In this example, we show that TCN can beat LSTM on the [WordPTB](tasks/word_ptb/README.md) task, without too much tuning.
 
 <p align="center">
   <img src="tasks/word_ptb/result.png" width="800"><br>
@@ -304,23 +244,12 @@ The idea here is to consider MNIST images as 1-D sequences and feed them to the 
 1875/1875 [==============================] - 46s 25ms/step - loss: 0.0453 - accuracy: 0.9858 - val_loss: 0.0424 - val_accuracy: 0.9862
 ```
 
-## Testing
-
-Testing is based on Tox.
-
-```
-pip install tox
-tox
-```
-
 ## References
 - https://github.com/locuslab/TCN/ (TCN for Pytorch)
 - https://arxiv.org/pdf/1803.01271 (An Empirical Evaluation of Generic Convolutional and Recurrent Networks
 for Sequence Modeling)
 - https://arxiv.org/pdf/1609.03499 (Original Wavenet paper)
-
-## Related
-- https://github.com/Baichenjia/Tensorflow-TCN (Tensorflow Eager implementation of TCNs)
+- - https://github.com/Baichenjia/Tensorflow-TCN (Tensorflow Eager implementation of TCNs)
 
 ## Citation
 
