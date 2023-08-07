@@ -1,5 +1,5 @@
 import inspect
-from typing import List
+from typing import List # noqa
 
 import tensorflow as tf
 # pylint: disable=E0611,E0401
