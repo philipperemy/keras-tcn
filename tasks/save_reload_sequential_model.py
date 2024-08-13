@@ -21,7 +21,7 @@ model_as_json = model.to_json()
 with open('model.json', "w") as json_file:
     json_file.write(model_as_json)
 # save weights to file (for this format, need h5py installed)
-model.save_weights('weights.h5')
+model.save_weights('model.weights.h5')
 
 # Make inference.
 inputs = np.ones(shape=(1, 100))
@@ -36,7 +36,7 @@ reloaded_model = model_from_json(loaded_json, custom_objects={'TCN': TCN})
 tcn_full_summary(model, expand_residual_blocks=False)
 
 # restore weights
-reloaded_model.load_weights('weights.h5')
+reloaded_model.load_weights('model.weights.h5')
 
 # Make inference.
 out2 = reloaded_model.predict(inputs)[0, 0]
