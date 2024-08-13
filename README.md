@@ -2,7 +2,7 @@
 
 *Keras Temporal Convolutional Network*. [[paper](https://arxiv.org/abs/1803.01271)]
 
-Tested with Tensorflow 2.6, 2.7, 2.8, 2.9, 2.10, 2.11, 2.12 and 2.13 (Jul 25, 2023).
+Tested with Tensorflow 2.9, 2.10, 2.11, 2.12, 2.13, 2.14 and 2.15 (Nov 17, 2023).
 
 [![Downloads](https://pepy.tech/badge/keras-tcn)](https://pepy.tech/project/keras-tcn)
 [![Downloads](https://pepy.tech/badge/keras-tcn/month)](https://pepy.tech/project/keras-tcn)
@@ -96,7 +96,7 @@ Here are some of my notes regarding my experience using TCN:
 - `activation`: Leave it to default. I have never changed it.
 - `kernel_initializer`: If the training of the TCN gets stuck, it might be worth changing this parameter. For example: `glorot_uniform`.
 
-- `use_batch_norm`, `use_weight_norm`, `use_weight_norm`: Use normalization if your network is big enough and the task contains enough data. I usually prefer using `use_layer_norm`, but you can try them all and see which one works the best.
+- `use_batch_norm`, `use_weight_norm`, `use_layer_norm`: Use normalization if your network is big enough and the task contains enough data. I usually prefer using `use_layer_norm`, but you can try them all and see which one works the best.
 
 
 ### Receptive field
