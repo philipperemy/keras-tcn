@@ -46,4 +46,4 @@ m = Sequential([
 m.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
 gen = get_x_y(max_time_steps=MAX_TIME_STEP)
-m.fit(gen, epochs=1, steps_per_epoch=1000, max_queue_size=1, verbose=2)
+m.fit(gen, epochs=1, steps_per_epoch=1000, verbose=2)
