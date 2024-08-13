@@ -96,7 +96,7 @@ Here are some of my notes regarding my experience using TCN:
 - `activation`: Leave it to default. I have never changed it.
 - `kernel_initializer`: If the training of the TCN gets stuck, it might be worth changing this parameter. For example: `glorot_uniform`.
 
-- `use_batch_norm`, `use_weight_norm`, `use_weight_norm`: Use normalization if your network is big enough and the task contains enough data. I usually prefer using `use_layer_norm`, but you can try them all and see which one works the best.
+- `use_batch_norm`, `use_weight_norm`, `use_layer_norm`: Use normalization if your network is big enough and the task contains enough data. I usually prefer using `use_layer_norm`, but you can try them all and see which one works the best.
 
 
 ### Receptive field
