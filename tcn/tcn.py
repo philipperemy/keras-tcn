@@ -1,5 +1,5 @@
 import inspect
-from typing import List # noqa
+from typing import List  # noqa
 
 import tensorflow as tf
 # pylint: disable=E0611,E0401
@@ -270,6 +270,12 @@ class TCN(Layer):
     def receptive_field(self):
         return 1 + 2 * (self.kernel_size - 1) * self.nb_stacks * sum(self.dilations)
 
+    def tolist(self, shape):
+        try:
+            return shape.as_list()
+        except AttributeError:
+            return shape
+
     def build(self, input_shape):
 
         # member to hold current output shape of the layer for building purposes
@@ -305,9 +311,9 @@ class TCN(Layer):
 
         self.output_slice_index = None
         if self.padding == 'same':
-            time = self.build_output_shape.as_list()[1]
+            time = self.tolist(self.build_output_shape)[1]
             if time is not None:  # if time dimension is defined. e.g. shape = (bs, 500, input_dim).
-                self.output_slice_index = int(self.build_output_shape.as_list()[1] / 2)
+                self.output_slice_index = int(self.tolist(self.build_output_shape)[1] / 2)
             else:
                 # It will known at call time. c.f. self.call.
                 self.padding_same_and_time_dim_unknown = True
@@ -315,10 +321,7 @@ class TCN(Layer):
         else:
             self.output_slice_index = -1  # causal case.
         self.slicer_layer = Lambda(lambda tt: tt[:, self.output_slice_index, :], name='Slice_Output')
-        try:
-            self.slicer_layer.build(self.build_output_shape.as_list())
-        except AttributeError:
-            self.slicer_layer.build(self.build_output_shape)
+        self.slicer_layer.build(self.tolist(self.build_output_shape))
 
     def compute_output_shape(self, input_shape):
         """
