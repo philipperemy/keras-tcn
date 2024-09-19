@@ -38,7 +38,6 @@ model = Sequential([
         kernel_size=2,
         use_skip_connections=False,
         use_batch_norm=False,
-        use_weight_norm=False,
         use_layer_norm=False
         ),
     Dense(1, activation='linear')

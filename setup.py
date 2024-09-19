@@ -10,7 +10,7 @@ if platform.system() == 'Darwin' and platform.processor() == 'arm':
     os.environ['GRPC_PYTHON_BUILD_SYSTEM_OPENSSL'] = '1'
     os.environ['GRPC_PYTHON_BUILD_SYSTEM_ZLIB'] = '1'
 
-install_requires = ['numpy', tensorflow, 'tensorflow_addons']
+install_requires = ['numpy', tensorflow]
 
 setup(
     name='keras-tcn',

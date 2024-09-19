@@ -43,7 +43,6 @@ TCN(
     kernel_initializer='he_normal',
     use_batch_norm=False,
     use_layer_norm=False,
-    use_weight_norm=False,
     go_backwards=False,
     return_state=False,
     **kwargs
@@ -64,7 +63,6 @@ TCN(
 - `kernel_initializer`: Initializer for the kernel weights matrix (Conv1D).
 - `use_batch_norm`: Whether to use batch normalization in the residual layers or not.
 - `use_layer_norm`: Whether to use layer normalization in the residual layers or not.
-- `use_weight_norm`: Whether to use weight normalization in the residual layers or not.
 - `go_backwards`: Boolean (default False). If True, process the input sequence backwards and return the reversed sequence.
 - `return_state`: Boolean. Whether to return the last state in addition to the output. Default: False.
 - `kwargs`: Any other set of arguments for configuring the parent class Layer. For example "name=str", Name of the model. Use unique names when using multiple TCN.
@@ -96,7 +94,7 @@ Here are some of my notes regarding my experience using TCN:
 - `activation`: Leave it to default. I have never changed it.
 - `kernel_initializer`: If the training of the TCN gets stuck, it might be worth changing this parameter. For example: `glorot_uniform`.
 
-- `use_batch_norm`, `use_weight_norm`, `use_layer_norm`: Use normalization if your network is big enough and the task contains enough data. I usually prefer using `use_layer_norm`, but you can try them all and see which one works the best.
+- `use_batch_norm`, `use_layer_norm`: Use normalization if your network is big enough and the task contains enough data. I usually prefer using `use_layer_norm`, but you can try them both and see which one works the best.
 
 
 ### Receptive field
