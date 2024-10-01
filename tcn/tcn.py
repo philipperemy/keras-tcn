@@ -28,6 +28,7 @@ class ResidualBlock(Layer):
 
     def __init__(self,
                  dilation_rate: int,
+                 residual_depth: int,
                  nb_filters: int,
                  kernel_size: int,
                  padding: str,
@@ -42,6 +43,7 @@ class ResidualBlock(Layer):
             x: The previous layer in the model
             training: boolean indicating whether the layer should behave in training mode or in inference mode
             dilation_rate: The dilation power of 2 we are using for this residual block
+            residual_depth: The number of residual convolutions to use in this block
             nb_filters: The number of convolutional filters to use in this block
             kernel_size: The size of the convolutional kernel
             padding: The padding used in the convolutional layers, 'same' or 'causal'.
@@ -54,6 +56,7 @@ class ResidualBlock(Layer):
         """
 
         self.dilation_rate = dilation_rate
+        self.residual_depth = residual_depth
         self.nb_filters = nb_filters
         self.kernel_size = kernel_size
         self.padding = padding
@@ -85,7 +88,7 @@ class ResidualBlock(Layer):
             self.layers = []
             self.res_output_shape = input_shape
 
-            for k in range(2):  # dilated conv block.
+            for k in range(self.residual_depth):  # dilated conv block.
                 name = 'conv1D_{}'.format(k)
                 with K.name_scope(name):  # name scope used to make sure weights get unique names
                     conv = Conv1D(
@@ -181,6 +184,7 @@ class TCN(Layer):
             nb_filters: The number of filters to use in the convolutional layers. Can be a list.
             kernel_size: The size of the kernel to use in each convolutional layer.
             dilations: The list of the dilations. Example is: [1, 2, 4, 8, 16, 32, 64].
+            residual_depth: The depth of a residual block. Default is 2.
             nb_stacks : The number of stacks of residual blocks to use.
             padding: The padding to use in the convolutional layers, 'causal' or 'same'.
             use_skip_connections: Boolean. If we want to add skip connections from input to each residual blocK.
@@ -202,8 +206,9 @@ class TCN(Layer):
     def __init__(self,
                  nb_filters=64,
                  kernel_size=3,
-                 nb_stacks=1,
                  dilations=(1, 2, 4, 8, 16, 32),
+                 residual_depth=2,
+                 nb_stacks=1,
                  padding='causal',
                  use_skip_connections=True,
                  dropout_rate=0.0,
@@ -220,6 +225,7 @@ class TCN(Layer):
         self.dropout_rate = dropout_rate
         self.use_skip_connections = use_skip_connections
         self.dilations = dilations
+        self.residual_depth = residual_depth
         self.nb_stacks = nb_stacks
         self.kernel_size = kernel_size
         self.nb_filters = nb_filters
@@ -238,6 +244,9 @@ class TCN(Layer):
         self.output_slice_index = None  # in case return_sequence=False
         self.padding_same_and_time_dim_unknown = False  # edge case if padding='same' and time_dim = None
 
+        if self.residual_depth < 1:
+            raise ValueError('Residual depth must be at least 1.')
+
         if self.use_batch_norm + self.use_layer_norm > 1:
             raise ValueError('Only one normalization can be specified at once.')
 
@@ -255,7 +264,7 @@ class TCN(Layer):
 
     @property
     def receptive_field(self):
-        return 1 + 2 * (self.kernel_size - 1) * self.nb_stacks * sum(self.dilations)
+        return 1 + self.residual_depth * (self.kernel_size - 1) * self.nb_stacks * sum(self.dilations)
 
     def tolist(self, shape):
         try:
@@ -278,6 +287,7 @@ class TCN(Layer):
             for i, d in enumerate(self.dilations):
                 res_block_filters = self.nb_filters[i] if isinstance(self.nb_filters, list) else self.nb_filters
                 self.residual_blocks.append(ResidualBlock(dilation_rate=d,
+                                                          residual_depth=self.residual_depth,
                                                           nb_filters=res_block_filters,
                                                           kernel_size=self.kernel_size,
                                                           padding=self.padding,
