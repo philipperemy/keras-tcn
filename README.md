@@ -4,6 +4,8 @@
 
 Tested with Tensorflow 2.9, 2.10, 2.11, 2.12, 2.13, 2.14, 2.15, 2.16, 2.17 and 2.18 (Oct 28, 2024).
 
+For a fully working example of Keras TCN using **R Language**, [browse here](https://github.com/philipperemy/keras-tcn/issues/246]).
+
 [![Downloads](https://pepy.tech/badge/keras-tcn)](https://pepy.tech/project/keras-tcn)
 [![Downloads](https://pepy.tech/badge/keras-tcn/month)](https://pepy.tech/project/keras-tcn)
 ![Keras TCN CI](https://github.com/philipperemy/keras-tcn/workflows/Keras%20TCN%20CI/badge.svg?branch=master)
@@ -243,6 +245,10 @@ The idea here is to consider MNIST images as 1-D sequences and feed them to the 
 1875/1875 [==============================] - 46s 25ms/step - loss: 0.0486 - accuracy: 0.9840 - val_loss: 0.0572 - val_accuracy: 0.9832
 1875/1875 [==============================] - 46s 25ms/step - loss: 0.0453 - accuracy: 0.9858 - val_loss: 0.0424 - val_accuracy: 0.9862
 ```
+
+## R Language
+
+For a fully working example of Keras TCN using **R Language**, [browse here](https://github.com/philipperemy/keras-tcn/issues/246]).
 
 ## References
 - https://github.com/locuslab/TCN/ (TCN for Pytorch)
