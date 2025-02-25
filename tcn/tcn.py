@@ -227,7 +227,7 @@ class TCN(Layer):
                  go_backwards=False,
                  return_state=False,
                  **kwargs):
-
+        self.stateful = False  # TCN are not stateful. Keras requires this parameter.
         self.return_sequences = return_sequences
         self.dropout_rate = dropout_rate
         self.use_skip_connections = use_skip_connections
