@@ -4,7 +4,7 @@
 
 Tested with Tensorflow 2.9, 2.10, 2.11, 2.12, 2.13, 2.14, 2.15, 2.16, 2.17 and 2.18 (Oct 28, 2024).
 
-For a fully working example of Keras TCN using **R Language**, [browse here](https://github.com/philipperemy/keras-tcn/issues/246]).
+For a fully working example of Keras TCN using **R Language**, [browse here](https://github.com/philipperemy/keras-tcn/issues/246).
 
 [![Downloads](https://pepy.tech/badge/keras-tcn)](https://pepy.tech/project/keras-tcn)
 [![Downloads](https://pepy.tech/badge/keras-tcn/month)](https://pepy.tech/project/keras-tcn)
@@ -248,7 +248,7 @@ The idea here is to consider MNIST images as 1-D sequences and feed them to the 
 
 ## R Language
 
-For a fully working example of Keras TCN using **R Language**, [browse here](https://github.com/philipperemy/keras-tcn/issues/246]).
+For a fully working example of Keras TCN using **R Language**, [browse here](https://github.com/philipperemy/keras-tcn/issues/246).
 
 ## References
 - https://github.com/locuslab/TCN/ (TCN for Pytorch)
