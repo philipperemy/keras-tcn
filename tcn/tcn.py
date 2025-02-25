@@ -69,6 +69,7 @@ class ResidualBlock(Layer):
         self.shape_match_conv = None
         self.res_output_shape = None
         self.final_activation = None
+        self.batch_norm_layers = []
 
         super(ResidualBlock, self).__init__(**kwargs)
 
@@ -108,7 +109,9 @@ class ResidualBlock(Layer):
 
                 with K.name_scope('norm_{}'.format(k)):
                     if self.use_batch_norm:
-                        self._build_layer(BatchNormalization())
+                        bn_layer = BatchNormalization()
+                        self.batch_norm_layers.append(bn_layer)
+                        self._build_layer(bn_layer)
                     elif self.use_layer_norm:
                         self._build_layer(LayerNormalization())
                     elif self.use_weight_norm:

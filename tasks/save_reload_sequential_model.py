@@ -1,6 +1,6 @@
 import numpy as np
 from tensorflow.keras.layers import Dense, Embedding
-from tensorflow.keras.models import Sequential, model_from_json
+from tensorflow.keras.models import Sequential, model_from_json, load_model
 
 from tcn import TCN, tcn_full_summary
 
@@ -13,8 +13,12 @@ model = Sequential(layers=[Embedding(max_features, 16, input_shape=(max_len,)),
                            TCN(nb_filters=12,
                                dropout_rate=0.5,
                                kernel_size=6,
+                               use_batch_norm=True,
                                dilations=[1, 2, 4]),
                            Dense(units=1, activation='sigmoid')])
+
+model.compile(loss='mae')
+model.fit(x=np.random.random((max_features, 100)), y=np.random.random((max_features, 1)))
 
 # get model as json string and save to file
 model_as_json = model.to_json()
@@ -44,3 +48,8 @@ print('*' * 80)
 print('Inference after loading:', out2)
 
 assert abs(out1 - out2) < 1e-6
+
+model.save('model.keras')
+out11 = load_model('model.keras').predict(inputs)[0, 0]
+out22 = model.predict(inputs)[0, 0]
+assert abs(out11 - out22) < 1e-6
