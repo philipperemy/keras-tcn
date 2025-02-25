@@ -17,7 +17,7 @@ setup(
     version='3.5.2',
     description='Keras TCN',
     author='Philippe Remy',
-    licenses=['MIT'],
+    license_files=['MIT'],
     long_description_content_type='text/markdown',
     long_description=open('README.md').read(),
     packages=['tcn'],
