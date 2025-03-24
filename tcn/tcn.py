@@ -265,7 +265,7 @@ class TCN(Layer):
 
     def tolist(self, shape):
         try:
-            return shape.as_list()
+            return list(shape)
         except AttributeError:
             return shape
 
