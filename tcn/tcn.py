@@ -38,7 +38,6 @@ class ResidualBlock(Layer):
                  kernel_initializer: str = 'he_normal',
                  use_batch_norm: bool = False,
                  use_layer_norm: bool = False,
-                 use_weight_norm: bool = False,
                  **kwargs):
         """Defines the residual block for the WaveNet TCN
         Args:
@@ -53,7 +52,6 @@ class ResidualBlock(Layer):
             kernel_initializer: Initializer for the kernel weights matrix (Conv1D).
             use_batch_norm: Whether to use batch normalization in the residual layers or not.
             use_layer_norm: Whether to use layer normalization in the residual layers or not.
-            use_weight_norm: Whether to use weight normalization in the residual layers or not.
             kwargs: Any initializers for Layer class.
         """
 
@@ -65,7 +63,6 @@ class ResidualBlock(Layer):
         self.dropout_rate = dropout_rate
         self.use_batch_norm = use_batch_norm
         self.use_layer_norm = use_layer_norm
-        self.use_weight_norm = use_weight_norm
         self.kernel_initializer = kernel_initializer
         self.layers = []
         self.shape_match_conv = None
@@ -103,11 +100,6 @@ class ResidualBlock(Layer):
                         name=name,
                         kernel_initializer=self.kernel_initializer
                     )
-                    if self.use_weight_norm:
-                        from tensorflow_addons.layers import WeightNormalization
-                        # wrap it. WeightNormalization API is different than BatchNormalization or LayerNormalization.
-                        with K.name_scope('norm_{}'.format(k)):
-                            conv = WeightNormalization(conv)
                     self._build_layer(conv)
 
                 with K.name_scope('norm_{}'.format(k)):
@@ -119,8 +111,6 @@ class ResidualBlock(Layer):
                         ln_layer = LayerNormalization()
                         self.layer_norm_layers.append(ln_layer)
                         self._build_layer(ln_layer)
-                    elif self.use_weight_norm:
-                        pass  # done above.
 
                 with K.name_scope('act_and_dropout_{}'.format(k)):
                     self._build_layer(Activation(self.activation, name='Act_Conv1D_{}'.format(k)))
@@ -209,7 +199,6 @@ class TCN(Layer):
             kernel_initializer: Initializer for the kernel weights matrix (Conv1D).
             use_batch_norm: Whether to use batch normalization in the residual layers or not.
             use_layer_norm: Whether to use layer normalization in the residual layers or not.
-            use_weight_norm: Whether to use weight normalization in the residual layers or not.
             go_backwards: Boolean (default False). If True, process the input sequence backwards and
             return the reversed sequence.
             return_state: Boolean. Whether to return the last state in addition to the output. Default: False.
@@ -232,7 +221,6 @@ class TCN(Layer):
                  kernel_initializer='he_normal',
                  use_batch_norm=False,
                  use_layer_norm=False,
-                 use_weight_norm=False,
                  go_backwards=False,
                  return_state=False,
                  **kwargs):
@@ -249,7 +237,6 @@ class TCN(Layer):
         self.kernel_initializer = kernel_initializer
         self.use_batch_norm = use_batch_norm
         self.use_layer_norm = use_layer_norm
-        self.use_weight_norm = use_weight_norm
         self.go_backwards = go_backwards
         self.return_state = return_state
         self.skip_connections = []
@@ -260,7 +247,7 @@ class TCN(Layer):
         self.output_slice_index = None  # in case return_sequence=False
         self.padding_same_and_time_dim_unknown = False  # edge case if padding='same' and time_dim = None
 
-        if self.use_batch_norm + self.use_layer_norm + self.use_weight_norm > 1:
+        if self.use_batch_norm + self.use_layer_norm > 1:
             raise ValueError('Only one normalization can be specified at once.')
 
         if isinstance(self.nb_filters, list):
@@ -281,7 +268,7 @@ class TCN(Layer):
 
     def tolist(self, shape):
         try:
-            return shape.as_list()
+            return list(shape)
         except AttributeError:
             return shape
 
@@ -307,7 +294,6 @@ class TCN(Layer):
                                                           dropout_rate=self.dropout_rate,
                                                           use_batch_norm=self.use_batch_norm,
                                                           use_layer_norm=self.use_layer_norm,
-                                                          use_weight_norm=self.use_weight_norm,
                                                           kernel_initializer=self.kernel_initializer,
                                                           name='residual_block_{}'.format(len(self.residual_blocks))))
                 # build newest residual block
@@ -397,7 +383,6 @@ class TCN(Layer):
         config['activation'] = self.activation_name
         config['use_batch_norm'] = self.use_batch_norm
         config['use_layer_norm'] = self.use_layer_norm
-        config['use_weight_norm'] = self.use_weight_norm
         config['kernel_initializer'] = self.kernel_initializer
         config['go_backwards'] = self.go_backwards
         config['return_state'] = self.return_state
@@ -423,8 +408,7 @@ def compiled_tcn(num_feat,  # type: int
                  opt='adam',
                  lr=0.002,
                  use_batch_norm=False,
-                 use_layer_norm=False,
-                 use_weight_norm=False):
+                 use_layer_norm=False):
     # type: (...) -> Model
     """Creates a compiled TCN model for a given task (i.e. regression or classification).
     Classification uses a sparse categorical loss. Please input class ids and not one-hot encodings.
@@ -449,7 +433,6 @@ def compiled_tcn(num_feat,  # type: int
         lr: Learning rate.
         use_batch_norm: Whether to use batch normalization in the residual layers or not.
         use_layer_norm: Whether to use layer normalization in the residual layers or not.
-        use_weight_norm: Whether to use weight normalization in the residual layers or not.
     Returns:
         A compiled keras TCN.
     """
@@ -461,7 +444,7 @@ def compiled_tcn(num_feat,  # type: int
     x = TCN(nb_filters, kernel_size, nb_stacks, dilations, padding,
             use_skip_connections, dropout_rate, return_sequences,
             activation, kernel_initializer, use_batch_norm, use_layer_norm,
-            use_weight_norm, name=name)(input_layer)
+            name=name)(input_layer)
 
     print('x.shape=', x.shape)
 
