@@ -3,6 +3,8 @@ from typing import List  # noqa
 
 import tensorflow as tf
 # pylint: disable=E0611,E0401
+from keras.src.saving import register_keras_serializable
+# pylint: disable=E0611,E0401
 from tensorflow.keras import backend as K, Model, Input, optimizers
 # pylint: disable=E0611,E0401
 from tensorflow.keras import layers
@@ -187,7 +189,7 @@ class ResidualBlock(Layer):
         return [self.res_output_shape, self.res_output_shape]
 
 
-@tf.keras.saving.register_keras_serializable()
+@register_keras_serializable()
 class TCN(Layer):
     """Creates a TCN layer.
 
