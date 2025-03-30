@@ -11,10 +11,9 @@ For a fully working example of Keras TCN using **R Language**, [browse here](htt
 ![Keras TCN CI](https://github.com/philipperemy/keras-tcn/workflows/Keras%20TCN%20CI/badge.svg?branch=master)
 ```bash
 pip install keras-tcn
-pip install keras-tcn --no-dependencies  # without the dependencies if you already have TF/Numpy.
 ```
 
-For MacOS M1 users: `pip install --no-binary keras-tcn keras-tcn`. The `--no-binary` option will force pip to download the sources (tar.gz) and re-compile them locally. Also make sure that `grpcio` and `h5py` are installed correctly. There are some tutorials on how to do that online.
+For [MacOS users](https://developer.apple.com/metal/tensorflow-plugin/) to use the GPU: `pip install tensorflow-metal`.
 
 ## Why TCN (Temporal Convolutional Network) instead of LSTM/GRU?
 
