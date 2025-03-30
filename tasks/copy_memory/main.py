@@ -30,7 +30,7 @@ def run_task():
                          use_skip_connections=True,
                          opt='rmsprop',
                          lr=5e-4,
-                         use_weight_norm=True,
+                         # use_weight_norm=True,
                          return_sequences=True)
 
     print(f'x_train.shape = {x_train.shape}')

@@ -26,7 +26,7 @@ def run_task():
         nb_stacks=1,
         max_len=x_train.shape[1],
         use_skip_connections=False,
-        use_weight_norm=True,
+        # use_weight_norm=True,
         regression=True,
         dropout_rate=0
     )
