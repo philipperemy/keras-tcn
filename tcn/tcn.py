@@ -267,10 +267,11 @@ class TCN(Layer):
         return 1 + 2 * (self.kernel_size - 1) * self.nb_stacks * sum(self.dilations)
 
     def tolist(self, shape):
+        # noinspection PyBroadException
         try:
+            return shape.as_list()
+        except Exception:
             return list(shape)
-        except AttributeError:
-            return shape
 
     def build(self, input_shape):
 
