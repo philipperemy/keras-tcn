@@ -2,8 +2,13 @@ import inspect
 from typing import List  # noqa
 
 import tensorflow as tf
-# pylint: disable=E0611,E0401
-from keras.src.saving import register_keras_serializable
+try:
+    # pylint: disable=E0611,E0401
+    from keras.src.saving import register_keras_serializable  # For recent Keras
+except ImportError:
+    # pylint: disable=E0611,E0401
+    from tensorflow.keras.saving import register_keras_serializable  # For older versions
+
 # pylint: disable=E0611,E0401
 from tensorflow.keras import backend as K, Model, Input, optimizers
 # pylint: disable=E0611,E0401

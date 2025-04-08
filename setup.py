@@ -14,7 +14,7 @@ install_requires = ['numpy', tensorflow]
 
 setup(
     name='keras-tcn',
-    version='3.5.5',
+    version='3.5.6',
     description='Keras TCN',
     author='Philippe Remy',
     license_files=['MIT'],
