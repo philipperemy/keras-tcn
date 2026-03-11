@@ -421,7 +421,7 @@ def compiled_tcn(num_feat,  # type: int
 
     Args:
         num_feat: The number of features of your input, i.e. the last dimension of: (batch_size, timesteps, input_dim).
-        num_classes: The size of the final dense layer, how many classes we are predicting.
+        num_classes: The size of the final dense layer, how many classes we are predicting. Only valid when regression=False. 
         nb_filters: The number of filters to use in the convolutional layers.
         kernel_size: The size of the kernel to use in each convolutional layer.
         dilations: The list of the dilations. Example is: [1, 2, 4, 8, 16, 32, 64].
