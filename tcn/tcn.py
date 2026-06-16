@@ -456,9 +456,9 @@ def compiled_tcn(num_feat,  # type: int
 
     def get_opt():
         if opt == 'adam':
-            return optimizers.Adam(lr=lr, clipnorm=1.)
+            return optimizers.Adam(lr, clipnorm=1.)
         elif opt == 'rmsprop':
-            return optimizers.RMSprop(lr=lr, clipnorm=1.)
+            return optimizers.RMSprop(lr, clipnorm=1.)
         else:
             raise Exception('Only Adam and RMSProp are available here')
 
