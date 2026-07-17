@@ -3,14 +3,16 @@ import platform
 
 from setuptools import setup
 
-tensorflow = 'tensorflow'
 if platform.system() == 'Darwin' and platform.processor() == 'arm':
-    tensorflow = 'tensorflow-macos'
     # https://github.com/grpc/grpc/issues/25082
     os.environ['GRPC_PYTHON_BUILD_SYSTEM_OPENSSL'] = '1'
     os.environ['GRPC_PYTHON_BUILD_SYSTEM_ZLIB'] = '1'
 
-install_requires = ['numpy', tensorflow]
+install_requires = [
+    'numpy',
+    'tensorflow; platform_system != "Darwin" or platform_machine != "arm64"',
+    'tensorflow-macos; platform_system == "Darwin" and platform_machine == "arm64"',
+]
 
 setup(
     name='keras-tcn',
